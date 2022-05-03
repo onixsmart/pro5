@@ -97,6 +97,11 @@
                                 Productos
                             </a>
                         </li>
+                        <li>
+                            <a href="{{route('tenant.reports.purchases.general_items_service.index')}}">
+                                Productos / Servicios
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
