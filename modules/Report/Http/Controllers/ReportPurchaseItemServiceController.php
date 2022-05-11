@@ -15,6 +15,8 @@ use Modules\Report\Traits\ReportTrait;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\Company;
+use Modules\Expense\Models\Expense;
+use Modules\Expense\Models\ExpenseItem;
 use Carbon\Carbon;
 use App\Http\Resources\Tenant\PurchaseCollection;
 use Modules\Report\Http\Resources\GeneralItemCollection;
@@ -116,6 +118,17 @@ class ReportPurchaseItemServiceController extends Controller
             $relation = 'sale_note';
  */
             $data = PurchaseItem::whereHas('purchase', function($query) use($date_start, $date_end, $user_id, $documents_excluded){
+                $query
+                ->whereBetween('date_of_issue', [$date_start, $date_end])
+                ->latest()
+                ->whereTypeUser();
+                if(!empty($user_id)){
+                    $query->where('user_id',$user_id);
+                }
+                $query->whereNotIn('state_type_id', $documents_excluded);
+            });
+
+            $data_expenses= ExpenseItem::whereHas('expense', function($query) use($date_start, $date_end, $user_id, $documents_excluded){
                 $query
                 ->whereBetween('date_of_issue', [$date_start, $date_end])
                 ->latest()
