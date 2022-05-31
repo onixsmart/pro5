@@ -59,15 +59,16 @@ class ReportPurchaseItemServiceController extends Controller
 
     public function records(Request $request)
     {
-
-        $records = $this->getRecordsItems($request->all())->latest('id');
-        
+        $purchaseType=true;
+        $purchase = $this->getRecordsItems($request->all(),$purchaseType);
+        $expense = $this->getRecordsItems($request->all(),false);
+        $records=$purchase->merge($expense);
         return new GeneralItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
 
-    public function getRecordsItems($request){
-
+    public function getRecordsItems($request, $purchaseType){
+        $purchseType=$purchaseType;
         $data_of_period = $this->getDataOfPeriod($request);
         /* $data_type = $this->getDataType($request); */
 
@@ -85,7 +86,7 @@ class ReportPurchaseItemServiceController extends Controller
         $user_type = $request['user_type'] != null ? $request['user_type'] : 'VENDEDOR';
         $web_platform_id = $request['web_platform_id'];
 
-        $records = $this->dataItems($d_start, $d_end, $document_type_id, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type);
+        $records = $this->dataItems($d_start, $d_end, $document_type_id, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type,$purchaseType);
 
         return $records;
 
@@ -108,8 +109,18 @@ class ReportPurchaseItemServiceController extends Controller
      *
      * @return \App\Models\Tenant\SaleNoteItem|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
-    private function dataItems($date_start, $date_end, $document_type_id, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type)
+    private function dataItems($date_start, $date_end, $document_type_id, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type,$purchaseType)
     {
+        if(!$document_type_id){
+            $document_type_id=['02','14'];
+            $expense_type_id=['2','3'];
+        }else{
+            if ($document_type_id=='02') {
+                $expense_type_id=$document_type_id;
+            }else{
+                $expense_type_id=$document_type_id;
+            }
+        }
         /* columna state_type_id */
         $documents_excluded = [
             '11' // Documentos anulados
@@ -117,27 +128,36 @@ class ReportPurchaseItemServiceController extends Controller
         /* if( $document_type_id && $document_type_id == '80' ) {
             $relation = 'sale_note';
  */
-            $data = PurchaseItem::whereHas('purchase', function($query) use($date_start, $date_end, $user_id, $documents_excluded){
-                $query
-                ->whereBetween('date_of_issue', [$date_start, $date_end])
-                ->latest()
-                ->whereTypeUser();
-                if(!empty($user_id)){
-                    $query->where('user_id',$user_id);
-                }
-                $query->whereNotIn('state_type_id', $documents_excluded);
-            });
+            if ($purchaseType) {
+                $data= PurchaseItem::whereHas('purchase', function($query) use($date_start, $date_end, $user_id, $documents_excluded, $document_type_id){
+                    $query
+                    ->whereBetween('date_of_issue', [$date_start, $date_end])
+                    ->latest()
+                    ->whereBetween('document_type_id', [$document_type_id])
+                    ->whereTypeUser();
+                    if(!empty($user_id)){
+                        $query->where('user_id',$user_id);
+                    }
+                    $query->whereNotIn('state_type_id', $documents_excluded);
+                })->get();
+            } else {
+                $data= ExpenseItem::whereHas('expense', function($query) use($date_start, $date_end, $user_id, $documents_excluded, $expense_type_id){
+                    $query
+                    ->whereBetween('date_of_issue', [$date_start, $date_end])
+                    ->latest()
+                    ->whereBetween('expense_type_id', [$expense_type_id])
+                    ->whereTypeUser();
+                    if(!empty($user_id)){
+                        $query->where('user_id',$user_id);
+                    }
+                    $query->whereNotIn('state_type_id', $documents_excluded);
+                })->get();
+            }
+            
+            
 
-            $data_expenses= ExpenseItem::whereHas('expense', function($query) use($date_start, $date_end, $user_id, $documents_excluded){
-                $query
-                ->whereBetween('date_of_issue', [$date_start, $date_end])
-                ->latest()
-                ->whereTypeUser();
-                if(!empty($user_id)){
-                    $query->where('user_id',$user_id);
-                }
-                $query->whereNotIn('state_type_id', $documents_excluded);
-            });
+            
+
 
         /* } else {
 

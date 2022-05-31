@@ -19,31 +19,31 @@ class GeneralItemCollection extends ResourceCollection
             /** @var \App\Models\Tenant\DocumentItem|\App\Models\Tenant\PurchaseItem|mixed|\App\Models\Tenant\SaleNoteItem|mixed $row */
             $resource = self::getDocument($row);
             $purchase_item = null;
-            $total_item_purchase = self::getPurchaseUnitPrice($row,$resource,$purchase_item);
-            $quantity_unit = 0;
-            if (property_exists($row, 'item') && property_exists($row->item, 'presentation')) {
+            $total_item_purchase = $row->expense? null : self::getPurchaseUnitPrice($row,$resource,$purchase_item);
+            $quantity_unit = $row->expense? 1 : 0;
+            if (!$row->expense && property_exists($row, 'item') && property_exists($row->item, 'presentation')) {
                 $quantity_unit= $row->item->presentation->quantity_unit;
                 $total_item_purchase *= $quantity_unit;
             }
 
 
             $row_total = $row->total;
-            $row_unit_value = $row->unit_value;
+            $row_unit_value =$row->expense? $row->total : $row->unit_value;
             $description_apply_conversion_to_pen = null;
 
             if($apply_conversion_to_pen && $row->isCurrencyTypeUsd())
             {
                 $row_total = $row->getConvertTotalToPen();
-                $row_unit_value = $row->getConvertUnitValueToPen();
+                $row_unit_value = $row->expense? $row_total : $row->getConvertUnitValueToPen();
                 $description_apply_conversion_to_pen = 'Se aplicó conversión a soles';
             }
 
-            $utility_item = $row_total - $total_item_purchase;
+            $utility_item = $row->expense? null : $row_total - $total_item_purchase;
             // $utility_item = $row->total - $total_item_purchase;
             
-            $item = $row->getModelItem();
-            $model = $item->model;
-            $platform = $item->getWebPlatformModel();
+            $item =$row->expense? null : $row->getModelItem();
+            $model =$row->expense? null : $item->model;
+            $platform =$row->expense? null : $item->getWebPlatformModel();
             if($platform !== null){
                 $platform = $platform->name;
             }
@@ -62,16 +62,16 @@ class GeneralItemCollection extends ResourceCollection
             }
             return [
                 'id' => $row->id,
-                'unit_type_id' => $row->item->unit_type_id,
-                'internal_id' => $row->relation_item->internal_id,
-                'description' => $row->item->description,
+                'unit_type_id' =>$row->expense? null : $row->item->unit_type_id,
+                'internal_id' =>$row->expense? null : $row->relation_item->internal_id,
+                'description' =>$row->expense? $row->description : $row->item->description,
                 'currency_type_id' => $resource['currency_type_id'],
-                'lot_has_sale' => self::getLotsHasSale($row),
+                'lot_has_sale' => $row->expense? null : self::getLotsHasSale($row),
                 'date_of_issue' => $resource['date_of_issue'],
                 'customer_name' => $resource['customer_name'],
                 'purchase_order' => $resource['purchase_order'],
                 'customer_number' => $resource['customer_number'],
-                'brand' => $row->relation_item->brand->name,
+                'brand' =>$row->expense? null : $row->relation_item->brand->name,
                 'series' => $resource['series'],
                 'alone_number' => $resource['alone_number'],
                 'quantity' => number_format($row->quantity, 2),
@@ -82,12 +82,12 @@ class GeneralItemCollection extends ResourceCollection
                 'total_number' => $row_total,
                 // 'total_number' => $row->total,
                 'total_item_purchase' => number_format($total_item_purchase, 2),
-                'is_set' => (bool) $row->relation_item->is_set,
+                'is_set' => $row->expense? null : (bool) $row->relation_item->is_set,
                 'utility_item' => number_format($utility_item, 2),
                 'factor' => ($quantity_unit!=0) ? number_format($quantity_unit, 2) : 0,
                 'document_type_description' => $resource['document_type_description'],
                 'document_type_id' => $resource['document_type_id'],
-                'web_platform_name' => optional($row->relation_item->web_platform)->name,
+                'web_platform_name' =>$row->expense? null : optional($row->relation_item->web_platform)->name,
                 'model' => $model,
                 'platform' => $platform,
                 // 'resource'=>$resource,
@@ -234,6 +234,19 @@ class GeneralItemCollection extends ResourceCollection
             $data['currency_type_id'] = $document->currency_type_id;
             $data['purchase_order'] = $document->purchase_order;
             $data['observation'] = $document->observation;
+        }else if ($row->expense) {
+            /** @var \App\Models\Tenant\SaleNote $document */
+            $document = $row->expense;
+            $data['date_of_issue'] = $document->date_of_issue->format('Y-m-d');
+            $data['customer_name'] = $document->supplier->name;
+            $data['customer_number'] = $document->supplier->number;
+            $data['series'] = '';
+            $data['alone_number'] = $document->number;
+            $data['document_type_description'] = $document->document_type->description;
+            $data['document_type_id'] = $document->document_type->id;
+            $data['currency_type_id'] = $document->currency_type_id;
+            $data['purchase_order'] = '';
+            $data['observation'] = '';
         }
 
         return $data;
