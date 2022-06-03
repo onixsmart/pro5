@@ -1640,7 +1640,7 @@ class SaleNoteController extends Controller
         }else{
 
             $items = SaleNoteItem::whereIn('sale_note_id', $request->notes_id)
-                    ->select('item_id', 'quantity')
+                    ->select('item_id', 'quantity', 'unit_value')
                     ->get();
         }
 

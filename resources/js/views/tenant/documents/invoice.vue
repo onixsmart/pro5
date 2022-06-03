@@ -1712,7 +1712,6 @@ export default {
                 });
             });
         }
-
         //parse items from multiple sale notes not group
         this.processItemsForNotesNotGroup()
 
@@ -1799,6 +1798,14 @@ export default {
             }
             item.presentation = {};
             item.unit_price = item.sale_unit_price;
+
+            let catchItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
+
+            if (catchItem !== undefined) {
+                item.unit_price = catchItem.unit_value;
+            }
+
+            
             item.item = {
                 amount_plastic_bag_taxes: item.amount_plastic_bag_taxes,
                 attributes: item.attributes,
@@ -1837,6 +1844,7 @@ export default {
             item.discounts = [];
             item.charges = [];
             item.item_id = item.id;
+
             item.unit_price_value = item.sale_unit_price;
             item.input_unit_price_value = item.sale_unit_price;
 
@@ -1844,11 +1852,12 @@ export default {
 
             let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
             if (tempItem !== undefined) {
-                item.quantity = tempItem.quantity
+                item.quantity = tempItem.quantity;
+                item.unit_price_value = tempItem.unit_value;
+                item.input_unit_price_value = tempItem.unit_value;
             }
             // item.quantity = itemsParsed.find(ip => ip.item_id == item.id).quantity;
             item.warehouse_id = null;
-
             return item
         },
         // #307 Ajuste para seleccionar automaticamente el tipo de comprobante y serie

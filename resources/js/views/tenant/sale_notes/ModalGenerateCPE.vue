@@ -188,15 +188,18 @@ export default {
               const it = {
                 id: i.item_id,
                 quantity: 0,
+                unit_value:0,
               };
               items.map((ite) => {
                 if (ite.item_id === it.id) {
                   it.quantity = it.quantity + parseFloat(ite.quantity);
+                  it.unit_value = parseFloat(ite.unit_value);
                 }
               });
               const itemIsDuplicated = data.find((item) => item.id === it.id);
               if (itemIsDuplicated) {
                 itemIsDuplicated.quantity = it.quantity;
+                itemIsDuplicated.unit_value = parseFloat(ite.unit_value);
               } else {
                 data.push(it);
               }
