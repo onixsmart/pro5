@@ -64,7 +64,6 @@ use Mpdf\Mpdf;
 use setasign\Fpdi\Fpdi;
 use Modules\Inventory\Models\InventoryConfiguration;
 
-
 class ItemController extends Controller
 {
     use OfflineTrait;
@@ -600,6 +599,7 @@ class ItemController extends Controller
                 $item->save();
             }
         }
+        
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes
