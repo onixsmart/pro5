@@ -162,10 +162,10 @@
         },
         async created() {
             this.title = 'Precios'
-            this.$eventHub.$on('reloadListPrice', () => {
+            /* this.$eventHub.$on('reloadListPrice', () => {
                 this.reloadListPrice()
-            });
-            /* await this.reloadListPrice() */
+            }); */
+            await this.reloadListPrice()
             /* this.$eventHub.$on('reloadListPrice', () => {
                 this.reloadListPrice();
             }) */
