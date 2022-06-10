@@ -62,8 +62,12 @@ class ReportPurchaseItemServiceController extends Controller
         $purchaseType=true;
         $purchase = $this->getRecordsItems($request->all(),$purchaseType);
         $expense = $this->getRecordsItems($request->all(),false);
-        $records=$purchase->merge($expense);
-        return new GeneralItemCollection($records->paginate(config('tenant.items_per_page')));
+
+        $allPurchase= new GeneralItemCollection($purchase->paginate(config('tenant.items_per_page')));
+        $allExpense= new GeneralItemCollection($expense->paginate(config('tenant.items_per_page')));
+        $allRecords=$allPurchase->concat($allExpense);
+
+        return $allRecords;
     }
 
 
@@ -139,7 +143,7 @@ class ReportPurchaseItemServiceController extends Controller
                         $query->where('user_id',$user_id);
                     }
                     $query->whereNotIn('state_type_id', $documents_excluded);
-                })->get();
+                });
             } else {
                 $data= ExpenseItem::whereHas('expense', function($query) use($date_start, $date_end, $user_id, $documents_excluded, $expense_type_id){
                     $query
@@ -151,7 +155,7 @@ class ReportPurchaseItemServiceController extends Controller
                         $query->where('user_id',$user_id);
                     }
                     $query->whereNotIn('state_type_id', $documents_excluded);
-                })->get();
+                });
             }
             
             
