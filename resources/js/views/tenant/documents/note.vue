@@ -288,7 +288,7 @@
                             :isEditItemNote="isEditItemNote"
                             :documentTypeId="form.document_type_id"
                             :noteCreditOrDebitTypeId="form.note_credit_or_debit_type_id"
-                            :operation-type-id="form.operation_type_id"
+                            :operation-type-id="form.operation_type_id!=null?form.operation_type_id:'0101'"
                             :currency-type-id-active="form.currency_type_id"
                             :typeUser="user"
                             :exchange-rate-sale="form.exchange_rate_sale"
@@ -631,7 +631,7 @@
                         format_pdf: 'a4'
                     },
                     // operation_type_id: null,
-                    operation_type_id: this.document.invoice.operation_type_id, //se asigna el t. operacion del documento relacionado para filtrar en form item el tipo de afectacion
+                    operation_type_id: this.document.invoice? this.document.invoice.operation_type_id:null, //se asigna el t. operacion del documento relacionado para filtrar en form item el tipo de afectacion
                     hotel: {},
                     charges: this.document.charges ? Object.values(this.document.charges) : null,
                     payment_condition_id : null,

@@ -3,13 +3,21 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Document;
+use App\Models\Tenant\Purchase;
 use App\Models\Tenant\Configuration;
 
 class NoteController extends Controller
 {
-    public function create($document_id)
+    public function create($document_id,$data=null)
     {
-        $document_affected = Document::find($document_id);
+        $purchase=$data?true:false;
+        if ($purchase) {
+            $document_affected = Purchase::find($document_id);
+        } else {
+            $document_affected = Document::find($document_id);
+        }
+        
+        
         $configuration = Configuration::first();
 
         return view('tenant.documents.note', compact('document_affected', 'configuration'));
