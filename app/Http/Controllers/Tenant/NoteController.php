@@ -10,8 +10,8 @@ class NoteController extends Controller
 {
     public function create($document_id,$data=null)
     {
-        $purchase=$data?true:false;
-        if ($purchase) {
+        $purchaseValue=$data?true:false;
+        if ($purchaseValue) {
             $document_affected = Purchase::find($document_id);
         } else {
             $document_affected = Document::find($document_id);
@@ -20,7 +20,7 @@ class NoteController extends Controller
         
         $configuration = Configuration::first();
 
-        return view('tenant.documents.note', compact('document_affected', 'configuration'));
+        return view('tenant.documents.note', compact('document_affected', 'configuration','purchaseValue'));
     }
 
     public function record($document_id)

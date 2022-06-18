@@ -21,15 +21,63 @@
                                 <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="form-group" :class="{'has-danger': errors.series_id}">
-                                <label class="control-label">Serie</label>
-                                <el-select v-model="form.series_id">
-                                    <el-option v-for="option in series" :key="option.id" :value="option.id" :label="option.number"></el-option>
-                                </el-select>
-                                <small class="form-control-feedback" v-if="errors.series_id" v-text="errors.series_id[0]"></small>
+                        <template v-if="purchase_value">
+                            <div class="col-lg-2">
+                                <div :class="{'has-danger': errors.series}"
+                                    class="form-group">
+                                    <label class="control-label">Serie <span class="text-danger">*</span></label>
+                                    <el-input v-model="form.series"
+                                            :maxlength="4"
+                                            @input="inputSeries"></el-input>
+
+                                    <small v-if="errors.series"
+                                        class="form-control-feedback"
+                                        v-text="errors.series[0]"></small>
+                                </div>
                             </div>
-                        </div>
+                        </template>
+                        <template v-else>
+                            <div class="col-md-2">
+                                <div class="form-group" :class="{'has-danger': errors.series_id}">
+                                    <label class="control-label">Serie</label>
+                                    <template v-if="purchase_value">
+                                        <div class="col-lg-2">
+                                            <div :class="{'has-danger': errors.series}"
+                                                class="form-group">
+                                                <label class="control-label">Serie <span class="text-danger">*</span></label>
+                                                <el-input v-model="form.series"
+                                                        :maxlength="4"
+                                                        @input="inputSeries"></el-input>
+
+                                                <small v-if="errors.series"
+                                                    class="form-control-feedback"
+                                                    v-text="errors.series[0]"></small>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        <el-select v-model="form.series_id">
+                                            <el-option v-for="option in series" :key="option.id" :value="option.id" :label="option.number"></el-option>
+                                        </el-select>
+                                    </template>
+                                    <small class="form-control-feedback" v-if="errors.series_id" v-text="errors.series_id[0]"></small>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <template v-if="purchase_value">
+                            <div class="col-lg-2">
+                                <div :class="{'has-danger': errors.number}"
+                                    class="form-group">
+                                    <label class="control-label">Número <span class="text-danger">*</span></label>
+                                    <el-input v-model="form.number"></el-input>
+
+                                    <small v-if="errors.number"
+                                        class="form-control-feedback"
+                                        v-text="errors.number[0]"></small>
+                                </div>
+                            </div>
+                        </template>
                         <div class="col-md-2">
                             <template v-if="form.document_type_id === '08'">
                                 <div class="form-group" :class="{'has-danger': errors['note.note_debit_type_id']}">
@@ -68,15 +116,33 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group" :class="{'has-danger': errors.customer_id}">
+                        <template v-if="purchase_value">
+                            <div class="col-lg-6">
+                            <div class="form-group" :class="{'has-danger': errors.supplier_id}">
                                 <label class="control-label">Cliente</label>
-                                <el-select v-model="form.customer_id" filterable :disabled="true">
-                                    <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                <el-select 
+                                           v-model="form.supplier_id"
+                                           filterable :disabled="true">
+                                    <el-option v-for="option in suppliers" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
-                                <small class="form-control-feedback" v-if="errors.customer_id" v-text="errors.customer_id[0]"></small>
+                                <small v-if="errors.supplier_id"
+                                       class="form-control-feedback"
+                                       v-text="errors.supplier_id[0]"></small>
                             </div>
                         </div>
+                        </template>
+                        <template v-else>
+                            <div class="col-md-6">
+                                <div class="form-group" :class="{'has-danger': errors.customer_id}">
+                                    <label class="control-label">Cliente</label>
+                                    <el-select v-model="form.customer_id" filterable :disabled="true">
+                                        <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.customer_id" v-text="errors.customer_id[0]"></small>
+                                </div>
+                            </div>
+                        </template>
+                        
                         <div class="col-md-2">
                             <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                 <label class="control-label">Moneda</label>
@@ -312,7 +378,7 @@
     export default {
         components: {DocumentFormItem, DocumentOptions},
         mixins: [functions, exchangeRate],
-        props: ['document_affected', 'configuration'],
+        props: ['document_affected', 'configuration','purchase_value'],
         data() {
             return {
                 recordItem: null,
@@ -322,11 +388,13 @@
                 loading_submit: false,
                 loading: false,
                 resource: 'documents',
+                resource_purchase:'purchases',
                 errors: {},
                 form: {},
                 document_types: [],
                 currency_types: [],
                 customers: [],
+                suppliers:[],
                 all_series: [],
                 series: [],
                 currency_type: {},
@@ -548,7 +616,8 @@
                 this.form.number = '#'
                 // this.form.date_of_issue= moment().format('YYYY-MM-DD')
                 // this.form.time_of_issue= moment().format('HH:mm:ss')
-                this.form.customer_id= this.document.customer_id
+                this.form.supplier_id= this.document.supplier_id
+                this.form.customer_id= this.purchase_value? this.document.supplier_id : this.document.customer_id
                 this.form.currency_type_id= this.document.currency_type_id
                 this.form.purchase_order= null
                 this.form.exchange_rate_sale= this.document.exchange_rate_sale
@@ -750,6 +819,7 @@
                 }
 
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
+                this.form.series = (this.series.length > 0)?this.series[0].number:null
 
                 this.initData()
                 this.validateHasDiscounts()
@@ -854,7 +924,8 @@
                 }
 
                 this.loading_submit = true
-                await this.$http.post(`/${this.resource}`, this.form)
+                let new_resource= this.purchase_value? this.resource_purchase:this.resource;
+                await this.$http.post(`/${new_resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
                             this.resetForm()
@@ -876,10 +947,20 @@
                     })
             },
             getCustomer(){
-                this.$http.get(`/${this.resource}/search/customer/${this.document.customer_id}`).then((response) => {
-                    this.customers = response.data.customers
-                    this.form.customer_id = this.document.customer_id
-                })
+                if(this.purchase_value){
+                    this.$http.get(`/${this.resource_purchase}/table/suppliers`).then((response) => {
+
+                        this.suppliers = response.data
+                        this.form.supplier_id = this.document.supplier_id
+
+                    })
+                }else{
+                    this.$http.get(`/${this.resource}/search/customer/${this.document.customer_id}`).then((response) => {
+                        this.customers = response.data.customers
+                        this.form.customer_id = this.document.customer_id
+                    })
+                }
+                
             },
             close() {
                 location.href = '/documents'
