@@ -34,6 +34,7 @@
         {
             $records = UserRelSuscriptionPlan::query();
             if ($request->has('column') && !empty($request->column)) {
+                //fixed #818
                 $records->whereHas('suscription_plan', function($query) use ($request) {
                     $query->where($request->column, 'like', "%{$request->value}%");
                 });
