@@ -6,6 +6,7 @@ use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\PurchaseItem;
+use App\Models\Tenant\PurchaseSettlementItem;
 use App\Models\Tenant\SaleNoteItem;
 use Exception;
 use Illuminate\Support\ServiceProvider;
@@ -31,6 +32,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
     public function boot() {
         $this->purchase();
+        $this->purchase_settlement();
         $this->sale();
         $this->sale_note();
         $this->sale_note_item_delete();
@@ -38,6 +40,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
         $this->order_note();
         $this->order_note_item_delete();
         $this->purchase_item_delete();
+        $this->purchase_item_settlement_delete();
         $this->item_lot_delete();
 
         $this->devolution();
@@ -63,6 +66,25 @@ class InventoryKardexServiceProvider extends ServiceProvider
             $this->updateStock($purchase_item->item_id, ($purchase_item->quantity * $presentationQuantity), $warehouse->id);
         });
     }
+
+    /**
+     *Se dispara luego de crear la compra.
+     */
+    private function purchase_settlement() {
+        PurchaseSettlementItem::created(function (PurchaseSettlementItem $purchase_item) {
+            /* dd($purchase_item); */
+            $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
+
+            $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
+            // $warehouse = $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id);
+            // $warehouse = $this->findWarehouse();
+            //$this->createInventory($purchase_item->item_id, $purchase_item->quantity, $warehouse->id);
+            $inve=$this->createInventoryKardex($purchase_item->purchase_settlement, $purchase_item->item_id, /*$purchase_item->quantity*/ ($purchase_item->quantity * $presentationQuantity), $warehouse->id);
+            /* dd($inve); */
+            $this->updateStock($purchase_item->item_id, ($purchase_item->quantity * $presentationQuantity), $warehouse->id);
+        });
+    }
+
 
     /**
      * Se dispara cuando se realiza una venta
@@ -422,9 +444,24 @@ class InventoryKardexServiceProvider extends ServiceProvider
             // $this->createInventoryKardex($order_note_item->order_note, $order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
             // $this->updateStock($order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
             
-            /*
-             * Calculando el stock por lote por factor según la unidad
-             */
+            // control de lotes
+            if (isset($order_note_item->item->IdLoteSelected)) 
+            {
+                $IdLoteSelected = $order_note_item->item->IdLoteSelected;
+
+                if(is_array($IdLoteSelected))
+                {
+                    foreach ($IdLoteSelected as $lot_selected) 
+                    {
+                        $lot = ItemLotsGroup::find($lot_selected->id);
+                        $lot->quantity = $lot->quantity - ($lot_selected->compromise_quantity * $presentationQuantity ?? 1);
+                        $lot->save();
+                    }
+                }
+            }
+            else
+            {
+
             if (isset($order_note_item->item->lots_group)) {
                     if(is_array($order_note_item->item->lots_group) && count($order_note_item->item->lots_group) > 0) {
                             $lots_group = $order_note_item->item->lots_group;
@@ -436,6 +473,10 @@ class InventoryKardexServiceProvider extends ServiceProvider
                             }
                     }
             }
+
+            }
+            // control de lotes
+            
 
 
             if(isset($item->lots) )
@@ -516,6 +557,30 @@ class InventoryKardexServiceProvider extends ServiceProvider
             $this->deleteItemSeriesAndGroup($purchase_item);
 
             $this->createInventoryKardex($purchase_item->purchase, $purchase_item->item_id, (-1 * ($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
+            // $this->updateStock($purchase_item->item_id, (-1 *($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
+            $this->updateStockPurchase($purchase_item->item_id, (-1 *($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
+
+        });
+    }
+
+    /**
+     * Se dispara cuando se borra un item de compra
+     */
+    private function purchase_item_settlement_delete()
+    {
+        PurchaseSettlementItem::deleted(function (PurchaseSettlementItem $purchase_item) {
+
+
+            $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
+
+            $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
+
+            $this->verifyHasSaleLots($purchase_item);
+            $this->verifyHasSaleLotsGroup($purchase_item);
+
+            $this->deleteItemSeriesAndGroup($purchase_item);
+
+            $this->createInventoryKardex($purchase_item->purchase_settlement, $purchase_item->item_id, (-1 * ($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
             // $this->updateStock($purchase_item->item_id, (-1 *($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
             $this->updateStockPurchase($purchase_item->item_id, (-1 *($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
 
