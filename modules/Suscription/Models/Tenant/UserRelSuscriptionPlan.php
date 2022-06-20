@@ -97,6 +97,8 @@
     {
         use UsesTenantConnection;
 
+        protected $with = ['suscription_plan'];
+
         protected $casts = [
             'user_id' => 'int',
             'suscription_plan_id' => 'int',

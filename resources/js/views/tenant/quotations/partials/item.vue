@@ -546,7 +546,8 @@ export default {
         'typeUser',
         'configuration',
         'displayDiscount',
-        'customerId'
+        'customerId',
+        'personTypeId',
     ],
     components: {
         itemForm,
@@ -888,6 +889,14 @@ export default {
                 has_igv: null,
                 is_set: false,
                 item_unit_types: [],
+                prices_types:{ 
+                    id: null,
+                    description: null,
+                    unit_type_id: 'NIU',
+                    quantity_unit: 0,
+                    price_default: 2,
+                    prices: [],
+                },
                 has_plastic_bag_taxes: false,
                 series_enabled: false,
                 warehouse_id: null,
@@ -917,6 +926,21 @@ export default {
                     this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
                 }
             }
+    
+            this.$http.get(`/price/search/${this.personTypeId}`)
+            .then(response => {
+                console.log(response.data)
+                this.form.prices_types.prices = [];
+                response.data.forEach(value => {
+                    this.form.prices_types.prices.push(value.price)
+                });
+
+                this.form.prices_types.id=response.data[0].id
+                this.form.prices_types.description=response.data[0].description
+                this.form.prices_types.unit_type_id=response.data[0].unit_type_id
+                this.form.prices_types.quantity_unit=response.data[0].quantity_unit
+                this.form.prices_types.price_default=response.data[0].price_default
+            })
 
             if (this.recordItem) {
                 await this.reloadDataItems(this.recordItem.item_id)
