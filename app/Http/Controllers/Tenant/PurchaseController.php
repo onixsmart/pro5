@@ -49,6 +49,7 @@
     use Symfony\Component\HttpFoundation\StreamedResponse;
     use Throwable;
     use App\Models\Tenant\GeneralPaymentCondition;
+    use App\Models\Tenant\Note;
 
 
     class PurchaseController extends Controller
@@ -405,12 +406,27 @@
                             $this->createGlobalPayment($record_payment, $payment);
                         }
                     }
+                    
+            
+                    if(isset($data['note'])){
+                        foreach ($data['note'] as $note) {
+                            Note::create([
+                                'purchase_id' => $doc->id,
+                                'note_type' => $note['note_type'],
+                                'note_credit_type_id' => $note['note_credit_type_id'],
+                                'note_debit_type_id' => $note['note_debit_type_id'],
+                                'note_description' => $note['note_description'],
+                                'affected_purchase_id' => $note['affected_purchase_id'],
+                            ]);
+                        }
+                        /* if($data['type']=== 'credit') $this->savePurchaseFee($doc, $data['fee']); */
+                    }
 
                     $this->savePurchaseFee($doc, $data['fee']);
 
                     $this->setFilename($doc);
                     $this->createPdf($doc, "a4", $doc->filename);
-
+                    
                     return $doc;
                 });
 
@@ -428,7 +444,6 @@
                 ], 500);
             }
         }
-
 
         private function savePurchaseFee($purchase, $fee)
         {

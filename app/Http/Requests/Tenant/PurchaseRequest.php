@@ -31,6 +31,15 @@ class PurchaseRequest extends FormRequest
                 'required',
                 'array',
             ],
+            'note.note_credit_type_id' => [
+                'required_if:document_type_id, "07"',
+            ],
+            'note.note_debit_type_id' => [
+                'required_if:document_type_id, "08"',
+            ],
+            'note.note_description' => [
+                'required_if:document_type_id,"07", "08"',
+            ],
 		];
 	}
 }

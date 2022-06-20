@@ -40,26 +40,9 @@
                             <div class="col-md-2">
                                 <div class="form-group" :class="{'has-danger': errors.series_id}">
                                     <label class="control-label">Serie</label>
-                                    <template v-if="purchase_value">
-                                        <div class="col-lg-2">
-                                            <div :class="{'has-danger': errors.series}"
-                                                class="form-group">
-                                                <label class="control-label">Serie <span class="text-danger">*</span></label>
-                                                <el-input v-model="form.series"
-                                                        :maxlength="4"
-                                                        @input="inputSeries"></el-input>
-
-                                                <small v-if="errors.series"
-                                                    class="form-control-feedback"
-                                                    v-text="errors.series[0]"></small>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <template v-else>
                                         <el-select v-model="form.series_id">
                                             <el-option v-for="option in series" :key="option.id" :value="option.id" :label="option.number"></el-option>
                                         </el-select>
-                                    </template>
                                     <small class="form-control-feedback" v-if="errors.series_id" v-text="errors.series_id[0]"></small>
                                 </div>
                             </div>
@@ -613,6 +596,7 @@
                 this.form.establishment_id= this.document.establishment_id
                 // this.form.document_type_id= null
                 // this.form.series_id= null
+                
                 this.form.number = '#'
                 // this.form.date_of_issue= moment().format('YYYY-MM-DD')
                 // this.form.time_of_issue= moment().format('HH:mm:ss')
@@ -658,12 +642,14 @@
 
                 this.temp_total = this.form.total
 
+
             },
             async initForm() {
 
                 // console.log(this.hasDiscounts)
 
                 this.errors = {}
+                if (!this.purchase_value) {
                 this.form = {
                     establishment_id: this.document.establishment_id,
                     document_type_id: null,
@@ -705,8 +691,56 @@
                     charges: this.document.charges ? Object.values(this.document.charges) : null,
                     payment_condition_id : null,
                     fee : [],
+
                 }
 
+                }else{
+                    this.form={
+                        establishment_id: this.document.establishment_id,
+                        document_type_id: null,
+                        series_id: null,
+                        number: '#',
+                        date_of_issue: moment().format('YYYY-MM-DD'),
+                        time_of_issue: moment().format('HH:mm:ss'),
+                        customer_id: this.document.customer_id,
+                        currency_type_id: this.document.currency_type_id,
+                        purchase_order: null,
+                        exchange_rate_sale: 0,
+                        total_prepayment:this.document.total_prepayment,
+                        total_charge: this.document.total_charge,
+                        // total_discount: this.document.total_discount,
+                        total_exportation: this.document.total_exportation,
+                        total_free: this.document.total_free,
+                        total_taxed: this.document.total_taxed,
+                        total_unaffected: this.document.total_unaffected,
+                        total_exonerated: this.document.total_exonerated,
+                        total_igv: this.document.total_igv,
+                        total_base_isc: this.document.total_base_isc,
+                        total_isc: this.document.total_isc,
+                        total_base_other_taxes: this.document.total_base_other_taxes,
+                        total_other_taxes: this.document.total_other_taxes,
+                        total_plastic_bag_taxes: this.document.total_plastic_bag_taxes,
+                        total_taxes: this.document.total_taxes,
+                        total_value: this.document.total_value,
+                        total: this.document.total,
+                        items: this.document.items,
+                        affected_document_id: this.document.id,
+                        note_credit_or_debit_type_id: null,
+                        note_description: null,
+                        actions: {
+                            format_pdf: 'a4'
+                        },
+                        // operation_type_id: null,
+                        operation_type_id: this.document.invoice? this.document.invoice.operation_type_id:null, //se asigna el t. operacion del documento relacionado para filtrar en form item el tipo de afectacion
+                        hotel: {},
+                        charges: this.document.charges ? Object.values(this.document.charges) : null,
+                        payment_condition_id : null,
+                        fee : [],
+                        payments:[],
+                        note:[],
+                        type: null
+                    }
+                }
 
                 await this.form.items.forEach((item)=>{
                     item.input_unit_price_value = item.unit_price
@@ -817,9 +851,29 @@
                         return (s.document_type_id === document_type.id && s.number.substr(0, 1) === firstChar)
                     });
                 }
+                if(this.purchase_value){
+                    if(this.form.document_type_id=='07'){
+                        this.form.type='credit';
+                    }
 
+                    if(this.form.document_type_id=='08'){
+                        this.form.type='debit';
+                    }
+
+                    if(this.document.purchase_payments.length>0){
+                        this.form.payments.push({
+                            id: null,
+                            purchase_id: null,
+                            date_of_payment: moment().format('YYYY-MM-DD'),
+                            payment_method_type_id: this.document.purchase_payments?this.document.purchase_payments.payment_method_type_id:'01',
+                            reference: this.document.purchase_payments?this.document.purchase_payments.reference:null,
+                            payment_destination_id: this.document.purchase_payments?this.document.purchase_payments.payment_destination_id:null,
+                            payment: this.document.total,
+                        });
+                    }
+                    
+                }
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
-                this.form.series = (this.series.length > 0)?this.series[0].number:null
 
                 this.initData()
                 this.validateHasDiscounts()
@@ -918,6 +972,17 @@
 
             },
             async submit() {
+
+                if (this.purchase_value) {
+                    this.form.note.push({
+                        purchase_id: null,
+                        note_type: this.form.type,
+                        note_credit_type_id: this.form.type=='credit'?this.form.note_credit_or_debit_type_id:null,
+                        note_debit_type_id: this.form.type=='debit'?this.form.note_credit_or_debit_type_id:null,
+                        note_description: this.form.note_description,
+                        affected_purchase_id: this.document.id,
+                    });
+                }
 
                 if(this.isCreditNote && this.hasDiscounts && this.form.total > this.document.total){
                     return this.$message.error(`El monto total de la nota de credito debe ser menor o igual al monto del documento relacionado (${this.document.total})`)
