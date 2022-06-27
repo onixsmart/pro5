@@ -50,6 +50,24 @@
                             Route::get('filter', 'ReportPurchaseItemController@filter');
 
                         });
+
+                        /*
+                         * reports/purchases/general_items_service/
+                         * reports/purchases/general_items_service/records
+                         * reports/purchases/general_items_service/excel
+                         * reports/purchases/general_items_service/pdf
+                         * reports/purchases/general_items_service/filter
+                         */
+                        Route::prefix('general_items_service')->group(function () {
+                         Route::get('/', 'ReportPurchaseItemServiceController@general_items')->name('tenant.reports.purchases.general_items_service.index');
+                         Route::get('records', 'ReportPurchaseItemServiceController@records');
+                         Route::get('excel', 'ReportPurchaseItemServiceController@excel');
+                         Route::get('pdf', 'ReportPurchaseItemServiceController@pdf');
+                         Route::get('filter', 'ReportPurchaseItemServiceController@filter');
+                         Route::get('records', 'ReportPurchaseItemServiceController@records');
+
+                     });
+
                         /** Nuevo */
 
 
