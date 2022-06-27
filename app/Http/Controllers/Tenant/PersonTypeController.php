@@ -58,15 +58,7 @@ class PersonTypeController extends Controller
     public function store(PersonTypeRequest $request)
     {
         $id = $request->input('id');
-        $price_id=$request->input('price_id');
-        /* dd($name); */
         
-        if($price_id){
-            $list_price = NamePrice::where('id',$price_id);
-            $list_price = $list_price->update([
-                'type_customer_id' => $id
-            ]);
-        }
         $person_type = PersonType::firstOrNew(['id' => $id]);
         $person_type->fill($request->all());
         $person_type->save();
