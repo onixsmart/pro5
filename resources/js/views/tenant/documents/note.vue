@@ -974,14 +974,15 @@
             async submit() {
 
                 if (this.purchase_value) {
-                    this.form.note.push({
+                    this.form.note=[
+                        document_type_id: this.form.document_type_id,
                         purchase_id: null,
                         note_type: this.form.type,
                         note_credit_type_id: this.form.type=='credit'?this.form.note_credit_or_debit_type_id:null,
                         note_debit_type_id: this.form.type=='debit'?this.form.note_credit_or_debit_type_id:null,
                         note_description: this.form.note_description,
                         affected_purchase_id: this.document.id,
-                    });
+                    ];
                 }
 
                 if(this.isCreditNote && this.hasDiscounts && this.form.total > this.document.total){
