@@ -449,6 +449,12 @@ class SaleNoteController extends Controller
         if($request != null && $request->has('onlySuscription') && (bool)$request->onlySuscription == true){
             $records->whereNotNull('grade')->whereNotNull('section') ;
         }
+        // Solo devuelve Suscripciones que tengan relacion en user_rel_suscription_plans.
+        if($request != null && $request->has('onlyFullSuscription') && (bool)$request->onlyFullSuscription == true){
+            $records->whereNotNull('user_rel_suscription_plan_id')
+                ->whereNull('grade')->whereNull('section')
+            ;
+        }
         if($request->column == 'customer'){
             $records->whereHas('person', function($query) use($request){
                                     $query
@@ -473,6 +479,9 @@ class SaleNoteController extends Controller
 
         if($request->purchase_order) {
             $records->where('purchase_order', $request->purchase_order);
+        }
+        if($request->license_plate) {
+            $records->where('license_plate', $request->license_plate);
         }
         return $records;
     }
@@ -614,6 +623,7 @@ class SaleNoteController extends Controller
                     $row['item']['lots'] = isset($row['lots']) ? $row['lots']:$row['item']['lots'];
                 }
 
+                $this->setIdLoteSelectedToItem($row);
                 $sale_note_item->fill($row);
                 $sale_note_item->sale_note_id = $this->sale_note->id;
                 $sale_note_item->save();
@@ -627,7 +637,9 @@ class SaleNoteController extends Controller
                     }
                 }
 
-                if(isset($row['IdLoteSelected']))
+                
+                // si tiene lotes y no fue generado a partir de otro documento (pedido...)
+                if(isset($row['IdLoteSelected']) && !$this->sale_note->isGeneratedFromExternalRecord())
                 {
                     if(is_array($row['IdLoteSelected'])) 
                     {
@@ -683,6 +695,27 @@ class SaleNoteController extends Controller
             ];
         }
     }
+
+
+    /**
+     * 
+     * Asignar lote a item (regularizar propiedad en json item)
+     *
+     * @param  array $row
+     * @return void
+     */
+    private function setIdLoteSelectedToItem(&$row)
+    {
+        if(isset($row['IdLoteSelected']))
+        {
+            $row['item']['IdLoteSelected'] = $row['IdLoteSelected'];
+        }
+        else
+        {
+            $row['item']['IdLoteSelected'] = isset($row['item']['IdLoteSelected']) ? $row['item']['IdLoteSelected'] : null;
+        }
+    }
+
 
     private function regularizePayments($payments){
 
@@ -1636,7 +1669,7 @@ class SaleNoteController extends Controller
         }else{
 
             $items = SaleNoteItem::whereIn('sale_note_id', $request->notes_id)
-                    ->select('item_id', 'quantity')
+                    ->select('item_id', 'quantity', 'unit_price')
                     ->get();
         }
 

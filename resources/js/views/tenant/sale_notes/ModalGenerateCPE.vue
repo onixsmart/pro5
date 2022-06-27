@@ -188,15 +188,18 @@ export default {
               const it = {
                 id: i.item_id,
                 quantity: 0,
+                unit_price:0,
               };
               items.map((ite) => {
                 if (ite.item_id === it.id) {
                   it.quantity = it.quantity + parseFloat(ite.quantity);
+                  it.unit_price = parseFloat(ite.unit_price);
                 }
               });
               const itemIsDuplicated = data.find((item) => item.id === it.id);
               if (itemIsDuplicated) {
                 itemIsDuplicated.quantity = it.quantity;
+                itemIsDuplicated.unit_price = parseFloat(it.unit_price);
               } else {
                 data.push(it);
               }
@@ -249,11 +252,15 @@ export default {
     },
     onFillSelectedNotes() {
       this.form.selecteds = [];
+      this.sum_total=0;
+      let total=0;
       this.notes.map((d) => {
         if (d.selected) {
+          total+=d.total;
           this.form.selecteds.push(d.id);
         }
       });
+      this.sum_total+=total;
     },
     onFindNotes() {
       this.form.selecteds = [];
@@ -262,7 +269,7 @@ export default {
       this.$http
         .get(`/sale-notes/list-by-client`, { params })
         .then((response) => {
-          this.sum_total = response.data.sum_total;
+          /* this.sum_total = response.data.sum_total; */
           this.notes = response.data.data.map((d) => {
 
             d.selected = false;

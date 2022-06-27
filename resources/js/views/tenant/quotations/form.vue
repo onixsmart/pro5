@@ -37,7 +37,8 @@
                                         placeholder="Escriba el nombre o número de documento del cliente"
                                         :remote-method="searchRemoteCustomers"
                                         :loading="loading_search"
-                                        @change="changeCustomer">
+                                        @change="changeCustomer"
+                                        @keyup.enter.native="keyupCustomer">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
 
@@ -228,10 +229,16 @@
                                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                                     <label class="control-label">Observación
                                                     </label>
-                                                    <el-input  type="textarea"  :rows="3" v-model="form.description"
+                                                    <div class="el-textarea el-input--small">
+                                                        <textarea class="obs" v-model="form.description"
+                                                        maxlength="1000"
+                                                        autocomplete="off"
+                                                        rows="3"></textarea>
+                                                    </div>
+                                                    <!-- <el-input class="obs"  type="textarea"  :rows="3" v-model="form.description"
                                                         maxlength="1000"
                                                         show-word-limit>
-                                                    </el-input>
+                                                    </el-input> -->
                                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                                 </div>
                                             </div>
@@ -338,6 +345,7 @@
         <person-form :showDialog.sync="showDialogNewPerson"
                        type="customers"
                        :external="true"
+                       :input_person="input_person"
                        :document_type_id = form.document_type_id></person-form>
 
         <quotation-options :showDialog.sync="showDialogOptions"
@@ -351,6 +359,21 @@
                           :showClose="false"></terms-condition>
     </div>
 </template>
+
+<style>
+
+.obs{
+    height: 40px;
+    width: 100%!important;
+    border: 1px solid rgb(234, 238, 247)!important;
+    color: rgb(3, 26, 110)!important;
+    background-color: rgb(247, 248, 250)!important;
+}
+.obs:hover {
+    border-color: #c0c4cc;
+}
+
+</style>
 
 <script>
     import TermsCondition from './partials/terms_condition.vue'
@@ -373,6 +396,7 @@
         data() {
             return {
                 sellers: [],
+                input_person: {},
                 resource: 'quotations',
                 showDialogTermsCondition: false,
                 showDialogAddItem: false,
@@ -434,6 +458,9 @@
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
             })
+            this.$eventHub.$on('initInputPerson', () => {
+                this.initInputPerson()
+            });
 
             await this.createQuotationFromSO()
         },
@@ -593,10 +620,12 @@
                             .then(response => {
                                 this.customers = response.data.customers
                                 this.loading_search = false
-                                if(this.customers.length == 0){this.allCustomers()}
+                                /* if(this.customers.length == 0){this.allCustomers()} */
+                                this.input_person.number=(this.customers.length==0)? input : null
                             })
                 } else {
                     this.allCustomers()
+                    this.input_person.number= null
                 }
 
             },
@@ -656,7 +685,7 @@
                 }
 
                 this.total_discount_no_base = 0
-
+                this.initInputPerson()
                 // no se agrega pago por defecto para controlar flujo caja pos
                 // this.clickAddPayment()
 
@@ -890,6 +919,36 @@
                     .catch(error => {
                         console.log(error);
                     })
+            },
+            keyupCustomer() {
+
+                if (this.input_person.number) {
+
+                    if (!isNaN(parseInt(this.input_person.number))) {
+
+                        switch (this.input_person.number.length) {
+                            case 8:
+                                this.input_person.identity_document_type_id = '1'
+                                this.showDialogNewPerson = true
+                                break;
+
+                            case 11:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                            default:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                        }
+                    }
+                }
+            },
+            initInputPerson() {
+                this.input_person = {
+                    number: null,
+                    identity_document_type_id: null
+                }
             },
         }
     }

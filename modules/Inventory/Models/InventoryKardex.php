@@ -117,12 +117,12 @@ class InventoryKardex extends ModelTenant
         $models = [
             Document::class,
             Purchase::class,
-            PurchaseSettlement::class,
             SaleNote::class,
             Inventory::class,
             OrderNote::class,
             Devolution::class,
-            Dispatch::class
+            Dispatch::class,
+            PurchaseSettlement::class,
         ];
         $item = $this->item;
         $warehouseprice = $this->getItemWarehousePriceModel();
@@ -195,20 +195,26 @@ class InventoryKardex extends ModelTenant
                 $data['type_transaction'] = ($qty < 0) ? "Anulación Compra" : "Compra";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
-            case $models[2]: // liquidacion de compra
-                
-                $data['balance'] = $balance += $qty;
-                $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
-                $data['type_transaction'] = ($qty < 0) ? "Anulación Liquidacion Compra" : "Liquidacion Compra";
-                $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
-                break;
-            case $models[3]: // Nota de venta
-                $data['balance'] = $balance += $qty;
+            case $models[2]: // Nota de venta
+
+                if(isset($inventory_kardexable->order_note_id))
+                {
+                    $nv_balance = $balance += 0;
+                    $data['output'] = '-';
+                    $data['order_note_asoc'] = optional($inventory_kardexable)->order_note->number_full;
+                }
+                else
+                {
+                    $nv_balance = $balance += $qty;
+                }
+
+                $data['balance'] = $nv_balance;
+                // $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->number_full;
                 $data['type_transaction'] = "Nota de venta";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
-            case $models[4]:
+            case $models[3]:
             {
                 $transaction = '';
                 $input = '';
@@ -238,19 +244,19 @@ class InventoryKardex extends ModelTenant
                 }
                 break;
             }
-            case $models[5]:
+            case $models[4]:
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->prefix . '-' . optional($inventory_kardexable)->id;
                 $data['type_transaction'] = ($qty < 0) ? "Pedido" : "Anulación Pedido";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
-            case $models[6]: // Devolution
+            case $models[5]: // Devolution
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->number_full;
                 $data['type_transaction'] = "Devolución";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
-            case $models[7]: // Dispatch
+            case $models[6]: // Dispatch
                 $data['input'] = ($qty > 0) ? (isset($inventory_kardexable->reference_sale_note_id) || isset($inventory_kardexable->reference_order_note_id) || isset($inventory_kardexable->reference_document_id) ? "-" : $qty) : "-";
                 $data['output'] = ($qty < 0) ? (isset($inventory_kardexable->reference_sale_note_id) || isset($inventory_kardexable->reference_order_note_id) || isset($inventory_kardexable->reference_document_id) ? "-" : $qty) : "-";
                 $data['balance'] = (isset($inventory_kardexable->reference_sale_note_id) || isset($inventory_kardexable->reference_order_note_id) || isset($inventory_kardexable->reference_document_id)) ? $balance += 0 : $balance += $qty;
@@ -260,6 +266,12 @@ class InventoryKardex extends ModelTenant
                 $data['sale_note_asoc'] = isset($inventory_kardexable->reference_sale_note_id) ? optional($inventory_kardexable)->sale_note->number_full : "-";
                 $data['order_note_asoc'] = isset($inventory_kardexable->reference_order_note_id) ? optional($inventory_kardexable)->order_note->number_full : "-";
                 $data['doc_asoc'] = isset($inventory_kardexable->reference_document_id) ? $inventory_kardexable->reference_document->getNumberFullAttribute() : '-';
+                break;
+            case $models[7]: // LIQUIDACION DE COMPRA
+                $data['balance'] = $balance += $qty;
+                $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
+                $data['type_transaction'] = isset($inventory_kardexable->transfer_reason_type->description) ? $inventory_kardexable->transfer_reason_type->description : '';
+                $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
         }
         $decimalRound = 6; // Cantidad de decimales a aproximar

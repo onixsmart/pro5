@@ -1274,4 +1274,118 @@
             return $total_factor;
         }
 
+        
+        /**
+         * 
+         * Filtrar por rango de fechas
+         * 
+         * @param \Illuminate\Database\Eloquent\Builder $query
+         * @return \Illuminate\Database\Eloquent\Builder
+         * 
+         */
+        public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
+        {
+            return $query->whereBetween('date_of_issue', [$date_start, $date_end]);
+        }
+
+        
+        /**
+         * 
+         * Obtener la fecha de vencimiento y aplicar formato
+         *
+         * @return string
+         */
+        public function getFormatDueDate()
+        {
+            return $this->due_date ? $this->generalFormatDate($this->due_date) : null;
+        }
+
+
+        /**
+         * 
+         * Obtener descripción del tipo de documento
+         *
+         * @return string
+         */
+        public function getDocumentTypeDescription()
+        {
+            return 'NOTA DE VENTA';
+        }
+
+
+        /**
+         * 
+         * Obtener pagos en efectivo
+         *
+         * @return Collection
+         */
+        public function getCashPayments()
+        {
+            return $this->payments()->whereFilterCashPayment()->get()->transform(function($row){{
+                return $row->getRowResourceCashPayment();
+            }});
+        }
+        
+
+        /**
+         * 
+         * Validar si el registro esta rechazado o anulado
+         * 
+         * @return bool
+         */
+        public function isVoidedOrRejected()
+        {
+            return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
+        }
+        
+
+        /**
+         * 
+         * Retornar el total de pagos
+         *
+         * @return float
+         */
+        public function getTotalAllPayments()
+        {
+
+            $total_payments = 0;
+
+            if(!$this->isVoidedOrRejected())
+            {
+                $total_payments = $this->payments->sum('payment');
+    
+                if($this->currency_type_id === 'USD')
+                {
+                    $total_payments = $this->generalConvertValueToPen($total_payments, $this->exchange_rate_sale);
+                }
+            }
+
+            return $total_payments;
+        }
+
+        
+        /**
+         * 
+         * Validar si la nota de venta fue generada a partir de un registro externo
+         *
+         * Usado en:
+         * SaleNoteController
+         * 
+         * @return bool
+         */
+        public function isGeneratedFromExternalRecord()
+        {
+            $generated = false;
+
+            if(!is_null($this->order_note_id))
+            {
+                $generated = true;
+            }
+            
+            // @todo agregar mas registros relacionados
+
+            return $generated;
+        }
+
+        
     }

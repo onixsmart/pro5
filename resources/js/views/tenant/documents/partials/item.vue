@@ -216,15 +216,42 @@
                                         <i class="fa fa-info-circle"></i>
                                 </el-tooltip>
                             </label>
-                            <el-input v-model="form.unit_price_value"
-                                      :tabindex="'3'"
-                                      :readonly="!edit_unit_price"
-                                      @input="calculateQuantity">
-                                <template v-if="form.item.currency_type_symbol"
-                                          slot="prepend">
-                                    {{ form.item.currency_type_symbol }}
+
+                            <template v-if="applyChangeCurrencyItem && isFromInvoice">
+
+                                <template v-if="form.item">
+                                    <el-input v-model="form.unit_price_value"
+                                            :tabindex="'3'"
+                                            :readonly="!edit_unit_price"
+                                            @input="calculateQuantity">
+
+                                        <template v-if="form.item.currency_type_symbol">
+                                            <el-select slot="prepend" v-model="form.item.currency_type_id" class="el-select-currency">
+
+                                                <el-option v-for="option in currencyTypes"
+                                                            :key="option.id"
+                                                            :label="option.symbol"
+                                                            :value="option.id"></el-option>
+                                            </el-select>
+                                        </template>
+                                    </el-input>
                                 </template>
-                            </el-input>
+                                
+                            </template>
+                            <template v-else>
+
+                                <el-input v-model="form.unit_price_value"
+                                        :tabindex="'3'"
+                                        :readonly="!edit_unit_price"
+                                        @input="calculateQuantity">
+                                    <template v-if="form.item.currency_type_symbol"
+                                            slot="prepend">
+                                        {{ form.item.currency_type_symbol }}
+                                    </template>
+                                </el-input>
+
+                            </template>
+
                             <small v-if="errors.unit_price_value"
                                    class="form-control-feedback"
                                    v-text="errors.unit_price[0]"></small>
@@ -610,8 +637,6 @@
         </form>
         <item-form :external="true"
                    :showDialog.sync="showDialogNewItem"></item-form>
-
-
         <warehouses-detail
             :isUpdateWarehouseId="isUpdateWarehouseId"
             :showDialog.sync="showWarehousesDetail"
@@ -648,6 +673,11 @@
     margin-right: 5% !important;
     max-width: 80% !important;
 }
+
+.el-select-currency {
+    width: 59px;
+}
+
 </style>
 
 <script>
@@ -664,9 +694,7 @@ import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
-
 import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
-
 export default {
     props: [
         'recordItem',
@@ -681,6 +709,8 @@ export default {
         'noteCreditOrDebitTypeId',
         'displayDiscount',
         'customerId',
+        'currencyTypes',
+        'isFromInvoice',
         'personTypeId',
     ],
     components: {
@@ -690,6 +720,7 @@ export default {
         LotsGroup,
         HistorySalesForm,
         SelectLotsForm,
+        HistorySalesForm,
         'vue-ckeditor': VueCkeditor.component
     },
     data() {
@@ -736,6 +767,7 @@ export default {
             value1: 'hello',
             readonly_total: 0,
             itemLastPrice: null,
+            search_item_by_barcode_presentation: false,
             showDialogHistorySales: false,
             //item_unit_type: {}
         }
@@ -833,6 +865,13 @@ export default {
                 return this.config.allow_edit_unit_price_to_seller;
             }
             return false;
+        },
+        applyChangeCurrencyItem(){
+
+            if(this.configuration) return this.configuration.change_currency_item
+
+            return false
+
         }
     },
     methods: {
@@ -1421,12 +1460,15 @@ export default {
 
             
             //validar precio compra y venta
-            if(this.configuration.validate_purchase_sale_unit_price)
+            if(this.configuration)
             {
-                let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
-                
-                if(val_purchase_unit_price > parseFloat(unit_price)){
-                    return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
+                if(this.configuration.validate_purchase_sale_unit_price)
+                {
+                    let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
+                    
+                    if(val_purchase_unit_price > parseFloat(unit_price)){
+                        return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
+                    }
                 }
             }
 
@@ -1777,7 +1819,8 @@ export default {
                 }
             }
            
-        },
+        }
+        ,
         clickHistorySales() {
             if (!this.form.item_id) {
                 return this.$message.error('Seleccione un item');
