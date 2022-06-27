@@ -44,34 +44,33 @@ class ReportPurchaseItemServiceController extends Controller
      * @return array
      */
     public function filter() {
-        $customers = $this->getPersons('customers');
-        $suppliers = $this->getPersons('suppliers');
-        $items = $this->getItems('items');
-        $brands = $this->getBrands();
-        $web_platforms = $this->getWebPlatforms();
         $document_types = DocumentType::whereIn('id', ['02', '14'])->get();
 
-        $categories = $this->getCategories();
-        $users = $this->getUsers();
+        $persons = $this->getPersons('suppliers');
+        $sellers = $this->getSellers();
 
-        return compact('document_types', 'suppliers', 'customers', 'items','web_platforms', 'brands', 'categories', 'users');
+        $establishments = Establishment::all()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'name' => $row->description
+            ];
+        });
+
+        return compact('document_types','establishments', 'persons', 'sellers');
     }
 
     public function records(Request $request)
     {
-        $purchaseType=true;
-        $purchase = $this->getRecordsItems($request->all(),$purchaseType);
-        $expense = $this->getRecordsItems($request->all(),false);
+        /* $purchaseType=true; */
+        $data = $this->getRecordsItems($request->all(),true);
 
-        $allPurchase= new GeneralItemCollection($purchase->paginate(config('tenant.items_per_page')));
-        $allExpense= new GeneralItemCollection($expense->paginate(config('tenant.items_per_page')));
-        $allRecords=$allPurchase->concat($allExpense);
-
+        $allRecords= new GeneralItemCollection($data->paginate(config('tenant.items_per_page')));
+        
         return $allRecords;
     }
 
 
-    public function getRecordsItems($request, $purchaseType){
+    public function getRecordsItems($request, $purchaseType=null){
         $purchseType=$purchaseType;
         $data_of_period = $this->getDataOfPeriod($request);
         /* $data_type = $this->getDataType($request); */
@@ -125,15 +124,11 @@ class ReportPurchaseItemServiceController extends Controller
                 $expense_type_id=$document_type_id;
             }
         }
-        /* columna state_type_id */
-        $documents_excluded = [
-            '11' // Documentos anulados
-        ];
         /* if( $document_type_id && $document_type_id == '80' ) {
             $relation = 'sale_note';
  */
             if ($purchaseType) {
-                $data= PurchaseItem::whereHas('purchase', function($query) use($date_start, $date_end, $user_id, $documents_excluded, $document_type_id){
+                $data= PurchaseItem::whereHas('purchase', function($query) use($date_start, $date_end, $user_id, $document_type_id){
                     $query
                     ->whereBetween('date_of_issue', [$date_start, $date_end])
                     ->latest()
@@ -142,10 +137,10 @@ class ReportPurchaseItemServiceController extends Controller
                     if(!empty($user_id)){
                         $query->where('user_id',$user_id);
                     }
-                    $query->whereNotIn('state_type_id', $documents_excluded);
+                    $query->whereNotIn('state_type_id', [11]);
                 });
             } else {
-                $data= ExpenseItem::whereHas('expense', function($query) use($date_start, $date_end, $user_id, $documents_excluded, $expense_type_id){
+                $data= ExpenseItem::whereHas('expense', function($query) use($date_start, $date_end, $user_id, $expense_type_id){
                     $query
                     ->whereBetween('date_of_issue', [$date_start, $date_end])
                     ->latest()
@@ -154,7 +149,7 @@ class ReportPurchaseItemServiceController extends Controller
                     if(!empty($user_id)){
                         $query->where('user_id',$user_id);
                     }
-                    $query->whereNotIn('state_type_id', $documents_excluded);
+                    $query->whereNotIn('state_type_id', [11]);
                 });
             }
             
