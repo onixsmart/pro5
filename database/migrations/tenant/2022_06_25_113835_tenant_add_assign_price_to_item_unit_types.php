@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class TenantListPricesTable extends Migration
+class TenantAddAssignPriceToItemUnitTypes extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class TenantListPricesTable extends Migration
      */
     public function up()
     {
-        Schema::create('list_prices', function (Blueprint $table) {
-            $table->increments('id');
-            $table->decimal('price', 12, 4);
+        Schema::table('item_unit_types', function (Blueprint $table) {
+            $table->boolean('assing_price')->after('barcode')->default(false);
         });
     }
 
@@ -26,6 +25,8 @@ class TenantListPricesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('list_prices');
+        Schema::table('item_unit_types', function (Blueprint $table) {
+            $table->dropColumn('assing_price');
+        });
     }
 }

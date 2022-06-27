@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class TenantNamePricesTable extends Migration
+class TenantAddAssignPercentageToItemUnitTypes extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class TenantNamePricesTable extends Migration
      */
     public function up()
     {
-        Schema::create('name_prices', function (Blueprint $table) {
-            $table->increments('id');
-            $table->boolean('price_default')->default(2);
-            
+        Schema::table('item_unit_types', function (Blueprint $table) {
+            $table->boolean('assing_percentage')->after('assing_price')->default(false);
         });
     }
 
@@ -27,6 +25,8 @@ class TenantNamePricesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('name_prices');
+        Schema::table('item_unit_types', function (Blueprint $table) {
+            $table->dropColumn('assing_percentage');
+        });
     }
 }

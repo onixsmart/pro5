@@ -573,6 +573,25 @@
                                         <th class="text-center">Precio 2</th>
                                         <th class="text-center">Precio 3</th>
                                         <th class="text-center">P. Defecto</th>
+                                        <th class="text-center">
+                                            Asignar Precio
+                                            <el-tooltip class="item"
+                                                        content="Usar en la afectacion de precio por tipo de cliente"
+                                                        effect="dark"
+                                                        placement="top">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </th>
+                                            <th>
+                                                Afectacion por porcentaje
+                                                <el-tooltip class="item"
+                                                            content="A partir del precio 2"
+                                                            effect="dark"
+                                                            placement="top">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </th>
+                                        
                                         <th></th>
                                     </tr>
                                     </thead>
@@ -594,6 +613,18 @@
                                                 <el-input v-model="row.price3"></el-input>
                                             </td>
                                             <td class="text-center">Precio {{ row.price_default }}</td>
+                                            <td class="text-center">
+                                                <el-checkbox v-model="row.assing_price"
+                                                @change="getItemTypePrice(index,'price')"
+                                                >
+                                                </el-checkbox>
+                                            </td>
+                                                <td class="text-center">
+                                                    <el-checkbox v-model="row.assing_percentage"
+                                                    @change="getItemTypePrice(index, 'porcent')"
+                                                    >
+                                                    </el-checkbox>
+                                                </td>
                                             <td class="series-table-actions text-right">
                                                 <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                         type="button"
@@ -659,6 +690,17 @@
                                                     </el-select>
                                                 </div>
                                             </td>
+                                            <td class="text-center">
+                                                <el-checkbox v-model="row.assing_price" @change="getItemTypePrice(index,'price')"
+                                                >
+                                                </el-checkbox>
+                                            </td>
+                                                <td class="text-center">
+                                                    <el-checkbox v-model="row.assing_percentage"
+                                                    @change="getItemTypePrice(index, 'porcent')"
+                                                    >
+                                                    </el-checkbox>
+                                                </td>
                                             <td class="series-table-actions text-right">
                                                 <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickSubmit(index)">
                                                     <i class="fa fa-check"></i>
@@ -1242,6 +1284,7 @@ export default {
             show_has_igv: true,
             purchase_show_has_igv: true,
             have_account: false,
+            initial_price:false,
             item_unit_type: {
                 id: null,
                 unit_type_id: null,
@@ -1250,7 +1293,8 @@ export default {
                 price2: 0,
                 price3: 0,
                 price_default: 2,
-
+                assing_price:false,
+                assing_percentage:false
             },
             attribute_types: [],
             activeName: 'first',
@@ -1425,7 +1469,9 @@ export default {
                 price2: 0,
                 price3: 0,
                 price_default: 2,
-                barcode: null
+                barcode: null,
+                assing_price:false,
+                assing_percentage:false
             })
         },
         clickCancel(index) {
@@ -1869,6 +1915,25 @@ this.activeName =  'first'
 
 
         },
+        getItemTypePrice(index,price){
+            let searchprice=price=='price'?this.form.item_unit_types.filter(el=>el.assing_price==true):this.form.item_unit_types.filter(el=>el.assing_percentage==true)
+            if(searchprice.length==1){
+                if(price=='price')
+                {
+                    this.form.item_unit_types[index].assing_price=true
+                }else{
+                    this.form.item_unit_types[index].assing_percentage=true
+                }
+                    
+            }else{
+                if(price=='price')
+                {
+                    this.form.item_unit_types[index].assing_price=false
+                }else{
+                    this.form.item_unit_types[index].assing_percentage=false
+                }
+            }
+        }
     }
 }
 </script>

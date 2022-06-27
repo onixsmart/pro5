@@ -491,10 +491,6 @@
                                         <a class="nav-link"
                                            href="{{route('tenant.zone.index')}}">Zonas</a>
                                     </li>
-                                    <li class="{{ ($firstLevel === 'price')?'nav-active':'' }}">
-                                        <a class="nav-link"
-                                           href="{{route('tenant.price.index')}}">Precios</a>
-                                    </li>
 
                             </ul>
                         </li>

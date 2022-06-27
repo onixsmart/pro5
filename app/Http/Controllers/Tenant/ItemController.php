@@ -324,6 +324,8 @@ class ItemController extends Controller
             $item_unit_type->price2 = $value['price2'];
             $item_unit_type->price3 = $value['price3'];
             $item_unit_type->price_default = $value['price_default'];
+            $item_unit_type->assing_price = $value['assing_price'];
+            $item_unit_type->assing_percentage = $value['assing_percentage'];
             $item_unit_type->save();
 
             // migracion desarrollo sin terminar #1401
