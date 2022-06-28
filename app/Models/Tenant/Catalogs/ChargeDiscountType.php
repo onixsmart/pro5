@@ -11,11 +11,6 @@ class ChargeDiscountType extends ModelCatalog
     protected $table = "cat_charge_discount_types";
     public $incrementing = false;
 
-    protected $casts = [
-        'base' => 'boolean',
-        'active' => 'boolean',
-    ];
-
     public function scopeWhereType($query, $type)
     {
         return $query->where('type', $type);

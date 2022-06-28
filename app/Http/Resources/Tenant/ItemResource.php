@@ -127,7 +127,7 @@
                 'commission_amount' => $this->commission_amount,
                 'lot_code' => $this->lot_code,
                 'line' => $this->line,
-                'lots' => $this->item_lots->transform(function ($row, $key) {
+                'lots' => $this->lots->transform(function ($row, $key) {
                     return [
                         'id' => $row->id,
                         'series' => $row->series,
@@ -182,7 +182,7 @@
                 'sanitary' => $this->sanitary,
                 'cod_digemid' => $this->cod_digemid,
                 'supplies' => $itemSupply,
-
+                
                 'purchase_has_isc' => $this->purchase_has_isc,
                 'purchase_system_isc_type_id' => $this->purchase_system_isc_type_id,
                 'purchase_percentage_isc' => $this->purchase_percentage_isc,

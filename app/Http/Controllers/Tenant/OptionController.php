@@ -37,7 +37,7 @@ use Modules\Pos\Models\Tip;
 use Modules\Production\Models\{
     Production,
     Mill,
-    Packaging
+    Packaging,
 };
 
 

@@ -15,7 +15,7 @@ class Quotation extends ModelTenant
 {
     use SellerIdTrait;
 
-//    protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'];
+    protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'];
 
     protected $fillable = [
         'id',
@@ -28,8 +28,6 @@ class Quotation extends ModelTenant
         'payment_method_type_id',
 
         'prefix',
-        'series',
-        'number',
 
         'date_of_issue',
         'time_of_issue',
@@ -37,7 +35,6 @@ class Quotation extends ModelTenant
         'delivery_date',
         'customer_id',
         'customer',
-        'customer_address_id',
         'currency_type_id',
         'exchange_rate_sale',
         'total_prepayment',
@@ -479,12 +476,12 @@ class Quotation extends ModelTenant
 
 
     /**
-     *
+     * 
      * Filtro para no incluir relaciones en consulta
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
-     */
+     */  
     public function scopeWhereFilterWithOutRelations($query)
     {
         return $query->withOut(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments']);
@@ -492,7 +489,7 @@ class Quotation extends ModelTenant
 
 
     /**
-     *
+     * 
      * Obtener descripción del tipo de documento
      *
      * @return string
@@ -502,9 +499,9 @@ class Quotation extends ModelTenant
         return 'COTIZACIÓN';
     }
 
-
+    
     /**
-     *
+     * 
      * Obtener pagos en efectivo
      *
      * @return Collection
@@ -515,12 +512,12 @@ class Quotation extends ModelTenant
             return $row->getRowResourceCashPayment();
         }});
     }
-
-
+    
+    
     /**
-     *
+     * 
      * Validar si el registro esta rechazado o anulado
-     *
+     * 
      * @return bool
      */
     public function isVoidedOrRejected()

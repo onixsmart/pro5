@@ -67,6 +67,7 @@
          */
         public static function getNotServiceItem(Request $request = null, $id = 0)
         {
+
             self::validateRequest($request);
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
             $input = self::setInputByRequest($request);
@@ -82,11 +83,11 @@
             return $item->orderBy('description')->get();
         }
 
-
+        
         /**
-         *
+         * 
          * No aplica filtro por almacén
-         *
+         * 
          * @param Request|null $request
          * @param int          $id
          *
@@ -128,6 +129,7 @@
          */
         public static function getAllItemBase(Request $request = null, $service = false, $id = 0)
         {
+
             self::validateRequest($request);
             $search_item_by_series = Configuration::first()->isSearchItemBySeries();
             $production = (bool)($request->production ??false);
@@ -1034,7 +1036,7 @@
                         return $row;
                     }),
                     'series_enabled' => (bool)$row->series_enabled,
-
+                    
                     'purchase_has_isc' => $row->purchase_has_isc,
                     'purchase_system_isc_type_id' => $row->purchase_system_isc_type_id,
                     'purchase_percentage_isc' => $row->purchase_percentage_isc,
@@ -1189,7 +1191,6 @@
                 $data->OrWhereJsonContains('attributes', ['value' => $input]);
                 // Limita la cantidad de productos en la busqueda a 250, puede modificarse en el .env con NUMBER_SEARCH_ITEMS
                 $data->take(\Config('extra.number_items_in_search'));
-                dd('aa');
             }else{
                 // Inicia con 20 productos, puede añadirse en el env la variable NUMBER_ITEMS
                 $data->take(\Config('extra.number_items_at_start'));

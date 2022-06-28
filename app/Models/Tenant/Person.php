@@ -104,13 +104,24 @@
         use UsesTenantConnection;
 
         protected $table = 'persons';
-//        protected $with = [
-//            'identity_document_type',
-//            'country',
-//            'department',
-//            'province',
-//            'district'
-//        ];
+        protected $with = [
+            'identity_document_type',
+            'country',
+            'department',
+            'province',
+            'district'
+        ];
+        protected $casts = [
+            'perception_agent' => 'bool',
+            'person_type_id' => 'int',
+            'percentage_perception' => 'float',
+            'enabled' => 'bool',
+            'status' => 'int',
+            'credit_days' => 'int',
+            'seller_id' => 'int',
+            'zone_id' => 'int',
+            'parent_id' => 'int',
+        ];
         protected $fillable = [
             'type',
             'identity_document_type_id',
@@ -144,20 +155,7 @@
             'seller_id',
             'zone_id',
             'status',
-            'parent_id',
-            'text_filter'
-        ];
-
-        protected $casts = [
-            'perception_agent' => 'bool',
-            'person_type_id' => 'int',
-            'percentage_perception' => 'float',
-            'enabled' => 'bool',
-            'status' => 'int',
-            'credit_days' => 'int',
-            'seller_id' => 'int',
-            'zone_id' => 'int',
-            'parent_id' => 'int',
+            'parent_id'
         ];
 
         // protected static function boot()
@@ -767,14 +765,14 @@
 
         }
 
-
+        
         /**
-         *
+         * 
          * Aplicar filtro por vendedor asignado al cliente
          *
          * Usado en:
          * PersonController - records
-         *
+         * 
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @param string $type
          * @return \Illuminate\Database\Eloquent\Builder
@@ -784,7 +782,7 @@
             if($type === 'customers')
             {
                 $user = auth()->user();
-
+                
                 if($user->applyCustomerFilterBySeller())
                 {
                     return $query->where('seller_id', $user->id);

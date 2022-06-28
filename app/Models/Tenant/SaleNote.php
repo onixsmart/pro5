@@ -130,6 +130,7 @@
      * @property-read int|null                                  $guide_files_count
      * @property-read int|null                                  $kardexes_count
      * @property-read int|null                                  $sale_note_payments_count
+     * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereEstablishmentId($establishment_id = 0)
      */
     class SaleNote extends ModelTenant
     {
@@ -538,7 +539,7 @@
         {
             return $this->belongsTo(TechnicalService::class);
         }
-
+        
         /**
          * @return BelongsTo
          */
@@ -582,7 +583,7 @@
                     $user = new User();
                 }
             }
-            else {
+            else { 
                 $user = auth()->user();
             }
             return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
@@ -692,7 +693,6 @@
                 'time_of_issue' => $this->time_of_issue,
                 'identifier' => $this->identifier,
                 'full_number' => $this->series . '-' . $this->number,
-                'customer_id' => $this->customer_id,
                 'customer_name' => $customer->name,
                 'customer_number' => $customer->number,
                 'children_name' => $child_name,
@@ -1192,11 +1192,11 @@
             return $query;
         }
 
-
+        
         /**
          *
          * Obtener notas de venta filtradas por el id de los items (SaleNoteItem)
-         *
+         * 
          * Usado en:
          * DashboardUtility - Obtener totales
          *
@@ -1212,9 +1212,9 @@
 
         }
 
-
+        
         /**
-         *
+         * 
          * Obtener total y realizar conversión al tipo de cambio si se requiere
          *
          * @return float
@@ -1224,14 +1224,14 @@
             return ($this->currency_type_id === 'PEN') ? $this->total : ($this->total * $this->exchange_rate_sale);
         }
 
-
+        
         /**
-         *
+         * 
          * Filtro para no incluir relaciones en consulta
          *
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @return \Illuminate\Database\Eloquent\Builder
-         */
+         */  
         public function scopeWhereFilterWithOutRelations($query)
         {
             return $query->withOut([
@@ -1246,7 +1246,7 @@
 
 
         /**
-         *
+         * 
          * Obtener vuelto para mostrar en pdf
          *
          * @return float
@@ -1257,7 +1257,7 @@
         }
 
         /**
-         *
+         * 
          * Obtener porcentaje de cargos para mostrar en pdf
          *
          * @return float
@@ -1274,23 +1274,23 @@
             return $total_factor;
         }
 
-
+        
         /**
-         *
+         * 
          * Filtrar por rango de fechas
-         *
+         * 
          * @param \Illuminate\Database\Eloquent\Builder $query
          * @return \Illuminate\Database\Eloquent\Builder
-         *
+         * 
          */
         public function scopeFilterRangeDateOfIssue($query, $date_start, $date_end)
         {
             return $query->whereBetween('date_of_issue', [$date_start, $date_end]);
         }
 
-
+        
         /**
-         *
+         * 
          * Obtener la fecha de vencimiento y aplicar formato
          *
          * @return string
@@ -1302,7 +1302,7 @@
 
 
         /**
-         *
+         * 
          * Obtener descripción del tipo de documento
          *
          * @return string
@@ -1314,7 +1314,7 @@
 
 
         /**
-         *
+         * 
          * Obtener pagos en efectivo
          *
          * @return Collection
@@ -1325,22 +1325,22 @@
                 return $row->getRowResourceCashPayment();
             }});
         }
-
+        
 
         /**
-         *
+         * 
          * Validar si el registro esta rechazado o anulado
-         *
+         * 
          * @return bool
          */
         public function isVoidedOrRejected()
         {
             return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
         }
-
+        
 
         /**
-         *
+         * 
          * Retornar el total de pagos
          *
          * @return float
@@ -1353,7 +1353,7 @@
             if(!$this->isVoidedOrRejected())
             {
                 $total_payments = $this->payments->sum('payment');
-
+    
                 if($this->currency_type_id === 'USD')
                 {
                     $total_payments = $this->generalConvertValueToPen($total_payments, $this->exchange_rate_sale);
@@ -1363,14 +1363,14 @@
             return $total_payments;
         }
 
-
+        
         /**
-         *
+         * 
          * Validar si la nota de venta fue generada a partir de un registro externo
          *
          * Usado en:
          * SaleNoteController
-         *
+         * 
          * @return bool
          */
         public function isGeneratedFromExternalRecord()
@@ -1381,11 +1381,11 @@
             {
                 $generated = true;
             }
-
+            
             // @todo agregar mas registros relacionados
 
             return $generated;
         }
 
-
+        
     }

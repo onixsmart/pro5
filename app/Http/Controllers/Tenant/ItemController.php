@@ -118,11 +118,11 @@ class ItemController extends Controller
      */
     public function getRecords(Request $request)
     {
-
+ 
         // $records = Item::whereTypeUser()->whereNotIsSet();
         $records = $this->getInitialQueryRecords();
-
-        switch ($request->column)
+        
+        switch ($request->column) 
         {
 
             case 'brand':
@@ -179,16 +179,16 @@ class ItemController extends Controller
 
     }
 
-
+    
     /**
-     *
+     * 
      * Aplicar filtros iniciales a la consulta
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function getInitialQueryRecords()
     {
-
+        
         if(Configuration::getRecordIndividualColumn('list_items_by_warehouse'))
         {
             $records = Item::whereWarehouse()->whereNotIsSet();
@@ -283,8 +283,9 @@ class ItemController extends Controller
         return $record;
     }
 
-    public function store(ItemRequest $request)
-    {
+    public function store(ItemRequest $request) {
+
+
         $id = $request->input('id');
         if (!$request->barcode) {
             if ($request->internal_id) {
@@ -390,7 +391,7 @@ class ItemController extends Controller
             }
         }
 
-        $configuration = Configuration::query()->first();
+        $configuration = Configuration::first();
         if($configuration->isShowExtraInfoToItem()){
             // Extra data
             if($request->has('colors')){
@@ -446,7 +447,7 @@ class ItemController extends Controller
             foreach ($v_lots as $lot) {
 
                 // $item->lots()->create($lot);
-                $item->item_lots()->create([
+                $item->lots()->create([
                     'date' => $lot['date'],
                     'series' => $lot['series'],
                     'item_id' => $item->id,
@@ -1267,8 +1268,8 @@ class ItemController extends Controller
     public function printBarCodeX(Request $request)
     {
         ini_set("pcre.backtrack_limit", "50000000");
-        $id = $request->input('id');
-        $format = $request->input('format');
+        $id = $request->id;
+        $format = $request->format;
 
         $record = Item::find($id);
         $item_warehouse = ItemWarehouse::where([['item_id', $id], ['warehouse_id', auth()->user()

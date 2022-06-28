@@ -208,22 +208,16 @@
          * @return mixed|string
          */
         public static function  getBrandFormItem($row){
-            $brand_name = '';
-            if($row->item) {
-                if($row->item->brand_name) {
-                    $brand_name = $row->item->brand_name;
-                } else {
-                    if($row->item->brand){
-                        if(is_string($row->item->brand)){
-                            $brand_name = $row->item->brand;
-                        }elseif($row->item->brand->name){
-                            $brand_name = $row->item->brand->name;
-                        }
-                    }
+            $brand = '';
+            if(!empty($row->item) && !empty($row->item->brand) ){
+                if(is_string($row->item->brand)){
+                    $brand = $row->item->brand;
+                }elseif($row->item->brand->name){
+                    $brand = $row->item->brand->name;
                 }
-            }
 
-            return $brand_name;
+            }
+            return $brand;
         }
 
         /**
@@ -274,9 +268,9 @@
 
         }
 
-
+        
         /**
-         *
+         * 
          * Obtener configuracion de decimales para el precio unitario en pdf
          *
          * @return Configuration

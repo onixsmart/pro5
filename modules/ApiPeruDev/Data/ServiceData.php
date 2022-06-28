@@ -97,6 +97,7 @@
 
         public function service($type, $number)
         {
+
             $res = $this->client->request('GET', '/api/' . $type . '/' . $number, $this->parameters);
             $response = json_decode($res->getBody()->getContents(), true);
 

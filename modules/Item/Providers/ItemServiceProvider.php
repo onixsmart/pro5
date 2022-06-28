@@ -2,10 +2,8 @@
 
 namespace Modules\Item\Providers;
 
-use App\Models\Tenant\Item;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
-use Modules\Item\Observers\ItemObserver;
 
 class ItemServiceProvider extends ServiceProvider
 {
@@ -21,8 +19,6 @@ class ItemServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->registerFactories();
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
-
-        Item::observe(ItemObserver::class);
     }
 
     /**

@@ -9,10 +9,10 @@ import locale from 'element-ui/lib/locale'
 
 locale.use(lang)
 
-// ElementUI.Select.computed.readonly = function () {
-//     const isIE = !this.$isServer && !Number.isNaN(Number(document.documentMode));
-//     return !(this.filterable || this.multiple || !isIE) && !this.visible;
-// };
+ElementUI.Select.computed.readonly = function () {
+    const isIE = !this.$isServer && !Number.isNaN(Number(document.documentMode));
+    return !(this.filterable || this.multiple || !isIE) && !this.visible;
+};
 
 export default ElementUI;
 

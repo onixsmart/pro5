@@ -62,6 +62,7 @@ use App\Models\Tenant\PersonType;
 
 class SaleNoteController extends Controller
 {
+
     use FinanceTrait;
     use InventoryTrait;
     use SearchTrait;
@@ -636,23 +637,23 @@ class SaleNoteController extends Controller
                     }
                 }
 
-
+                
                 // si tiene lotes y no fue generado a partir de otro documento (pedido...)
                 if(isset($row['IdLoteSelected']) && !$this->sale_note->isGeneratedFromExternalRecord())
                 {
-                    if(is_array($row['IdLoteSelected']))
+                    if(is_array($row['IdLoteSelected'])) 
                     {
                         // presentacion - factor de lista de precios
                         $quantity_unit = isset($sale_note_item->item->presentation->quantity_unit) ? $sale_note_item->item->presentation->quantity_unit : 1;
 
-                        foreach ($row['IdLoteSelected'] as $item)
+                        foreach ($row['IdLoteSelected'] as $item) 
                         {
                             $lot = ItemLotsGroup::query()->find($item['id']);
                             $lot->quantity = $lot->quantity - ($quantity_unit * $item['compromise_quantity']);
                             $this->validateStockLotGroup($lot, $sale_note_item);
                             $lot->save();
                         }
-
+                        
                     }
                     else {
 
@@ -697,7 +698,7 @@ class SaleNoteController extends Controller
 
 
     /**
-     *
+     * 
      * Asignar lote a item (regularizar propiedad en json item)
      *
      * @param  array $row
@@ -846,7 +847,7 @@ class SaleNoteController extends Controller
     {
         $name = [$this->sale_note->series,$this->sale_note->number,date('Ymd')];
         $this->sale_note->filename = join('-', $name);
-
+        
         $this->sale_note->unique_filename = $this->sale_note->filename; //campo único para evitar duplicados
 
         $this->sale_note->save();
@@ -1054,7 +1055,7 @@ class SaleNoteController extends Controller
                         $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
                     }
                 }
-
+                
                 if (($format_pdf === 'ticket') || ($format_pdf === 'ticket_58') || ($format_pdf === 'ticket_50')) {
                     $pdf->WriteHTML($html_footer.$html_footer_legend, HTMLParserMode::HTML_BODY);
                 }else{
@@ -1069,7 +1070,7 @@ class SaleNoteController extends Controller
                 $pdf->SetHTMLFooter("");
             }
         }
-
+        
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
     }
 
@@ -1639,7 +1640,7 @@ class SaleNoteController extends Controller
         if ($dateOfIssue&&!$dateOfDue) {
             $records = $records->where('date_of_issue', $dateOfIssue);
         }
-
+        
         if ($dateOfIssue&&$dateOfDue) {
             $records = $records->whereBetween('date_of_issue', [$dateOfIssue,$dateOfDue]);
         }
