@@ -50,4 +50,14 @@
             return $this->belongsTo(Expense::class);
         }
 
+        public function getConvertTotalToPen()
+        {
+            return $this->generalConvertValueToPen($this->total, $this->expense->exchange_rate_sale);
+        }
+
+        public function isCurrencyTypeUsd()
+        {
+            return $this->expense->currency_type_id === 'USD';
+        }
+
     }

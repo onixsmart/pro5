@@ -31,7 +31,9 @@ class ItemUnitType extends ModelTenant
         'price2',
         'price3',
         'price_default',
-        'barcode'
+        'barcode',
+        'assing_price',
+        'assing_percentage'
     ];
 
     /**

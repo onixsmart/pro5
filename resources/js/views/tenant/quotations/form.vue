@@ -230,10 +230,16 @@
                                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                                     <label class="control-label">Observación
                                                     </label>
-                                                    <el-input  type="textarea"  :rows="3" v-model="form.description"
+                                                    <div class="el-textarea el-input--small">
+                                                        <textarea class="obs" v-model="form.description"
+                                                        maxlength="1000"
+                                                        autocomplete="off"
+                                                        rows="3"></textarea>
+                                                    </div>
+                                                    <!-- <el-input class="obs"  type="textarea"  :rows="3" v-model="form.description"
                                                         maxlength="1000"
                                                         show-word-limit>
-                                                    </el-input>
+                                                    </el-input> -->
                                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                                 </div>
                                             </div>
@@ -635,6 +641,24 @@
     </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<style>
+
+.obs{
+    height: 40px;
+    width: 100%!important;
+    border: 1px solid rgb(234, 238, 247)!important;
+    color: rgb(3, 26, 110)!important;
+    background-color: rgb(247, 248, 250)!important;
+}
+.obs:hover {
+    border-color: #c0c4cc;
+}
+
+</style>
+
+>>>>>>> 4d58fff861756b2b664f48fac7345ca092c97ce2
 <script>
     import TermsCondition from './partials/terms_condition.vue'
     import QuotationFormItem from './partials/item.vue'
