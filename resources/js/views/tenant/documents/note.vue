@@ -737,8 +737,6 @@
                         payment_condition_id : null,
                         fee : [],
                         payments:[],
-                        note:[],
-                        type: null
                     }
                 }
 
@@ -852,13 +850,13 @@
                     });
                 }
                 if(this.purchase_value){
-                    if(this.form.document_type_id=='07'){
+                   /*  if(this.form.document_type_id=='07'){
                         this.form.type='credit';
                     }
 
                     if(this.form.document_type_id=='08'){
                         this.form.type='debit';
-                    }
+                    } */
 
                     if(this.document.purchase_payments.length>0){
                         this.form.payments.push({
@@ -973,7 +971,7 @@
             },
             async submit() {
 
-                if (this.purchase_value) {
+                /* if (this.purchase_value) {
                     this.form.note={
                         document_type_id: this.form.document_type_id,
                         purchase_id: null,
@@ -983,7 +981,7 @@
                         note_description: this.form.note_description,
                         affected_purchase_id: this.document.id,
                     };
-                }
+                } */
 
                 if(this.isCreditNote && this.hasDiscounts && this.form.total > this.document.total){
                     return this.$message.error(`El monto total de la nota de credito debe ser menor o igual al monto del documento relacionado (${this.document.total})`)
