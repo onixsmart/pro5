@@ -129,13 +129,18 @@
             'soap_type_id',
             'state_type_id',
             'payment_method_type_id',
+
             'prefix',
+            'series',
+            'number',
+
             'date_of_issue',
             'time_of_issue',
             'date_of_due',
             'delivery_date',
             'customer_id',
             'customer',
+            'customer_address_id',
             'currency_type_id',
             'exchange_rate_sale',
             'total_prepayment',
@@ -533,7 +538,7 @@
                 if (isset($item->lots_group)) {
                     if(is_array($item->lots_group) && count($item->lots_group) > 0) {
                             $lots_group = $item->lots_group;
-    
+
                             foreach ($lots_group as $ltg) {
                                 $lot = ItemLotsGroup::query()->find($ltg->id);
                                 $lot->quantity = $lot->quantity + $ltg->compromise_quantity;

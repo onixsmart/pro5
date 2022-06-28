@@ -1,16 +1,14 @@
 <?php
 
 namespace App\Traits;
+
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Kardex;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Models\InventoryConfiguration;
 
-
-
 trait KardexTrait
 {
-
     public function saveKardex($type, $item_id, $id, $quantity, $relation) {
 
         $kardex = Kardex::create([
@@ -21,6 +19,7 @@ trait KardexTrait
             'purchase_id' => ($relation == 'purchase') ? $id : null,
             'purchase_settlement_id' => ($relation == 'purchase_settlement') ? $id : null,
             'sale_note_id' => ($relation == 'sale_note') ? $id : null,
+            'order_note_id' => ($relation == 'order_note') ? $id : null,
             'quantity' => $quantity,
         ]);
 
