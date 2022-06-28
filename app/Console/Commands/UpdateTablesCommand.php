@@ -10,21 +10,21 @@ use Modules\Item\Models\ItemLot;
 use Modules\Order\Models\OrderNote;
 use Modules\Order\Models\OrderNoteItem;
 
-class UpdateSeriesNumberCommand extends Command
+class UpdateTablesCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'update:series_number';
+    protected $signature = 'update:tables';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Actualización de serie y número';
+    protected $description = 'Actualización de registro de tablas';
 
     /**
      * Create a new command instance.
