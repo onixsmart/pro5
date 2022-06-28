@@ -80,12 +80,14 @@ class UpdateTablesCommand extends Command
             ->chunk(100, function ($document_items) {
                 foreach ($document_items as $document_item) {
                     $document = $document_item->order_note;
-                    $lots = $document_item->item->lots;
-                    foreach ($lots as $lot) {
-                        ItemLot::query()->where('id', $lot->id)->update([
-                            'item_loteable_type' => get_class($document),
-                            'item_loteable_id' => $document->id,
-                        ]);
+                    if($document_item->item->lots) {
+                        $lots = $document_item->item->lots;
+                        foreach ($lots as $lot) {
+                            ItemLot::query()->where('id', $lot->id)->update([
+                                'item_loteable_type' => get_class($document),
+                                'item_loteable_id' => $document->id,
+                            ]);
+                        }
                     }
                 }
             });
@@ -94,13 +96,16 @@ class UpdateTablesCommand extends Command
             ->chunk(100, function ($document_items) {
                 foreach ($document_items as $document_item) {
                     $document = $document_item->sale_note;
-                    $lots = $document_item->item->lots;
-                    foreach ($lots as $lot) {
-                        ItemLot::query()->where('id', $lot->id)->update([
-                            'item_loteable_type' => get_class($document),
-                            'item_loteable_id' => $document->id,
-                        ]);
+                    if($document_item->item->lots) {
+                        $lots = $document_item->item->lots;
+                        foreach ($lots as $lot) {
+                            ItemLot::query()->where('id', $lot->id)->update([
+                                'item_loteable_type' => get_class($document),
+                                'item_loteable_id' => $document->id,
+                            ]);
+                        }
                     }
+
                 }
             });
 
@@ -108,12 +113,14 @@ class UpdateTablesCommand extends Command
             ->chunk(100, function ($document_items) {
                 foreach ($document_items as $document_item) {
                     $document = $document_item->document;
-                    $lots = $document_item->item->lots;
-                    foreach ($lots as $lot) {
-                        ItemLot::query()->where('id', $lot->id)->update([
-                            'item_loteable_type' => get_class($document),
-                            'item_loteable_id' => $document->id,
-                        ]);
+                    if($document_item->item->lots) {
+                        $lots = $document_item->item->lots;
+                        foreach ($lots as $lot) {
+                            ItemLot::query()->where('id', $lot->id)->update([
+                                'item_loteable_type' => get_class($document),
+                                'item_loteable_id' => $document->id,
+                            ]);
+                        }
                     }
                 }
             });
