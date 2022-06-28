@@ -286,17 +286,16 @@ class DocumentController extends Controller
      */
     public function searchLots(Request $request)
     {
-        $records = ItemLot::where('series', 'like', "%{$request->input}%");
+        $records = ItemLot::query()->where('series', 'like', "%{$request->input}%");
         if ($request->document_item_id) {
             //proccess credit note
-            $document_item = DocumentItem::findOrFail($request->document_item_id);
+            $document_item = DocumentItem::query()->findOrFail($request->document_item_id);
             /** @var array $lots */
             $lots = $document_item->item->lots;
             $records
                 ->whereIn('id', collect($lots)->pluck('id')->toArray())
                 ->where('has_sale', true)
                 ->latest();
-
         } else {
             $warehouse = ModuleWarehouse::select('id')
                                         ->where('establishment_id', auth()->user()->establishment_id)

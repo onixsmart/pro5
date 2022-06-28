@@ -390,50 +390,45 @@ function calculateRowItemOther(row) {
     total = unit_price * quantity
 
 
-    /* Discounts */
-    let discount_base = 0
-    let discount_value_base = 0
-
-    let discount_no_base = 0
+    /*
+     * Discounts
+     */
+    let discount_total = 0;
+    let discount_total_value = 0;
+    let factor_discount_base = 0;
     let discounts = [];
-    let base = total_value;
-    let factor_discount = 0;
-
     _.forEach(row.discounts, (discount, index) => {
-        let factor = 0;
-        if (discount.is_amount) {
-            discount_base += parseFloat(discount.amount);
-            factor = parseFloat(discount.amount) / total;
-        } else {
-            factor = parseFloat(discount.amount) / 100;
-            discount_base += total * factor;
+        if (discount.base) {
+            let data = getDiscountCharge(total_value, total, discount);
+            discount_total += total * data.factor;
+            discount_total_value += data.amount;
+            factor_discount_base += data.factor;
+            discounts.push(data);
         }
-        factor_discount += factor;
-        let amount = _.round(base * factor, 2);
-        discount_value_base += amount;
-        discounts.push({
-            discount_type_id: discount.discount_type_id,
-            description: discount.description,
-            factor: factor,
-            base: base,
-            amount: amount,
-        });
     });
 
-    console.log('discount_base');
-    console.log(discount_base);
+    /*
+     * Charges
+     */
+    let charge_total = 0;
+    let charge_total_value = 0;
+    let factor_charge_base = 0;
+    let charges = [];
+    _.forEach(row.charges, (charge, index) => {
+        if (charge.base) {
+            let data = getDiscountCharge(total_value, total, charge);
+            charge_total += total * data.factor;
+            charge_total_value += data.amount;
+            factor_charge_base += data.factor;
+            charges.push(data);
+        }
+    });
 
-    console.log('discount_value_base');
-    console.log(discount_value_base);
+    total = _.round(total - discount_total + charge_total, 2)
+    total_value = _.round(total_value - discount_total_value + charge_total_value, 2);
 
-    total = _.round(total - discount_base, 2)
-    total_value = _.round(total_value - discount_value_base, 2);
-
-    console.log('total');
-    console.log(total);
-
-    console.log('total_value');
-    console.log(total_value);
+    let factor_discount_no_base = 0;
+    let factor_charge_no_base = 0;
     /* Charges */
     // let charge_base = 0
     // let charge_no_base = 0
@@ -472,6 +467,7 @@ function calculateRowItemOther(row) {
     }
 
     total_taxes = total_igv + total_isc + total_other_taxes + total_plastic_bag_taxes;
+    total += total_plastic_bag_taxes;
     //total = total_value + total_taxes;
 
     //procedimiento para agregar isc
@@ -537,12 +533,26 @@ function calculateRowItemOther(row) {
         'total_charge': total_charge,
         'total': total,
         'attributes': row.attributes,
-        'charges': row.charges,
+        'charges': charges,
         'discounts': discounts,
         'warehouse_id': row.warehouse_id,
         'name_product_pdf': row.name_product_pdf,
         'item': row.item,
-        'factor_discount': factor_discount
+        'factor_discount_base': factor_discount_base,
+        'factor_discount_no_base': factor_discount_no_base,
+        'factor_charge_base': factor_charge_base,
+        'factor_charge_no_base': factor_charge_no_base
+    };
+}
+
+function getDiscountCharge(base, total, record) {
+    let factor = record.is_amount ? (parseFloat(record.amount) / total) : (parseFloat(record.amount) / 100);
+    return {
+        charge_type_id: record.charge_type_id,
+        description: record.description,
+        factor: factor,
+        base: base,
+        amount: _.round(base * factor, 2),
     };
 }
 
@@ -594,11 +604,26 @@ function FormatUnitPriceRow(unit_price) {
     // return unit_price.toFixed(6)
 }
 
+
+const recalculateByCurrencyType = (store_items, currency_type) => {
+    console.log('recalculateByCurrencyType');
+    let items = [];
+    _.forEach(store_items, item => {
+        item.currency_type_id = currency_type.id;
+        item.currency_type_symbol = currency_type.symbol;
+        item.unit_price = (currency_type.id === 'PEN') ? item.unit_price_pen : item.unit_price_usd;
+        item.factor_icbper = (currency_type.id === 'PEN') ? item.factor_icbper_pen : item.factor_icbper_usd;
+        items.push(calculateRowItemOther(item));
+    });
+    return items;
+}
+
 export {
     calculateRowItem,
     calculateRowItemOther,
     getUniqueArray,
     showNamePdfOfDescription,
     sumAmountDiscountsNoBaseByItem,
-    FormatUnitPriceRow
+    FormatUnitPriceRow,
+    recalculateByCurrencyType
 }

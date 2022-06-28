@@ -82,7 +82,7 @@
               </div>
               <div class="col-lg-2">
                 <x-input label="Término de pago" :error="errors.payment_method_type_id">
-                  <el-select v-model="form.payment_method_type_id" filterable @change="changePaymentMethodType">
+                  <el-select v-model="form.payment_method_type_id" @change="changePaymentMethodType">
                     <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id"
                                :label="option.description"></el-option>
                   </el-select>
@@ -105,7 +105,8 @@
                 <x-input label="Tipo de cambio"
                          tooltip-content="Tipo de cambio del día, extraído de SUNAT"
                          :error="errors.exchange_rate_sale">
-                  <el-input v-model="form.exchange_rate_sale"></el-input>
+                  <el-input v-model="form.exchange_rate_sale"
+                            :readonly="true"></el-input>
                 </x-input>
               </div>
               <div class="col-12">
@@ -224,27 +225,25 @@
                 </el-collapse>
               </div>
             </div>
-
-
             <div class="row mt-3">
               <div class="col-md-12">
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
                     <tr>
-                      <th width="5%">#</th>
-                      <th class="font-weight-bold"
-                          width="30%">Descripción
-                      </th>
-                      <th width="8%" class="text-center font-weight-bold">Unidad</th>
-                      <th width="8%" class="text-center font-weight-bold">Cantidad</th>
-                      <th class="text-center font-weight-bold">Valor Unitario</th>
-                      <th class="text-center font-weight-bold">Precio Unitario</th>
-                      <th class="text-center font-weight-bold">Desc(%)</th>
-                      <th class="text-center font-weight-bold">Subtotal</th>
-                      <!--<th class="text-right font-weight-bold">Cargo</th>-->
-                      <th class="text-center font-weight-bold">Total</th>
-                      <th width="8%"></th>
+                      <th style="width: 40px">#</th>
+                      <th class="font-weight-bold">Descripción</th>
+                      <th class="text-center font-weight-bold" style="width: 70px">Unidad</th>
+                      <th class="text-center font-weight-bold" style="width: 60px">Cant.</th>
+                      <th class="text-center font-weight-bold" style="width: 100px">V.Unit.</th>
+                      <th class="text-center font-weight-bold" style="width: 100px">P.Unit.</th>
+                      <th class="text-center font-weight-bold" style="width: 90px">Desc(%)</th>
+                      <th class="text-center font-weight-bold" style="width: 90px">Cargo(%)</th>
+                      <th class="text-right font-weight-bold" style="width: 100px">Subtotal</th>
+                      <th class="text-center font-weight-bold" style="width: 90px">Desc(%)</th>
+                      <th class="text-center font-weight-bold" style="width: 90px">Cargo(%)</th>
+                      <th class="text-right font-weight-bold" style="width: 100px">Total</th>
+                      <th class="text-right" style="width: 80px"></th>
                     </tr>
                     </thead>
                     <tbody v-if="form.items.length > 0">
@@ -266,9 +265,12 @@
                           getFormatUnitPriceRow(row.unit_price)
                         }}
                       </td>
-                      <td class="text-center">{{ row.factor_discount * 100 }}%</td>
-                      <td class="text-center">{{ currency_type.symbol }} {{ row.total_value }}</td>
-                      <td class="text-center">{{ currency_type.symbol }} {{ row.total }}</td>
+                      <td class="text-right">{{ row.factor_discount_base * 100 }}%</td>
+                      <td class="text-right">{{ row.factor_charge_base * 100 }}%</td>
+                      <td class="text-right">{{ currency_type.symbol }} {{ row.total_value }}</td>
+                      <td class="text-right">{{ row.factor_discount_no_base * 100 }}%</td>
+                      <td class="text-right">{{ row.factor_charge_no_base * 100 }}%</td>
+                      <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                       <td class="text-center">
                         <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                 @click="ediItem(row.index)"><span style='font-size:10px;'>&#9998;</span></button>
@@ -294,19 +296,48 @@
               <div class="col-md-8 mt-3">
               </div>
               <div class="col-md-4">
-                <p class="text-right" v-if="form.total_exportation > 0">OP.EXPORTACIÓN: {{ currency_type.symbol }}
-                  {{ form.total_exportation }}</p>
-                <p class="text-right" v-if="form.total_free > 0">OP.GRATUITAS: {{ currency_type.symbol }}
-                  {{ form.total_free }}</p>
-                <p class="text-right" v-if="form.total_unaffected > 0">OP.INAFECTAS: {{ currency_type.symbol }}
-                  {{ form.total_unaffected }}</p>
-                <p class="text-right" v-if="form.total_exonerated > 0">OP.EXONERADAS: {{ currency_type.symbol }}
-                  {{ form.total_exonerated }}</p>
-                <p class="text-right" v-if="form.total_taxed > 0">OP.GRAVADA: {{ currency_type.symbol }}
-                  {{ form.total_taxed }}</p>
-                <p class="text-right" v-if="form.total_igv > 0">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
-                <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }}
-                  {{ form.total }}</h3>
+                <table class="table table-totals">
+                  <tr v-if="form.total_exportation > 0">
+                    <td class="text-right">OP.EXPORTACIÓN</td>
+                    <td>:</td>
+                    <td class="text-right">{{ currency_type.symbol }} {{ form.total_free }}</td>
+                  </tr>
+                  <tr v-if="form.total_free > 0">
+                    <td class="text-right">OP.GRATUITAS</td>
+                    <td>:</td>
+                    <td class="text-right">{{ currency_type.symbol }} {{ form.total_free }}</td>
+                  </tr>
+                  <tr v-if="form.total_unaffected > 0">
+                    <td class="text-right">OP.INAFECTAS</td>
+                    <td>:</td>
+                    <td class="text-right">{{ currency_type.symbol }} {{ form.total_unaffected }}</td>
+                  </tr>
+                  <tr v-if="form.total_exonerated > 0">
+                    <td class="text-right">OP.EXONERADAS</td>
+                    <td>:</td>
+                    <td class="text-right">{{ currency_type.symbol }} {{ form.total_exonerated }}</td>
+                  </tr>
+                  <tr v-if="form.total_taxed > 0">
+                    <td class="text-right">OP.GRAVADAS</td>
+                    <td>:</td>
+                    <td class="text-right">{{ currency_type.symbol }} {{ form.total_taxed }}</td>
+                  </tr>
+                  <tr v-if="form.total_igv > 0">
+                    <td class="text-right">IGV</td>
+                    <td>:</td>
+                    <td class="text-right">{{ currency_type.symbol }} {{ form.total_igv }}</td>
+                  </tr>
+                  <tr v-if="form.total_plastic_bag_taxes > 0">
+                    <td class="text-right">ICBPER</td>
+                    <td>:</td>
+                    <td class="text-right">{{ currency_type.symbol }} {{ form.total_plastic_bag_taxes }}</td>
+                  </tr>
+                  <tr v-if="form.total > 0">
+                    <td class="text-right">TOTAL A PAGAR</td>
+                    <td>:</td>
+                    <td class="text-right">{{ currency_type.symbol }} {{ form.total }}</td>
+                  </tr>
+                </table>
               </div>
             </div>
           </div>
@@ -347,6 +378,24 @@
   </div>
 </template>
 
+<style lang="scss" scoped>
+.table-totals {
+  margin: 0;
+
+  tr td {
+    padding: 2px;
+    font-size: 16px;
+  }
+
+  tr td:nth-child(2) {
+    width: 5px;
+  }
+
+  tr td:last-child {
+    width: 100px;
+  }
+}
+</style>
 <script>
 import TermsCondition from './partials/terms_condition.vue'
 import QuotationFormItem from './partials/item.vue'
@@ -357,7 +406,8 @@ import {
   calculateRowItem,
   calculateRowItemOther,
   showNamePdfOfDescription,
-  sumAmountDiscountsNoBaseByItem
+  sumAmountDiscountsNoBaseByItem,
+  recalculateByCurrencyType
 } from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
@@ -479,7 +529,7 @@ export default {
       if (customer) {
         this.customer_addresses = customer.addresses;
         if (this.customer_addresses.length > 0) {
-          if(_.isNull(id)) {
+          if (_.isNull(id)) {
             let address = _.find(this.customer_addresses, {'is_main': true});
             if (address) {
               this.form.customer_address_id = address.id;
@@ -648,6 +698,7 @@ export default {
         total_other_taxes: 0,
         total_taxes: 0,
         total_value: 0,
+        total_plastic_bag_taxes: 0,
         total: 0,
         subtotal: 0,
         operation_type_id: null,
@@ -744,7 +795,7 @@ export default {
       const indexStoreItems = _.findIndex(this.store_items, {'index': store_row.index});
       const indexFormItems = _.findIndex(this.form.items, {'index': store_row.index});
 
-      if(indexStoreItems > -1 && indexFormItems > -1) {
+      if (indexStoreItems > -1 && indexFormItems > -1) {
         this.store_items[indexStoreItems] = store_row;
         store_row = Object.assign({}, store_row, {
           'item': _.clone(store_row),
@@ -787,11 +838,13 @@ export default {
     },
     changeCurrencyType() {
       this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
-      let items = []
-      this.form.items.forEach((row) => {
-        items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
-      });
-      this.form.items = items
+      this.form.items = recalculateByCurrencyType(this.store_items, this.currency_type);
+      //
+      // let items = []
+      // this.form.items.forEach((row) => {
+      //   items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+      // });
+      // this.form.items = items
       this.calculateTotal()
     },
     calculateTotal() {
@@ -805,6 +858,7 @@ export default {
       let total_free = 0
       let total_igv = 0
       let total_value = 0
+      let total_plastic_bag_taxes = 0;
       let total = 0
       let total_igv_free = 0
       this.total_discount_no_base = 0
@@ -845,7 +899,9 @@ export default {
         }
         //sum discount no base
         this.total_discount_no_base += sumAmountDiscountsNoBaseByItem(row)
+        total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes);
       });
+
 
       this.form.total_igv_free = _.round(total_igv_free, 2)
       this.form.total_discount = _.round(total_discount, 2)
@@ -857,7 +913,7 @@ export default {
       this.form.total_igv = _.round(total_igv, 2)
       this.form.total_value = _.round(total_value, 2)
       this.form.total_taxes = _.round(total_igv, 2)
-
+      this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
       this.form.subtotal = _.round(total, 2)
       this.form.total = _.round(total - this.total_discount_no_base, 2)
 

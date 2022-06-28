@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Models\Tenant; 
+namespace App\Models\Tenant;
+
+use Modules\Order\Models\OrderNote;
 
 class Kardex extends ModelTenant
 {
@@ -13,7 +15,8 @@ class Kardex extends ModelTenant
         'document_id',
         'purchase_id',
         'sale_note_id',
-        'quantity', 
+        'order_note_id',
+        'quantity',
     ];
 
     protected $casts = [
@@ -24,7 +27,7 @@ class Kardex extends ModelTenant
     {
         return $this->belongsTo(Document::class);
     }
-    
+
     public function purchase()
     {
         return $this->belongsTo(Purchase::class);
@@ -33,6 +36,11 @@ class Kardex extends ModelTenant
     public function sale_note()
     {
         return $this->belongsTo(SaleNote::class);
+    }
+
+    public function order_note()
+    {
+        return $this->belongsTo(OrderNote::class);
     }
 
     public function item()

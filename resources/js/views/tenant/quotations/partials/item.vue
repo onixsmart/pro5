@@ -104,7 +104,7 @@
                 </el-checkbox>
                 <br>
               </template>
-              <el-checkbox v-model="form.has_plastic_bag_taxes"
+              <el-checkbox v-model="form.has_icbper"
                            v-if="showDiscounts"
                            :disabled="isEditItemNote">Impuesto a la Bolsa Plástica
               </el-checkbox>
@@ -116,8 +116,7 @@
           <div class="col-md-5">
             <x-input label="Afectación Igv" :error="errors.affectation_igv_type_id">
               <el-select v-model="form.affectation_igv_type_id"
-                         :disabled="!change_affectation_igv_type_id"
-                         filterable>
+                         :disabled="!change_affectation_igv_type_id">
                 <el-option v-for="option in affectation_igv_types"
                            :key="option.id"
                            :label="option.description"
@@ -207,56 +206,56 @@
             </x-input>
           </div>
           <template v-if="!is_client">
-<!--            <div v-if="has_list_prices"-->
-<!--                 class="col-md-12">-->
-<!--              <div class="table-responsive"-->
-<!--                   style="margin:3px">-->
-<!--                <h5 class="separator-title">-->
-<!--                  Lista de Precios-->
-<!--                  <el-tooltip class="item"-->
-<!--                              content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades"-->
-<!--                              effect="dark"-->
-<!--                              placement="top">-->
-<!--                    <i class="fa fa-info-circle"></i>-->
-<!--                  </el-tooltip>-->
-<!--                </h5>-->
-<!--                <table class="table">-->
-<!--                  <thead>-->
-<!--                  <tr>-->
-<!--                    <th class="text-center">Unidad</th>-->
-<!--                    <th class="text-center">Descripción</th>-->
-<!--                    <th class="text-center">Factor</th>-->
-<!--                    <th class="text-center">Precio 1</th>-->
-<!--                    <th class="text-center">Precio 2</th>-->
-<!--                    <th class="text-center">Precio 3</th>-->
-<!--                    <th class="text-center">Precio Default</th>-->
-<!--                    <th></th>-->
-<!--                  </tr>-->
-<!--                  </thead>-->
-<!--                  <tbody>-->
-<!--                  <tr v-for="(row, index) in form.item_unit_types"-->
-<!--                      :key="index">-->
-<!--                    <td class="text-center">{{ row.unit_type_id }}</td>-->
-<!--                    <td class="text-center">{{ row.description }}</td>-->
-<!--                    <td class="text-center">{{ row.quantity_unit }}</td>-->
-<!--                    <td class="text-center">{{ row.price1 }}</td>-->
-<!--                    <td class="text-center">{{ row.price2 }}</td>-->
-<!--                    <td class="text-center">{{ row.price3 }}</td>-->
-<!--                    <td class="text-center">Precio {{ row.price_default }}</td>-->
-<!--                    <td class="series-table-actions text-right">-->
-<!--                      <button class="btn waves-effect waves-light btn-xs btn-success"-->
-<!--                              type="button"-->
-<!--                              @click.prevent="selectedPrice(row)">-->
-<!--                        <i class="el-icon-check"></i>-->
-<!--                      </button>-->
-<!--                    </td>-->
-<!--                  </tr>-->
-<!--                  </tbody>-->
-<!--                </table>-->
-<!--              </div>-->
-<!--            </div>-->
+            <!--            <div v-if="has_list_prices"-->
+            <!--                 class="col-md-12">-->
+            <!--              <div class="table-responsive"-->
+            <!--                   style="margin:3px">-->
+            <!--                <h5 class="separator-title">-->
+            <!--                  Lista de Precios-->
+            <!--                  <el-tooltip class="item"-->
+            <!--                              content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades"-->
+            <!--                              effect="dark"-->
+            <!--                              placement="top">-->
+            <!--                    <i class="fa fa-info-circle"></i>-->
+            <!--                  </el-tooltip>-->
+            <!--                </h5>-->
+            <!--                <table class="table">-->
+            <!--                  <thead>-->
+            <!--                  <tr>-->
+            <!--                    <th class="text-center">Unidad</th>-->
+            <!--                    <th class="text-center">Descripción</th>-->
+            <!--                    <th class="text-center">Factor</th>-->
+            <!--                    <th class="text-center">Precio 1</th>-->
+            <!--                    <th class="text-center">Precio 2</th>-->
+            <!--                    <th class="text-center">Precio 3</th>-->
+            <!--                    <th class="text-center">Precio Default</th>-->
+            <!--                    <th></th>-->
+            <!--                  </tr>-->
+            <!--                  </thead>-->
+            <!--                  <tbody>-->
+            <!--                  <tr v-for="(row, index) in form.item_unit_types"-->
+            <!--                      :key="index">-->
+            <!--                    <td class="text-center">{{ row.unit_type_id }}</td>-->
+            <!--                    <td class="text-center">{{ row.description }}</td>-->
+            <!--                    <td class="text-center">{{ row.quantity_unit }}</td>-->
+            <!--                    <td class="text-center">{{ row.price1 }}</td>-->
+            <!--                    <td class="text-center">{{ row.price2 }}</td>-->
+            <!--                    <td class="text-center">{{ row.price3 }}</td>-->
+            <!--                    <td class="text-center">Precio {{ row.price_default }}</td>-->
+            <!--                    <td class="series-table-actions text-right">-->
+            <!--                      <button class="btn waves-effect waves-light btn-xs btn-success"-->
+            <!--                              type="button"-->
+            <!--                              @click.prevent="selectedPrice(row)">-->
+            <!--                        <i class="el-icon-check"></i>-->
+            <!--                      </button>-->
+            <!--                    </td>-->
+            <!--                  </tr>-->
+            <!--                  </tbody>-->
+            <!--                </table>-->
+            <!--              </div>-->
+            <!--            </div>-->
 
-            <div class="col-md-12 mt-2">
+            <div class="col-md-12 mt-2" v-if="itemId">
               <el-collapse v-model="activePanel">
                 <el-collapse-item name="1" title="+ Agregar Descuentos/Cargos/Atributos especiales">
                   <div v-if="discount_types.length > 0">
@@ -275,7 +274,8 @@
                       <tbody>
                       <tr v-for="(row, index) in form.discounts" :key="index">
                         <td>
-                          <el-select v-model="row.discount_type_id">
+                          <el-select v-model="row.discount_type_id"
+                                     @change="changeDiscount(index, row.discount_type_id)">
                             <el-option v-for="option in discount_types"
                                        :key="option.id"
                                        :label="option.description"
@@ -306,47 +306,55 @@
                       </tbody>
                     </table>
                   </div>
-<!--                  <div v-if="charge_types.length > 0">-->
-<!--                    <label class="control-label">Cargos-->
-<!--                      <a href="#" @click.prevent="clickAddCharge">[+ Agregar]</a>-->
-<!--                    </label>-->
-<!--                    <table class="table">-->
-<!--                      <thead>-->
-<!--                      <tr>-->
-<!--                        <th>Tipo</th>-->
-<!--                        <th>Descripción</th>-->
-<!--                        <th>Porcentaje</th>-->
-<!--                        <th></th>-->
-<!--                      </tr>-->
-<!--                      </thead>-->
-<!--                      <tbody>-->
-<!--                      <tr v-for="(row, index) in form.charges"-->
-<!--                          :key="index">-->
-<!--                        <td>-->
-<!--                          <el-select v-model="row.charge_type_id"-->
-<!--                                     @change="changeChargeType(index)">-->
-<!--                            <el-option v-for="option in charge_types"-->
-<!--                                       :key="option.id"-->
-<!--                                       :label="option.description"-->
-<!--                                       :value="option.id"></el-option>-->
-<!--                          </el-select>-->
-<!--                        </td>-->
-<!--                        <td>-->
-<!--                          <el-input v-model="row.description"></el-input>-->
-<!--                        </td>-->
-<!--                        <td>-->
-<!--                          <el-input v-model="row.percentage"></el-input>-->
-<!--                        </td>-->
-<!--                        <td>-->
-<!--                          <button class="btn btn-danger"-->
-<!--                                  type="button"-->
-<!--                                  @click.prevent="clickRemoveCharge(index)">x-->
-<!--                          </button>-->
-<!--                        </td>-->
-<!--                      </tr>-->
-<!--                      </tbody>-->
-<!--                    </table>-->
-<!--                  </div>-->
+                  <div v-if="charge_types.length > 0">
+                    <label class="control-label">Cargos
+                      <a href="#" @click.prevent="clickAddCharge">[+ Agregar]</a>
+                    </label>
+                    <table class="table">
+                      <thead>
+                      <tr>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Porcentaje</th>
+                        <th></th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr v-for="(row, index) in form.charges"
+                          :key="index">
+                        <td>
+                          <el-select v-model="row.charge_type_id"
+                                     @change="changeCharge(index, row.charge_type_id)">
+                            <el-option v-for="option in charge_types"
+                                       :key="option.id"
+                                       :label="option.description"
+                                       :value="option.id"></el-option>
+                          </el-select>
+                        </td>
+                        <td>
+                          <el-input v-model="row.description"></el-input>
+                        </td>
+                        <td>
+                          <div style="display: flex">
+                            <el-button type="primary" @click="row.is_amount = !row.is_amount" style="margin-right: 4px">
+                              <template v-if="row.is_amount">
+                                {{ form.currency_type_symbol }}
+                              </template>
+                              <template v-else>
+                                %
+                              </template>
+                            </el-button>
+                            <el-input v-model="row.amount">
+                            </el-input>
+                          </div>
+                        </td>
+                        <td>
+                          <el-button type="danger" @click="clickRemoveCharge(index)">X</el-button>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
                   <div v-if="attribute_types.length > 0">
                     <label class="control-label">Atributos
                       <a href="#" @click.prevent="clickAddAttribute">[+ Agregar]</a>
@@ -431,11 +439,11 @@
     </form>
     <item-form :external="true"
                :showDialog.sync="showDialogNewItem"></item-form>
-<!--    <warehouses-detail-->
-<!--      :isUpdateWarehouseId="isUpdateWarehouseId"-->
-<!--      :showDialog.sync="showWarehousesDetail"-->
-<!--      :warehouses="warehousesDetail">-->
-<!--    </warehouses-detail>-->
+    <!--    <warehouses-detail-->
+    <!--      :isUpdateWarehouseId="isUpdateWarehouseId"-->
+    <!--      :showDialog.sync="showWarehousesDetail"-->
+    <!--      :warehouses="warehousesDetail">-->
+    <!--    </warehouses-detail>-->
   </el-dialog>
 </template>
 <style>
@@ -457,7 +465,7 @@ import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import XInput from "../../../../components/XInput";
-import { uuid } from 'vue-uuid';
+import {uuid} from 'vue-uuid';
 
 export default {
   name: 'QuotationItem',
@@ -702,16 +710,16 @@ export default {
     },
     async searchRemoteItems(input) {
       // if (input.length > 2) {
-        this.loading_search = true
-        await this.$http.post(`/store/search_items`, {
-          'search': input,
-          'search_by_barcode': this.search_item_by_barcode
+      this.loading_search = true
+      await this.$http.post(`/store/search_items`, {
+        'search': input,
+        'search_by_barcode': this.search_item_by_barcode
+      })
+        .then(response => {
+          this.items = response.data;
+          this.enabledSearchItemsBarcode()
         })
-          .then(response => {
-            this.items = response.data;
-            this.enabledSearchItemsBarcode()
-          })
-        this.loading_search = false;
+      this.loading_search = false;
       // } else {
       //   this.filterItems()
       // }
@@ -722,7 +730,7 @@ export default {
     enabledSearchItemsBarcode() {
       if (this.search_item_by_barcode) {
         this.$refs.selectBarcode.$data.selectedLabel = '';
-        if (this.items.length == 1) {
+        if (this.items.length === 1) {
           this.form.item_id = this.items[0].id;
           this.$refs.selectBarcode.blur();
           this.changeItem();
@@ -753,11 +761,7 @@ export default {
     clickAddDiscount() {
       this.form.discounts.push({
         discount_type_id: null,
-        // discount_type: null,
         description: null,
-        // percentage: 0,
-        // factor: 0,
-        // base: 0,
         is_amount: false,
         amount: 0,
       })
@@ -765,27 +769,25 @@ export default {
     clickRemoveDiscount(index) {
       this.form.discounts.splice(index, 1)
     },
-    // changeDiscountType(index) {
-    //   let discount_type_id = this.form.discounts[index].discount_type_id
-    //   this.form.discounts[index].discount_type = _.find(this.discount_types, {id: discount_type_id})
-    // },
+    changeDiscount(index, id) {
+      let record = _.find(this.discount_types, {'id': id})
+      this.form.discounts[index].base = record.base
+    },
     clickAddCharge() {
       this.form.charges.push({
         charge_type_id: null,
-        charge_type: null,
         description: null,
-        percentage: 0,
-        factor: 0,
+        is_amount: false,
         amount: 0,
-        base: 0
+        base: false,
       })
     },
     clickRemoveCharge(index) {
       this.form.charges.splice(index, 1)
     },
-    changeChargeType(index) {
-      let charge_type_id = this.form.charges[index].charge_type_id
-      this.form.charges[index].charge_type = _.find(this.charge_types, {id: charge_type_id})
+    changeCharge(index, id) {
+      let record = _.find(this.charge_types, {'id': id})
+      this.form.charges[index].base = record.base
     },
     clickAddAttribute() {
       this.form.attributes.push({
@@ -855,7 +857,7 @@ export default {
     async clickAddItem() {
       this.$emit('success', this.form);
 
-      if(this.recordItem) {
+      if (this.recordItem) {
         this.clickClose();
       } else {
         this.initForm();

@@ -523,13 +523,13 @@ class Item extends ModelTenant
         return $this->hasMany(ItemLot::class, 'item_id');
     }
 
-    /**
-     * @return MorphMany
-     */
-    public function lots()
-    {
-        return $this->morphMany(ItemLot::class, 'item_loteable');
-    }
+//    /**
+//     * @return MorphMany
+//     */
+//    public function lots()
+//    {
+//        return $this->morphMany(ItemLot::class, 'item_loteable');
+//    }
 
     /**
      * @return HasMany

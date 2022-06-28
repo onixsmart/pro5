@@ -35,7 +35,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
         $this->sale_note();
         $this->sale_note_item_delete();
         $this->sale_document_type_03_delete();
-        $this->order_note();
+//        $this->order_note();
         $this->order_note_item_delete();
         $this->purchase_item_delete();
         $this->item_lot_delete();
@@ -71,7 +71,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         DocumentItem::created(function (DocumentItem $document_item) {
 
-            if (!$document_item->item->is_set) 
+            if (!$document_item->item->is_set)
             {
                 $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
                 $document = $document_item->document;
@@ -80,13 +80,13 @@ class InventoryKardexServiceProvider extends ServiceProvider
                 //$this->createInventory($document_item->item_id, $factor * $document_item->quantity, $warehouse->id);
                 $this->createInventoryKardex($document_item->document, $document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
 
-                if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id && !$document_item->document->sale_notes_relateds) 
+                if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id && !$document_item->document->sale_notes_relateds)
                 {
                     $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-                
-                } else 
+
+                } else
                 {
-                    if ($document_item->document->dispatch) 
+                    if ($document_item->document->dispatch)
                     {
                         if (!$document_item->document->dispatch->transfer_reason_type->discount_stock) {
                             $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
@@ -108,7 +108,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
                     $warehouse = $this->findWarehouse();
                     $this->createInventoryKardex($document_item->document, $ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
 
-                    if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id && !$document_item->document->sale_notes_relateds) 
+                    if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id && !$document_item->document->sale_notes_relateds)
                     {
                         $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
                     } else {
@@ -128,30 +128,30 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             if(!$document->isGeneratedFromExternalRecord())
             {
-                
-                if (isset($document_item->item->IdLoteSelected)) 
+
+                if (isset($document_item->item->IdLoteSelected))
                 {
-                    if ($document_item->item->IdLoteSelected != null) 
+                    if ($document_item->item->IdLoteSelected != null)
                     {
-                        if(is_array($document_item->item->IdLoteSelected)) 
+                        if(is_array($document_item->item->IdLoteSelected))
                         {
                             // presentacion - factor de lista de precios
                             $quantity_unit = isset($document_item->item->presentation->quantity_unit) ? $document_item->item->presentation->quantity_unit : 1;
-                            
+
                             $lotesSelecteds = $document_item->item->IdLoteSelected;
                             $document_factor = ($document->document_type_id === '07') ? 1 : -1;
-    
-                            foreach ($lotesSelecteds as $item) 
+
+                            foreach ($lotesSelecteds as $item)
                             {
                                 $lot = ItemLotsGroup::query()->find($item->id);
                                 $lot->quantity = $lot->quantity + (($quantity_unit * $item->compromise_quantity) * $document_factor);
                                 $this->validateStockLotGroup($lot, $document_item);
                                 $lot->save();
                             }
-    
+
                         }
                         else{
-    
+
                             $lot = ItemLotsGroup::query()->find($document_item->item->IdLoteSelected);
                             try {
                                 $quantity_unit = $document_item->item->presentation->quantity_unit;
@@ -163,21 +163,22 @@ class InventoryKardexServiceProvider extends ServiceProvider
                             } else {
                                 $quantity = $lot->quantity - ($quantity_unit * $document_item->quantity);
                             }
-    
+
                             $lot->quantity = $quantity;
                             $lot->save();
                         }
-    
+
                     }
                 }
             }
 
             if (isset($document_item->item->lots)) {
                 foreach ($document_item->item->lots as $it) {
-
                     if ($it->has_sale == true) {
-                        $r = ItemLot::find($it->id);
+                        $r = ItemLot::query()->find($it->id);
                         // $r->has_sale = true;
+                        $r->item_loteable_type = get_class($document);
+                        $r->item_loteable_id = $document->id;
                         $r->has_sale = ($document->document_type_id === '07') ? false : true;
                         $r->save();
                     }
@@ -200,6 +201,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
      */
     private function sale_note() {
         SaleNoteItem::created(function (SaleNoteItem $sale_note_item) {
+            $sale_note = $sale_note_item->sale_note;
 
             if(!$sale_note_item->item->is_set){
 
@@ -233,10 +235,10 @@ class InventoryKardexServiceProvider extends ServiceProvider
             if(isset($sale_note_item->item->lots) )
             {
                 foreach ($sale_note_item->item->lots as $it) {
-
-                    if($it->has_sale == true)
-                    {
-                        $r = ItemLot::find($it->id);
+                    if($it->has_sale == true) {
+                        $r = ItemLot::query()->find($it->id);
+                        $r->item_loteable_type = get_class($sale_note);
+                        $r->item_loteable_id = $sale_note->id;
                         $r->has_sale =  true;
                         $r->save();
                     }
@@ -358,118 +360,6 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         OrderNoteItem::created(function (OrderNoteItem $order_note_item) {
             /** @todo bloque repetido, buscar colocar en funcion */
-            $item = $order_note_item->item;
-            $document = $order_note_item->order_note;
-            $warehouse_id = $order_note_item->warehouse_id;
-
-            $presentationQuantity = $item->presentation->quantity_unit ?? 1;
-            // $warehouse = $this->findWarehouse($order_note_item->order_note->establishment_id);
-            // $warehouse = ($warehouse_id) ? $this->findWarehouse($this->findWarehouseById($warehouse_id)->establishment_id) : $this->findWarehouse($order_note_item->order_note->establishment_id);
-            $item_id =$order_note_item->item_id;
-            // $factor = 1;
-            // Factor proviende de Document.
-             $factor = ($document->document_type_id  && $document->document_type_id === '07') ? 1 : -1;
-
-            if (!$item->is_set) {
-                $presentationQuantity = $item->presentation->quantity_unit ?? 1;
-                $quanty = ($factor * ($order_note_item->quantity * $presentationQuantity));
-
-                $warehouse = ($warehouse_id) ?
-                    $this->findWarehouse($this->findWarehouseById($warehouse_id)->establishment_id) :
-                    $this->findWarehouse();
-                //$this->createInventory($item_id, $factor * $order_note_item->quantity, $warehouse->id);
-                $this->createInventoryKardex($document, $item_id, $quanty, $warehouse->id);
-                if (!$document->sale_note_id && !$document->order_note_id && !$document->dispatch_id) {
-                    $this->updateStock($item_id, ($quanty), $warehouse->id);
-                } else {
-                    if ($document->dispatch) {
-                        if (!$document->dispatch->transfer_reason_type->discount_stock) {
-                            $this->updateStock($item_id, ($quanty), $warehouse->id);
-                        }
-                    }
-                }
-
-            } else {
-
-                $item = Item::findOrFail($item_id);
-                foreach ($item->sets as $it) {
-                    /** @var Item $ind_item */
-
-                    $ind_item = $it->individual_item;
-                    $item_id = $ind_item->id;
-                    $item_set_quantity = ($it->quantity) ?: 1;
-                    $presentationQuantity = 1;
-
-                    $warehouse = $this->findWarehouse();
-                    $quanty = $factor * ($order_note_item->quantity * $presentationQuantity * $item_set_quantity);
-
-                    $this->createInventoryKardex($document, $item_id, ($quanty), $warehouse->id);
-
-                    if (!$document->sale_note_id && !$document->order_note_id && !$document->dispatch_id) {
-                        $this->updateStock($item_id, ($quanty), $warehouse->id);
-                    } else {
-                        if ($document->dispatch) {
-                            if (!$document->dispatch->transfer_reason_type->discount_stock) {
-                                $this->updateStock($item_id, ($quanty), $warehouse->id);
-                            }
-                        }
-                    }
-
-                }
-            }
-
-
-            // $this->createInventoryKardex($order_note_item->order_note, $order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
-            // $this->updateStock($order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
-            
-            // control de lotes
-            if (isset($order_note_item->item->IdLoteSelected)) 
-            {
-                $IdLoteSelected = $order_note_item->item->IdLoteSelected;
-
-                if(is_array($IdLoteSelected))
-                {
-                    foreach ($IdLoteSelected as $lot_selected) 
-                    {
-                        $lot = ItemLotsGroup::find($lot_selected->id);
-                        $lot->quantity = $lot->quantity - ($lot_selected->compromise_quantity * $presentationQuantity ?? 1);
-                        $lot->save();
-                    }
-                }
-            }
-            else
-            {
-
-            if (isset($order_note_item->item->lots_group)) {
-                    if(is_array($order_note_item->item->lots_group) && count($order_note_item->item->lots_group) > 0) {
-                            $lots_group = $order_note_item->item->lots_group;
-
-                            foreach ($lots_group as $item) {
-                                $lot = ItemLotsGroup::query()->find($item->id);
-                                $lot->quantity = $lot->quantity - $item->compromise_quantity;
-                                $lot->save();
-                            }
-                    }
-            }
-
-            }
-            // control de lotes
-            
-
-
-            if(isset($item->lots) )
-            {
-                foreach ($item->lots as $it) {
-
-                    if($it->has_sale == true)
-                    {
-                        $r = ItemLot::find($it->id);
-                        $r->has_sale = true;
-                        $r->save();
-                    }
-
-                }
-            }
 
 
 
@@ -483,9 +373,6 @@ class InventoryKardexServiceProvider extends ServiceProvider
     private function order_note_item_delete() {
 
         OrderNoteItem::deleted(function (OrderNoteItem $order_note_item) {
-
-
-
             // dd($order_note_item);
             $presentationQuantity = (!empty($order_note_item->item->presentation)) ? $order_note_item->item->presentation->quantity_unit : 1;
 
@@ -508,13 +395,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
                         }
                 }
             }
-
-
         });
-
-
-
-
     }
 
     /**

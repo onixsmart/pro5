@@ -16,10 +16,12 @@ class TenantAddColumnsToQuotationItems extends Migration
         Schema::table('quotation_items', function (Blueprint $table) {
             $table->string('name')->nullable()->after('item');
             $table->string('unit_type_id', 3)->nullable()->after('name');
-            $table->decimal('factor_discount',20,8);
+            $table->decimal('factor_discount_base',20,8);
+            $table->decimal('factor_discount_no_base',20,8);
+            $table->decimal('factor_charge_base',20,8);
+            $table->decimal('factor_charge_no_base',20,8);
         });
     }
-
     /**
      * Reverse the migrations.
      *
@@ -30,7 +32,10 @@ class TenantAddColumnsToQuotationItems extends Migration
         Schema::table('quotation_items', function (Blueprint $table) {
             $table->dropColumn('name');
             $table->dropColumn('unit_type_id');
-            $table->dropColumn('factor_discount');
+            $table->dropColumn('factor_discount_base');
+            $table->dropColumn('factor_discount_no_base');
+            $table->dropColumn('factor_charge_base');
+            $table->dropColumn('factor_charge_no_base');
         });
     }
 }

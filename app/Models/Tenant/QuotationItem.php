@@ -55,9 +55,11 @@
             'additional_information',
             'warehouse_id',
             'name_product_pdf',
-            'factor_discount'
+            'factor_discount_base',
+            'factor_discount_no_base',
+            'factor_charge_base',
+            'factor_charge_no_base'
         ];
-
 
         public function getItemAttribute($value)
         {

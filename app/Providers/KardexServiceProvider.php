@@ -10,6 +10,7 @@ use App\Models\Tenant\SaleNoteItem;
 use App\Models\Tenant\Kardex;
 use Illuminate\Support\ServiceProvider;
 use App\Traits\KardexTrait;
+use Modules\Order\Models\OrderNoteItem;
 
 
 /**
@@ -25,7 +26,7 @@ class KardexServiceProvider extends ServiceProvider
         $this->sale();
         $this->purchase();
         $this->sale_note();
-
+        $this->order_note();
     }
 
     public function register()
@@ -39,12 +40,12 @@ class KardexServiceProvider extends ServiceProvider
     private function sale()
     {
         DocumentItem::created(function (DocumentItem $document_item) {
-            $document = Document::whereIn('document_type_id',['01','03'])->find($document_item->document_id);
-            if($document){
+            $document = Document::whereIn('document_type_id', ['01', '03'])->find($document_item->document_id);
+            if ($document) {
 
                 $kardex = $this->saveKardex('sale', $document_item->item_id, $document_item->document_id, $document_item->quantity, 'document');
 
-                if($document->state_type_id != 11){
+                if ($document->state_type_id != 11) {
 
                     $this->updateStock($document_item->item_id, $kardex->quantity, true);
 
@@ -69,7 +70,7 @@ class KardexServiceProvider extends ServiceProvider
     }
 
     /**
-     * Cuando se realiza una nota de compra
+     * Cuando se realiza una nota de venta
      */
     private function sale_note()
     {
@@ -83,9 +84,22 @@ class KardexServiceProvider extends ServiceProvider
     }
 
     /**
+     * Cuando se realiza un pedido
+     */
+    private function order_note()
+    {
+        OrderNoteItem::created(function (OrderNoteItem $order_note_item) {
+            $kardex = $this->saveKardex('sale', $order_note_item->item_id,
+                $order_note_item->order_note_id, $order_note_item->quantity, 'order_note');
+            $this->updateStock($order_note_item->item_id, $kardex->quantity, true);
+        });
+    }
+
+    /**
      * Cuando se guarda un item
      */
-    private function save_item(){
+    private function save_item()
+    {
 
         Item::created(function (Item $item) {
 
@@ -95,7 +109,6 @@ class KardexServiceProvider extends ServiceProvider
         });
 
     }
-
 
 
 }

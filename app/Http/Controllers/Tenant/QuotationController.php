@@ -414,7 +414,7 @@ class QuotationController extends Controller
 
             $this->savePayments($this->quotation, $request['payments']);
 
-            $this->setFilename();
+//            $this->setFilename();
         });
 
         return [
@@ -447,6 +447,7 @@ class QuotationController extends Controller
         $this->quotation = $obj->replicate();
         $this->quotation->external_id = Str::uuid()->toString();
         $this->quotation->state_type_id = '01';
+        $this->quotation->number = '#';
         $this->quotation->save();
 
         foreach ($obj->items as $row) {
@@ -455,7 +456,7 @@ class QuotationController extends Controller
             $new->save();
         }
 
-        $this->setFilename();
+//        $this->setFilename();
 
         return [
             'success' => true,
@@ -497,12 +498,12 @@ class QuotationController extends Controller
     }
 
 
-    private function setFilename($record)
-    {
-        $name = [$record->prefix, $record->id, date('Ymd')];
-//        $this->quotation->filename = join('-', [$record->prefix, $record->id, date('Ymd')]);
-//        $this->quotation->save();
-    }
+//    private function setFilename($record)
+//    {
+//        $name = [$record->prefix, $record->id, date('Ymd')];
+////        $this->quotation->filename = join('-', [$record->prefix, $record->id, date('Ymd')]);
+////        $this->quotation->save();
+//    }
 
     public function table($table)
     {

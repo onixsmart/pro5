@@ -100,9 +100,9 @@ if (!function_exists('func_get_currency_types')) {
 if (!function_exists('func_get_discount_types')) {
     function func_get_discount_types()
     {
-        if (Cache::has('discount_types')) {
-            return Cache::get('discount_types');
-        }
+//        if (Cache::has('discount_types')) {
+//            return Cache::get('discount_types');
+//        }
 
         $discount_types = ChargeDiscountType::query()
             ->where('type', 'discount')
@@ -119,13 +119,14 @@ if (!function_exists('func_get_discount_types')) {
 if (!function_exists('func_get_charge_types')) {
     function func_get_charge_types()
     {
-        if (Cache::has('charge_types')) {
-            return Cache::get('charge_types');
-        }
+//        if (Cache::has('charge_types')) {
+//            return Cache::get('charge_types');
+//        }
 
         $charge_types = ChargeDiscountType::query()
             ->where('type', 'charge')
             ->where('level', 'item')
+            ->where('id', '47')
             ->get();
 
         Cache::put('charge_types', $charge_types, 1440);
@@ -257,6 +258,25 @@ if (!function_exists('func_get_full_address')) {
             return "{$row->address}, {$department_name} - {$province_name} - {$district_name}";
         }
         return '';
+    }
+}
+
+if (!function_exists('func_pdf_get_lots')) {
+    function func_pdf_get_lots($lots)
+    {
+        $lots_sale = [];
+        foreach($lots as $index => $lot){
+            if( isset($lot->has_sale) && $lot->has_sale) {
+                $lots_sale[] = $lot->series;
+            }
+        }
+        $array_chunks = array_chunk($lots_sale, 2);
+        $text = [];
+        foreach ($array_chunks as $chunks) {
+            $text[] = implode(', ', $chunks);
+        }
+
+        return implode(',<br/>', $text);
     }
 }
 

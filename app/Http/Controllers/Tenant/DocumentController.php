@@ -158,7 +158,6 @@ class DocumentController extends Controller
 
     public function searchCustomers(Request $request)
     {
-
         //tru de boletas en env esta en true filtra a los con dni   , false a todos
         $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id, $request->operation_type_id);
 //        $operation_type_id_id = $this->getIdentityDocumentTypeId($request->operation_type_id);
