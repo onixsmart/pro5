@@ -80,7 +80,7 @@ class UpdateTablesCommand extends Command
             ->chunk(100, function ($document_items) {
                 foreach ($document_items as $document_item) {
                     $document = $document_item->order_note;
-                    if($document_item->item->lots) {
+                    if($document_item->item) {
                         $lots = $document_item->item->lots;
                         foreach ($lots as $lot) {
                             ItemLot::query()->where('id', $lot->id)->update([
@@ -96,7 +96,7 @@ class UpdateTablesCommand extends Command
             ->chunk(100, function ($document_items) {
                 foreach ($document_items as $document_item) {
                     $document = $document_item->sale_note;
-                    if($document_item->item->lots) {
+                    if($document_item->item) {
                         $lots = $document_item->item->lots;
                         foreach ($lots as $lot) {
                             ItemLot::query()->where('id', $lot->id)->update([
@@ -113,7 +113,7 @@ class UpdateTablesCommand extends Command
             ->chunk(100, function ($document_items) {
                 foreach ($document_items as $document_item) {
                     $document = $document_item->document;
-                    if($document_item->item->lots) {
+                    if($document_item->item) {
                         $lots = $document_item->item->lots;
                         foreach ($lots as $lot) {
                             ItemLot::query()->where('id', $lot->id)->update([
