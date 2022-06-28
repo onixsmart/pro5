@@ -35,29 +35,23 @@ class ItemLotController extends Controller
 
     public function records(Request $request)
     {
-        
         $records = $this->getRecords($request);
 
         return new ItemLotCollection($records->paginate(config('tenant.items_per_page')));
-    
     }
 
-
-    public function getRecords($request){
-
-        if($request->column == 'item_description'){
-            
-            $records = ItemLot::whereHas('item', function($query) use($request){
-                            $query->where('description', 'like', "%{$request->value}%")->latest();
-                        });
-
-        }else{
-            $records = ItemLot::where($request->column, 'like', "%{$request->value}%")->latest();
+    public function getRecords($request)
+    {
+        if ($request->column == 'item_description') {
+            $records = ItemLot::query()->whereHas('item', function ($query) use ($request) {
+                $query->where('description', 'like', "%{$request->value}%")->latest();
+            });
+        } else {
+            $records = ItemLot::query()->where($request->column, 'like', "%{$request->value}%")->latest();
         }
 
         return $records;
     }
-
 
     public function record($id)
     {
@@ -77,7 +71,7 @@ class ItemLotController extends Controller
 
         return [
             'success' => true,
-            'message' => ($id)?'Serie editada con éxito':'Serie registrada con éxito',
+            'message' => ($id) ? 'Serie editada con éxito' : 'Serie registrada con éxito',
         ];
 
     }
@@ -88,8 +82,8 @@ class ItemLotController extends Controller
         $records = $this->getRecords($request)->get();
 
         return (new ItemLotExport)
-                ->records($records)
-                ->download('Series_'.Carbon::now().'.xlsx');
+            ->records($records)
+            ->download('Series_' . Carbon::now() . '.xlsx');
 
     }
 

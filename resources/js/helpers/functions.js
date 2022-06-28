@@ -1,8 +1,8 @@
 function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     // console.log(currency_type_id_new, exchange_rate_sale)
 
-    let currency_type_id_old = row_old.item.currency_type_id
-    let unit_price = parseFloat(row_old.unit_price)
+    let currency_type_id_old = row_old.item.currency_type_id;
+    let unit_price = parseFloat(row_old.item.unit_price);
     // } else {
     //     unit_price = parseFloat(row_old.item.unit_price) * 1.18
     // }
@@ -227,7 +227,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
 
     //impuesto bolsa - icbper
-    
+
     let total_plastic_bag_taxes = 0
 
     if (row_old.has_plastic_bag_taxes) {
@@ -254,24 +254,24 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     row.total_taxes = _.round(total_taxes, 2)
     row.total = _.round(total, 2)
 
-    
+
     //procedimiento para agregar isc
-    if(has_isc){
+    if (has_isc) {
 
         row.total_base_isc = _.round(total_value, 2) //total valor antes de aplicar isc
         row.total_isc = _.round(total_value * (row.percentage_isc / 100), 2)
         // row.total_isc = _.round(row.total_base_isc * (row.percentage_isc / 100), 2)
 
         //calcular nueva base incrementando el valor actual + isc
-        total_base_igv += row.total_isc  
-        row.total_base_igv = _.round(total_base_igv, 2)  
-        
+        total_base_igv += row.total_isc
+        row.total_base_igv = _.round(total_base_igv, 2)
+
         total_igv = total_base_igv * (percentage_igv / 100)
         row.total_igv = _.round(total_igv, 2)
 
         //asignar nuevo total impuestos, si tiene descuentos se usa total_taxes para calcular el precio unitario
         total_taxes = total_igv + row.total_isc + total_plastic_bag_taxes
-        // total_taxes = total_igv + row.total_isc 
+        // total_taxes = total_igv + row.total_isc
         row.total_taxes = _.round(total_taxes, 2)
 
         total = total_value + total_taxes
@@ -289,11 +289,11 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         // row.total_igv = row.total_base_igv * (percentage_igv / 100)
 
         // //asignar nuevo total impuestos, si tiene descuentos se usa total_taxes para calcular el precio unitario
-        // total_taxes = row.total_igv + row.total_isc 
+        // total_taxes = row.total_igv + row.total_isc
         // row.total_taxes = total_taxes
 
         // row.total = row.total_value + row.total_taxes
-        
+
         // //calcular nuevo precio unitario
         // row.unit_price = _.round(row.total / row.quantity, 6)
 
@@ -337,7 +337,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     row.total_igv_without_rounding = total_igv
     row.total_taxes_without_rounding = total_taxes
     row.total_without_rounding = total
-    
+
 
     if (row.affectation_igv_type.free) {
         row.price_type_id = '02'
@@ -357,6 +357,203 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
     // console.log(row)
     return row
+}
+
+function calculateRowItemOther(row) {
+    const percentage_igv = 0.18;
+
+    let price_type_id = '01';
+    let quantity = row.quantity;
+    let unit_price = parseFloat(row.unit_price);
+    let unit_value = 0;
+    let subtotal = 0;
+    let total_base_igv = 0;
+    let total_igv = 0;
+    let total_base_isc = 0;
+    let total_isc = 0;
+    let total_plastic_bag_taxes = 0;
+    let total_taxes = 0;
+    let total_value = 0;
+    let total_charge = 0;
+    let total_discount = 0;
+    let total = 0;
+
+
+    let total_base_other_taxes = 0;
+    let percentage_other_taxes = 0;
+    let total_other_taxes = 0;
+
+    if (row.affectation_igv_type_id === '10') {
+        unit_value = row.unit_price / (1 + percentage_igv);
+    }
+    total_value = unit_value * quantity
+    total = unit_price * quantity
+
+
+    /*
+     * Discounts
+     */
+    let discount_total = 0;
+    let discount_total_value = 0;
+    let factor_discount_base = 0;
+    let discounts = [];
+    _.forEach(row.discounts, (discount, index) => {
+        if (discount.base) {
+            let data = getDiscountCharge(total_value, total, discount);
+            discount_total += total * data.factor;
+            discount_total_value += data.amount;
+            factor_discount_base += data.factor;
+            discounts.push(data);
+        }
+    });
+
+    /*
+     * Charges
+     */
+    let charge_total = 0;
+    let charge_total_value = 0;
+    let factor_charge_base = 0;
+    let charges = [];
+    _.forEach(row.charges, (charge, index) => {
+        if (charge.base) {
+            let data = getDiscountCharge(total_value, total, charge);
+            charge_total += total * data.factor;
+            charge_total_value += data.amount;
+            factor_charge_base += data.factor;
+            charges.push(data);
+        }
+    });
+
+    total = _.round(total - discount_total + charge_total, 2)
+    total_value = _.round(total_value - discount_total_value + charge_total_value, 2);
+
+    let factor_discount_no_base = 0;
+    let factor_charge_no_base = 0;
+    /* Charges */
+    // let charge_base = 0
+    // let charge_no_base = 0
+    // if (row.charges.length > 0) {
+    //     row.charges.forEach((charge, index) => {
+    //         charge.percentage = parseFloat(charge.percentage)
+    //         charge.factor = charge.percentage / 100
+    //         charge.base = _.round(total_value, 2)
+    //         charge.amount = _.round(charge.base * charge.factor, 2)
+    //         if (charge.charge_type.base) {
+    //             charge_base += charge.amount
+    //         } else {
+    //             charge_no_base += charge.amount
+    //         }
+    //         row.charges.splice(index, charge)
+    //     })
+    // }
+
+    // total_discount = discount_base + discount_no_base;
+    // total_charge = charge_base + charge_no_base;
+    // total_value = total_value - total_discount + total_charge;
+    // total_base_igv = total_value - discount_base + total_isc;
+
+    if (row.affectation_igv_type_id === '10') {
+        total_igv = _.round(total - total_value, 2);
+    }
+    if (row.affectation_igv_type_id === '20') { //Exonerated
+        total_igv = 0;
+    }
+    if (row.affectation_igv_type_id === '30') { //Unaffected
+        total_igv = 0;
+    }
+
+    if (row.has_icbper) {
+        total_plastic_bag_taxes = row.quantity * parseFloat(row.factor_icbper);
+    }
+
+    total_taxes = total_igv + total_isc + total_other_taxes + total_plastic_bag_taxes;
+    total += total_plastic_bag_taxes;
+    //total = total_value + total_taxes;
+
+    //procedimiento para agregar isc
+    // if (row.has_isc) {
+    //     total_base_isc = _.round(total_value, 2)
+    //     total_isc = _.round(total_value * (row.percentage_isc / 100), 2)
+    //     total_base_igv += total_isc
+    //     total_igv = total_base_igv * (percentage_igv / 100)
+    //     total_taxes = total_igv + total_isc + total_plastic_bag_taxes
+    //     total = total_value + total_taxes
+    //     //row.unit_price = _.round(total / row.quantity, 6)
+    // }
+
+    // descuentos, se modifica precio unitario y total descuentos
+    // if (row.discounts.length > 0) {
+    //     let sum_discount_no_base = 0
+    //     let sum_discount_base = 0
+    //     row.discounts.forEach(discount => {
+    //         sum_discount_no_base += (discount.discount_type_id === '01') ? discount.amount : 0
+    //         sum_discount_base += (discount.discount_type_id === '00') ? discount.amount : 0
+    //     })
+    //     unit_price = (total_value + total_taxes - sum_discount_no_base) / quantity
+    //     total_discount = sum_discount_no_base + sum_discount_base;
+    // }
+
+    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+        price_type_id = '02';
+        // unit_value = 0;
+        // total = total_plastic_bag_taxes
+    }
+
+    return {
+        'index': row.index,
+        'item_id': row.item_id,
+        'name': row.name,
+        'description': row.name,
+        'unit_type_id': row.unit_type_id,
+        'quantity': quantity,
+        'currency_type_id': row.currency_type_id,
+        'price_type_id': price_type_id,
+        'unit_price': unit_price,
+        'unit_value': unit_value,
+
+        'affectation_igv_type_id': row.affectation_igv_type_id,
+        'total_base_igv': total_base_igv,
+        'percentage_igv': percentage_igv * 100,
+        'total_igv': total_igv,
+
+        'system_isc_type_id': row.has_isc ? row.system_isc_type_id : null,
+        'total_base_isc': total_base_isc,
+        'percentage_isc': row.has_isc ? parseFloat(row.percentage_isc) : 0,
+        'total_isc': total_isc,
+
+        'total_base_other_taxes': total_base_other_taxes,
+        'percentage_other_taxes': percentage_other_taxes,
+        'total_other_taxes': total_other_taxes,
+
+        'total_plastic_bag_taxes': total_plastic_bag_taxes,
+        'total_taxes': total_taxes,
+
+        'total_value': total_value,
+        'total_discount': total_discount,
+        'total_charge': total_charge,
+        'total': total,
+        'attributes': row.attributes,
+        'charges': charges,
+        'discounts': discounts,
+        'warehouse_id': row.warehouse_id,
+        'name_product_pdf': row.name_product_pdf,
+        'item': row.item,
+        'factor_discount_base': factor_discount_base,
+        'factor_discount_no_base': factor_discount_no_base,
+        'factor_charge_base': factor_charge_base,
+        'factor_charge_no_base': factor_charge_no_base
+    };
+}
+
+function getDiscountCharge(base, total, record) {
+    let factor = record.is_amount ? (parseFloat(record.amount) / total) : (parseFloat(record.amount) / 100);
+    return {
+        charge_type_id: record.charge_type_id,
+        description: record.description,
+        factor: factor,
+        base: base,
+        amount: _.round(base * factor, 2),
+    };
 }
 
 function getUniqueArray(arr, keyProps) {
@@ -402,9 +599,31 @@ function sumAmountDiscountsNoBaseByItem(row) {
     return sum_discount_no_base
 }
 
-function FormatUnitPriceRow(unit_price){
+function FormatUnitPriceRow(unit_price) {
     return _.round(unit_price, 6)
     // return unit_price.toFixed(6)
 }
 
-export {calculateRowItem, getUniqueArray, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem, FormatUnitPriceRow}
+
+const recalculateByCurrencyType = (store_items, currency_type) => {
+    console.log('recalculateByCurrencyType');
+    let items = [];
+    _.forEach(store_items, item => {
+        item.currency_type_id = currency_type.id;
+        item.currency_type_symbol = currency_type.symbol;
+        item.unit_price = (currency_type.id === 'PEN') ? item.unit_price_pen : item.unit_price_usd;
+        item.factor_icbper = (currency_type.id === 'PEN') ? item.factor_icbper_pen : item.factor_icbper_usd;
+        items.push(calculateRowItemOther(item));
+    });
+    return items;
+}
+
+export {
+    calculateRowItem,
+    calculateRowItemOther,
+    getUniqueArray,
+    showNamePdfOfDescription,
+    sumAmountDiscountsNoBaseByItem,
+    FormatUnitPriceRow,
+    recalculateByCurrencyType
+}
