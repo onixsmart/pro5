@@ -8,6 +8,19 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.limit_sales}">
+                            <label class="control-label">Límite de Ventas Mensual</label>
+                            <el-input v-model="limit_sales" @input="validateLUsers"  :disabled="users_unlimited"></el-input>
+                            <small class="form-control-feedback d-block" v-if="errors.limit_sales" v-text="errors.limit_sales[0]"></small>
+                        </div>
+                    </div>
+                    <div class="form-group" :class="{'has-danger': errors.sales_unlimited}">
+                        <el-checkbox v-model="sales_unlimited">Ilimitado</el-checkbox>
+                        <small class="form-control-feedback" v-if="errors.sales_unlimited" v-text="errors.sales_unlimited[0]"></small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.name}">
                             <label class="control-label">Nombre</label>
                             <el-input v-model="form.name" :maxlength="11"></el-input>
@@ -39,6 +52,15 @@
                             <el-checkbox v-model="documents_unlimited" @change="setUnlimitDocuments">Ilimitado</el-checkbox><br>
                             <small class="form-control-feedback d-block" v-if="errors.limit_documents" v-text="errors.limit_documents[0]"></small>
                             <small class="form-control-feedback" v-if="errorLDocument.limit_documents" v-text="errorLDocument.limit_documents[0]"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.limit_establishments }">
+                            <label class="control-label">Límite de Establecimientos</label>
+                            <el-input v-model="limit_establishments" @input="validateLUsers"  :disabled="users_unlimited"></el-input>
+                            <small class="form-control-feedback d-block" v-if="errors.limit_establishments" v-text="errors.limit_establishments[0]"></small>
                         </div>
                     </div>
                 </div>
@@ -82,8 +104,11 @@
                 resource: 'plans',
                 documents_unlimited:null,
                 users_unlimited:null,
+                sales_unlimited:false,
                 limit_users:null,
                 limit_documents:null,
+                limit_sales:null,
+                limit_establishments:null,
                 errors: {},
                 errorLDocument:{},
                 errorLUser:{},
@@ -99,6 +124,7 @@
                 this.limit_documents = null
                 this.documents_unlimited = false
                 this.users_unlimited = false
+                this.sales_unlimited = false
                 this.errors = {}
                 this.errorLDocument = {}
                 this.errorLUser = {}
@@ -108,6 +134,8 @@
                     pricing: null,
                     limit_users: null,
                     limit_documents: null,
+                    limit_sales:null,
+                    limit_establishments:null,
                     plan_documents:[]
                 }
             },
@@ -155,9 +183,12 @@
                 this.form = data
                 this.form.plan_documents = Object.values(data.plan_documents)
                 this.users_unlimited = (data.limit_users == 0) ? true : false
-                this.documents_unlimited = (data.limit_documents == 0) ? true : false                
+                this.documents_unlimited = (data.limit_documents == 0) ? true : false
+                this.sales_unlimited = (data.sales_unlimited) ? true:false                
                 this.limit_users = (this.users_unlimited) ? "∞": data.limit_users
                 this.limit_documents = (this.documents_unlimited) ? "∞":  data.limit_documents
+                this.limit_sales = (this.users_unlimited) ? "∞": data.limit_users
+                this.limit_establishments = data.limit_establishments? "∞" : data.limit_establishments
 
             },
             transform(){
