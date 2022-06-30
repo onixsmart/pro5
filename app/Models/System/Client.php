@@ -72,6 +72,8 @@ class Client extends Model
         'locked_emission',
         'locked_tenant',
         'locked_users',
+        'locked_establishments',
+        'locked_sales',
         'plan_id',
         'start_billing_cycle',
         'smtp_host',

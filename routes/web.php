@@ -722,6 +722,9 @@ if ($hostname) {
             Route::post('clients/locked_user', 'System\ClientController@lockedUser');
             Route::post('clients/renew_plan', 'System\ClientController@renewPlan');
 
+            Route::post('clients/locked_establishment', 'System\ClientController@lockedEstablishment');
+            Route::post('clients/locked_sale', 'System\ClientController@lockedSale');
+
             Route::post('clients/set_billing_cycle', 'System\ClientController@startBillingCycle');
 
 

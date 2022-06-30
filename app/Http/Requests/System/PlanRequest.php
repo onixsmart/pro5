@@ -34,6 +34,16 @@ class PlanRequest extends FormRequest
                 'numeric' ,
                 'integer', 
             ],
+            'limit_sales' => [
+                'required',
+                'numeric',
+                'integer', 
+            ],
+            'limit_establishments' => [
+                'required',
+                'numeric' ,
+                'integer', 
+            ],
             'plan_documents' => [
                 // 'required'
             ],

@@ -169,6 +169,10 @@
                 $row->count_user = DB::connection('tenant')
                     ->table('users')
                     ->count();
+                //LIMITE DE VENTAS Y ESTABLECIMIENTOS
+                $row->count_establishment = DB::connection('tenant')
+                    ->table('establishments')
+                    ->count();
                 $quantity_pending_documents = $this->getQuantityPendingDocuments();
                 $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
                 $row->document_not_sent = $quantity_pending_documents['document_not_sent'];
@@ -820,6 +824,41 @@
 
         }
 
+        public function lockedEstablishment(Request $request)
+        {
+
+            $client = Client::findOrFail($request->id);
+            $client->locked_establishments = $request->locked_establishments;
+            $client->save();
+
+            $tenancy = app(Environment::class);
+            $tenancy->tenant($client->hostname->website);
+            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_establishments' => $client->locked_establishments]);
+
+            return [
+                'success' => true,
+                'message' => ($client->locked_establishments) ? 'Limitar creación de establecimientos activado' : 'Limitar creación de establecimientos desactivado'
+            ];
+
+        }
+
+        public function lockedSale(Request $request)
+        {
+
+            $client = Client::findOrFail($request->id);
+            $client->locked_sales = $request->locked_sales;
+            $client->save();
+
+            $tenancy = app(Environment::class);
+            $tenancy->tenant($client->hostname->website);
+            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_sales' => $client->locked_sales]);
+
+            return [
+                'success' => true,
+                'message' => ($client->locked_sales) ? 'Limitar creación de ventas activado' : 'Limitar creación de ventas desactivado'
+            ];
+
+        }
 
         public function destroy($id)
         {

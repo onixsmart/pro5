@@ -243,6 +243,10 @@
                             <th class="text-right">Inicio Ciclo Facturacion</th>
                             <th class="text-center">Comprobantes Ciclo Facturacion</th>
                             <th class="text-center">Usuarios</th>
+
+                            <th class="text-center">Establecimientos</th>
+                            <th class="text-center">Ventas</th>
+
                             <th class="text-center">F.Creación</th>
                             <th class="text-center">Consultas <br>API Peru <br>(mes)</th>
 
@@ -250,6 +254,10 @@
 
                             <th class="text-right">Limitar Doc.</th>
                             <th class="text-center">Limitar Usuarios</th>
+
+                            <th class="text-right">Limitar Ventas <br>(mes)</th>
+                            <th class="text-center">Limitar Establecimientos</th>
+
                             <th class="text-right">Acciones</th>
                             <th class="text-right">Pagos</th>
                             <th class="text-right">E. Cuenta</th>
@@ -374,6 +382,36 @@
                                     <strong>{{ row.max_users }}</strong>
                                 </template>
                             </td>
+
+                            <td>
+                                <template v-if="row.max_establishment !== 0 && row.count_establishment > row.max_establishment">
+                                    <el-popover
+                                        :content="text_limit_establishments"
+                                        placement="top-start"
+                                        trigger="hover"
+                                        width="220"
+                                    >
+                                        <label slot="reference"
+                                               class="text-danger">
+                                            <strong>{{ row.count_establishment }}</strong>
+                                        </label>
+                                    </el-popover>
+                                </template>
+                                <template v-else>
+                                    <label>
+                                        <strong>{{ row.count_establishment }}</strong>
+                                    </label>
+                                </template>
+                                /
+                                <template v-if="row.max_establishment == 0">
+                                    <i class="fas fa-infinity"></i>
+                                </template>
+                                <template v-else>
+                                    <strong>{{ row.max_establishment }}</strong>
+                                </template>
+                            </td>
+                            <td>prueba</td>
+
                             <td class="text-center">{{ row.created_at }}</td>
                             <td>{{ row.queries_to_apiperu }}</td>
 
@@ -400,6 +438,22 @@
                                     v-model="row.locked_users"
                                     style="display: block"
                                     @change="changeLockedUser(row)"
+                                ></el-switch>
+                            </td>
+
+                            <td class="text-center">
+                                <el-switch
+                                    v-model="row.locked_establishments"
+                                    style="display: block"
+                                    @change="changeLockedEstablishments(row)"
+                                ></el-switch>
+                            </td>
+
+                            <td class="text-center">
+                                <el-switch
+                                    v-model="row.locked_sales"
+                                    style="display: block"
+                                    @change="changeLockedSales(row)"
                                 ></el-switch>
                             </td>
 
@@ -509,6 +563,7 @@ export default {
             records: [],
             text_limit_doc: null,
             text_limit_users: null,
+            text_limit_establishments: null,
             loaded: false,
             year: moment().format('YYYY'),
             total_documents: 0,
@@ -544,6 +599,7 @@ export default {
 
         this.text_limit_doc = "El límite de comprobantes fue superado";
         this.text_limit_users = "El límite de usuarios fue superado";
+        this.text_limit_establishments = "El límite de establecimientos fue superado";
     },
     methods: {
         changeLockedTenant(row) {
@@ -663,7 +719,49 @@ export default {
         clickEdit(recordId) {
             this.recordId = recordId;
             this.showDialog = true;
-        }
+        },
+        changeLockedEstablishments(row) {
+            this.$http
+                .post(`${this.resource}/locked_establishment`, row)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        this.$eventHub.$emit("reloadData");
+                    } else {
+                        this.$message.error(response.data.message);
+                    }
+                })
+                .catch(error => {
+                    if (error.response.status === 500) {
+                        this.$message.error(error.response.data.message);
+                    } else {
+                        console.log(error.response);
+                    }
+                })
+                .then(() => {
+                });
+        },
+        changeLockedSales(row) {
+            this.$http
+                .post(`${this.resource}/locked_sale`, row)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        this.$eventHub.$emit("reloadData");
+                    } else {
+                        this.$message.error(response.data.message);
+                    }
+                })
+                .catch(error => {
+                    if (error.response.status === 500) {
+                        this.$message.error(error.response.data.message);
+                    } else {
+                        console.log(error.response);
+                    }
+                })
+                .then(() => {
+                });
+        },
     }
 };
 </script>

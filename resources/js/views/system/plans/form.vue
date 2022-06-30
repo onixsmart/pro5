@@ -8,16 +8,18 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.limit_sales}">
+                        <div class="form-group" :class="{'has-danger': errorLSales.limit_sales}">
                             <label class="control-label">Límite de Ventas Mensual</label>
-                            <el-input v-model="limit_sales" @input="validateLUsers"  :disabled="users_unlimited"></el-input>
-                            <small class="form-control-feedback d-block" v-if="errors.limit_sales" v-text="errors.limit_sales[0]"></small>
+                            <el-input v-model="limit_sales" @input="validateLSales"  :disabled="sales_unlimited"></el-input>
+                            <small class="form-control-feedback d-block" v-if="errorLSales.limit_sales" v-text="errorLSales.limit_sales[0]"></small>
                         </div>
                     </div>
-                    <div class="form-group" :class="{'has-danger': errors.sales_unlimited}">
-                        <el-checkbox v-model="sales_unlimited">Ilimitado</el-checkbox>
-                        <small class="form-control-feedback" v-if="errors.sales_unlimited" v-text="errors.sales_unlimited[0]"></small>
+                    <div class="col-md-6 align-content-center">
+                        <div class="form-group" :class="{'has-danger': errorLSales.limit_sales}">
+                            <el-checkbox v-model="sales_unlimited" @change="setUnlimitSales">Ilimitado</el-checkbox>
+                        </div>
                     </div>
+                    
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -57,10 +59,10 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.limit_establishments }">
+                        <div class="form-group" :class="{'has-danger': errorLEstablishments.limit_establishments }">
                             <label class="control-label">Límite de Establecimientos</label>
-                            <el-input v-model="limit_establishments" @input="validateLUsers"  :disabled="users_unlimited"></el-input>
-                            <small class="form-control-feedback d-block" v-if="errors.limit_establishments" v-text="errors.limit_establishments[0]"></small>
+                            <el-input v-model="limit_establishments" @input="validateLEstablishments"></el-input>
+                            <small class="form-control-feedback d-block" v-if="errorLEstablishments.limit_establishments" v-text="errorLEstablishments.limit_establishments[0]"></small>
                         </div>
                     </div>
                 </div>
@@ -112,6 +114,8 @@
                 errors: {},
                 errorLDocument:{},
                 errorLUser:{},
+                errorLSales:{},
+                errorLEstablishments:{},
                 form: {}, 
             }
         },
@@ -128,6 +132,8 @@
                 this.errors = {}
                 this.errorLDocument = {}
                 this.errorLUser = {}
+                this.errorLSales = {}
+                this.errorLEstablishments = {}
                 this.form = {
                     id: null,
                     name: null,
@@ -150,7 +156,7 @@
             },
             submit() {   
 
-                if(this.validateLUsers().limit_users || this.validateLDocuments().limit_documents)
+                if(this.validateLUsers().limit_users || this.validateLDocuments().limit_documents || this.validateLDocuments().limit_sales)
                     return
                     
                 this.transform()
@@ -184,11 +190,11 @@
                 this.form.plan_documents = Object.values(data.plan_documents)
                 this.users_unlimited = (data.limit_users == 0) ? true : false
                 this.documents_unlimited = (data.limit_documents == 0) ? true : false
-                this.sales_unlimited = (data.sales_unlimited) ? true:false                
+                this.sales_unlimited = (data.limit_sales==0) ? true:false                
                 this.limit_users = (this.users_unlimited) ? "∞": data.limit_users
                 this.limit_documents = (this.documents_unlimited) ? "∞":  data.limit_documents
-                this.limit_sales = (this.users_unlimited) ? "∞": data.limit_users
-                this.limit_establishments = data.limit_establishments? "∞" : data.limit_establishments
+                this.limit_sales = (this.sales_unlimited) ? "∞": data.limit_sales
+                this.limit_establishments = data.limit_establishments
 
             },
             transform(){
@@ -203,6 +209,12 @@
                     this.form.limit_documents = 0
                 }else{
                     this.form.limit_documents = this.limit_documents
+                }
+
+                if(this.sales_unlimited){
+                    this.form.limit_sales = 0
+                }else{
+                    this.form.limit_sales = this.limit_sales
                 }
                 
             },
@@ -241,7 +253,35 @@
             close() {
                 this.$emit('update:showDialog', false)
                 this.initForm()
-            }
+            },
+            validateLSales(){
+
+                this.errorLSales = {}  
+                 
+                if(!this.sales_unlimited){
+                    if(this.limit_sales < 1)
+                        this.$set(this.errorLSales, 'limit_sales', ['limite de ventas debe ser mayor a cero']);
+                }
+
+                return this.errorLSales
+            },
+            setUnlimitSales(){
+                this.limit_sales = (this.sales_unlimited) ? "∞" : null
+                this.form.limit_sales = (this.limit_sales == "∞") ? 0 : this.limit_sales
+
+            },
+            validateLEstablishments(){
+
+                this.errorLEstablishments = {}  
+                 
+                if(this.limit_establishments < 1){
+                    
+                    this.$set(this.errorLEstablishments, 'limit_establishments', ['limite de establecimientos debe ser mayor a cero']);
+                }else{
+                    this.form.limit_establishments = this.limit_establishments
+                }
+                return this.errorLEstablishments
+            },  
         }
     }
 </script>
