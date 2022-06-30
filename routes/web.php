@@ -726,7 +726,9 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
             Route::post('clients', 'System\ClientController@store');
             Route::post('clients/update', 'System\ClientController@update');
 
-            Route::delete('clients/{client}', 'System\ClientController@destroy');
+            Route::delete('clients/{client}/{input_validate}', 'System\ClientController@destroy');
+            // Route::delete('clients/{client}', 'System\ClientController@destroy');
+
             Route::post('clients/password/{client}', 'System\ClientController@password');
             Route::post('clients/locked_emission', 'System\ClientController@lockedEmission');
             Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant');
