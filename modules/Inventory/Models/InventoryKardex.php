@@ -8,6 +8,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\ItemWarehousePrice;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Purchase;
+use App\Models\Tenant\PurchaseSettlement;
 use App\Models\Tenant\SaleNote;
 use Modules\Order\Models\OrderNote;
 
@@ -120,7 +121,8 @@ class InventoryKardex extends ModelTenant
             Inventory::class,
             OrderNote::class,
             Devolution::class,
-            Dispatch::class
+            Dispatch::class,
+            PurchaseSettlement::class,
         ];
         $item = $this->item;
         $warehouseprice = $this->getItemWarehousePriceModel();
@@ -266,9 +268,16 @@ class InventoryKardex extends ModelTenant
                 $data['order_note_asoc'] = isset($inventory_kardexable->reference_order_note_id) ? optional($inventory_kardexable)->order_note->number_full : "-";
                 $data['doc_asoc'] = isset($inventory_kardexable->reference_document_id) ? $inventory_kardexable->reference_document->getNumberFullAttribute() : '-';
                 break;
+            case $models[7]: // LIQUIDACION DE COMPRA
+                $data['balance'] = $balance += $qty;
+                $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
+                $data['type_transaction'] = isset($inventory_kardexable->transfer_reason_type->description) ? $inventory_kardexable->transfer_reason_type->description : '';
+                $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                break;
         }
         $decimalRound = 6; // Cantidad de decimales a aproximar
         $data['balance'] =$data['balance'] ? round( $data['balance'] ,$decimalRound):0;
         return $data;
+        /* dd($data); */
     }
 }

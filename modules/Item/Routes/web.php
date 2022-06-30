@@ -33,7 +33,6 @@ if($hostname) {
                 Route::delete('/{brand}', 'ZoneController@destroy');
             });
 
-
             Route::get('incentives', 'IncentiveController@index')->name('tenant.incentives.index')->middleware('redirect.level');
             Route::get('incentives/records', 'IncentiveController@records');
             Route::get('incentives/record/{incentive}', 'IncentiveController@record');

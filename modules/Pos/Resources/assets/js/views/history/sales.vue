@@ -51,7 +51,7 @@
                 titleDialog: 'Historial de ventas',
                 loading: false,
                 resource: 'pos/history-sales',
-                form:{}
+                form:{},
             }
         },
         async created() {

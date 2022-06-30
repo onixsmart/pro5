@@ -227,6 +227,16 @@
                                                :value="option.id"></el-option>
                                 </el-select>
                             </div>
+                            <div
+                                 class="form-group col-sm-6 mb-0">
+                                <label class="control-label font-weight-bold text-info">Tipo de cliente</label>
+                                <el-select v-model="form.person_type_id">
+                                    <el-option v-for="option in personTypes"
+                                               :key="option.id"
+                                               :label="option.description"
+                                               :value="option.id"></el-option>
+                                </el-select>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body border-top no-gutters p-0">
@@ -1378,6 +1388,7 @@
             :customer-id="form.customer_id"
             :currency-types="currency_types"
             :is-from-invoice="true"
+            :person-type-id="form.person_type_id"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
@@ -1465,7 +1476,8 @@ export default {
         'typeUser',
         'configuration',
         'documentId',
-        'isUpdate'
+        'isUpdate',
+        'personTypes'
     ],
     components: {
         DocumentFormItem,
@@ -1776,6 +1788,14 @@ export default {
             }
             item.presentation = {};
             item.unit_price = item.sale_unit_price;
+
+            let catchItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
+
+            if (catchItem !== undefined) {
+                item.unit_price = catchItem.unit_price;
+            }
+
+            
             item.item = {
                 amount_plastic_bag_taxes: item.amount_plastic_bag_taxes,
                 attributes: item.attributes,
@@ -1814,6 +1834,7 @@ export default {
             item.discounts = [];
             item.charges = [];
             item.item_id = item.id;
+
             item.unit_price_value = item.sale_unit_price;
             item.input_unit_price_value = item.sale_unit_price;
 
@@ -1821,11 +1842,13 @@ export default {
 
             let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
             if (tempItem !== undefined) {
-                item.quantity = tempItem.quantity
+                item.quantity = tempItem.quantity;
+                item.unit_price_value = tempItem.unit_price;
+                item.input_unit_price_value = tempItem.unit_price;
             }
             // item.quantity = itemsParsed.find(ip => ip.item_id == item.id).quantity;
             item.warehouse_id = null;
-
+            
             return item
         },
         // #307 Ajuste para seleccionar automaticamente el tipo de comprobante y serie
@@ -2559,6 +2582,7 @@ export default {
         initForm() {
             this.errors = {}
             this.form = {
+                person_type_id: null,
                 establishment_id: null,
                 document_type_id: null,
                 series_id: null,

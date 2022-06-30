@@ -2,7 +2,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     // console.log(currency_type_id_new, exchange_rate_sale)
 
     let currency_type_id_old = row_old.item.currency_type_id
-    let unit_price = parseFloat(row_old.item.unit_price)
+    let unit_price = parseFloat(row_old.unit_price)
     // } else {
     //     unit_price = parseFloat(row_old.item.unit_price) * 1.18
     // }
