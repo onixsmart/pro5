@@ -2,6 +2,8 @@
 
 namespace App\Models\Tenant;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 /**
  * App\Models\Tenant\PersonType
  *
@@ -18,6 +20,7 @@ class PersonType extends ModelTenant
         'description',
 
     ];
+
 
     /**
      * @return string
