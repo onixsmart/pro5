@@ -4,7 +4,7 @@ namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\NoteCreditType;
 use App\Models\Tenant\Catalogs\NoteDebitType;
-use App\Models\Tenant\purchase;
+use App\Models\Tenant\Purchase;
 
 /**
  * App\Models\Tenant\Note

@@ -411,7 +411,6 @@
             
                     if(isset($data['note'])){
                         $doc->note()->create($data['note']);
-                        /* if($data['type']=== 'credit') $this->savePurchaseFee($doc, $data['fee']); */
                     }
 
                     $this->savePurchaseFee($doc, $data['fee']);
