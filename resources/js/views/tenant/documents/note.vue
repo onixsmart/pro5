@@ -699,7 +699,7 @@
                         establishment_id: this.document.establishment_id,
                         document_type_id: null,
                         series_id: null,
-                        number: '#',
+                        number: '',
                         date_of_issue: moment().format('YYYY-MM-DD'),
                         time_of_issue: moment().format('HH:mm:ss'),
                         customer_id: this.document.customer_id,
