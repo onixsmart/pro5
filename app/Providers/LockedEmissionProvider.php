@@ -11,6 +11,8 @@ use Exception;
 use Modules\Document\Helpers\DocumentHelper;
 use Illuminate\Support\Facades\Log;
 
+use App\Models\Tenant\Establishment;
+
 
 class LockedEmissionProvider extends ServiceProvider
 {
@@ -33,6 +35,7 @@ class LockedEmissionProvider extends ServiceProvider
     {
         $this->locked_emission();
         $this->locked_users();
+        $this->locked_establishments();
         $this->update_quantity_documents();
     }
 
@@ -92,6 +95,27 @@ class LockedEmissionProvider extends ServiceProvider
                 if($quantity_users >= $configuration->plan->limit_users )
                 {
                     throw new Exception("Ha superado el límite permitido para la creación de usuarios");
+                }
+            }
+
+        });
+    }
+
+    private function locked_establishments()
+    {
+
+        Establishment::creating(function ($document) {
+            
+            
+            $configuration = Configuration::first();
+
+            $quantity_establishments = Establishment::count();
+
+            if($configuration->locked_establishments &&  $configuration->plan->limit_establishments !== 0){
+
+                if($quantity_establishments >= $configuration->plan->limit_establishments )
+                {
+                    throw new Exception("Ha superado el límite permitido para la creación de establecimientos");
                 }
             }
 
