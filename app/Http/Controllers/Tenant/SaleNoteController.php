@@ -685,6 +685,7 @@ class SaleNoteController extends Controller
                 'success' => true,
                 'data' => [
                     'id' => $this->sale_note->id,
+                    'number_full' => $this->sale_note->number_full,
                 ],
             ];
         } catch (Exception $e) {
