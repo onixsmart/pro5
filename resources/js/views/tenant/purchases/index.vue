@@ -262,7 +262,7 @@ import {mapActions, mapState} from 'vuex'
         async created() {
             this.$store.commit('setConfiguration',this.configuration)
             this.$store.commit('setTypeUser',this.typeUser)
-            await this.$http.get(`/${this.resource}/tables`)
+            await this.$http.get(`/${this.resource}/tables/purchase`)
                 .then(response => {
                     this.permissions = response.data.permissions
                 })
