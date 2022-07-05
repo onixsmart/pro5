@@ -182,6 +182,9 @@ class User extends Authenticatable
         'delete_payment',
         'create_payment',
 
+        'edit_purchase',
+        'annular_purchase',
+        'delete_purchase',
 
         // 'email_verified_at',
         // 'api_token',
@@ -210,6 +213,10 @@ class User extends Authenticatable
 
         'delete_payment' => 'bool',
         'create_payment' => 'bool',
+
+        'edit_purchase'=>'bool',
+        'annular_purchase'=>'bool',
+        'delete_purchase'=>'bool',
     ];
 
     public function modules()
@@ -920,6 +927,15 @@ $withEstablishment = true){
         return [
             'create_payment' => $this->create_payment,
             'delete_payment' => $this->delete_payment,
+        ];
+    }
+
+    public function getPermissionsPurchase()
+    {
+        return [
+            'edit_purchase' => $this->edit_purchase,
+            'annular_purchase' => $this->annular_purchase,
+            'delete_purchase' => $this->delete_purchase,
         ];
     }
 
