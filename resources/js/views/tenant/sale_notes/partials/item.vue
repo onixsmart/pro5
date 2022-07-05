@@ -324,7 +324,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 mt-2">
+                        <!-- <div class="col-md-12 mt-2"> -->
                         <div class="col-md-12 mt-2" v-if="!isUpdateItem">
                             <el-collapse v-model="activePanel">
                                 <el-collapse-item :disabled="isUpdateItem"
@@ -949,7 +949,7 @@ export default {
             this.updateItem()
 
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
-
+            }
         },
         // edicion de item
         searchGetIdLoteSelected(){

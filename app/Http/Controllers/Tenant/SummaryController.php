@@ -75,16 +75,25 @@ class SummaryController extends Controller
             ->where('group_id', '02')
             ->where('state_type_id', '01')
             ->where('document_type_id', $request->input('document_type_id'))
-            ->where('series', $request->input('series_number'));
+            ->where('series', $request->input('series_number'))
+            ->where('ticket_single_shipment', false)
+            ->take(500);
+
             if ($request->input('endInterval')) {
                 $documents = $documents->whereBetween('number', [ $request->input('initInterval') , $request->input('endInterval')])
                 ->get();
             } else {
-                $documents = $documents->where('number','>=',$request->input('initInterval'))
-                ->get();
+
+                if($request->input('initInterval'))
+                {
+                    $documents = $documents->where('number','>=',$request->input('initInterval'))
+                    ->get();
+                }
+                else
+                {
+                    $documents = $documents->get();
+                }
             }
-            
-            
             
         if (count($documents) === 0) {
             return [
