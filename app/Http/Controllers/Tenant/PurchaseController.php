@@ -49,7 +49,8 @@
     use Symfony\Component\HttpFoundation\StreamedResponse;
     use Throwable;
     use App\Models\Tenant\GeneralPaymentCondition;
-
+    use App\Models\Tenant\Note;
+    use App\CoreFacturalo\Requests\Inputs\Functions;
 
     class PurchaseController extends Controller
     {
@@ -303,6 +304,7 @@
         public function store(PurchaseRequest $request)
         {
             $data = self::convert($request);
+            //dd($data);
             try {
                 $purchase = DB::connection('tenant')->transaction(function () use ($data) {
                     $doc = Purchase::create($data);
@@ -413,12 +415,17 @@
                             $this->createGlobalPayment($record_payment, $payment);
                         }
                     }
+                    
+            
+                    if(isset($data['note'])){
+                        $doc->note()->create($data['note']);
+                    }
 
                     $this->savePurchaseFee($doc, $data['fee']);
 
                     $this->setFilename($doc);
                     $this->createPdf($doc, "a4", $doc->filename);
-
+                    
                     return $doc;
                 });
 
@@ -437,7 +444,6 @@
             }
         }
 
-
         private function savePurchaseFee($purchase, $fee)
         {
             foreach ($fee as $row) {
@@ -447,6 +453,31 @@
 
         public static function convert($inputs)
         {
+            if($inputs['note_credit_or_debit_type_id']){
+                $document_type_id = $inputs['document_type_id'];
+                $note_credit_or_debit_type_id = $inputs['note_credit_or_debit_type_id'];
+                $note_description = $inputs['note_description'];
+                $affected_purchase_id = $inputs['affected_document_id'];
+
+                $data_affected_document = Functions::valueKeyInArray($inputs, 'data_affected_document');
+
+                $type = ($document_type_id === '07') ? 'credit' : 'debit';
+
+                if (!$data_affected_document) {
+
+                    $affected_document = Purchase::find($affected_purchase_id);
+                    $group_id = $affected_document->group_id;
+                    $affected_purchase_id = $affected_document->id;
+
+                } else {
+
+                    $affected_purchase_id = null;
+                    $group_id = ($data_affected_document['document_type_id'] == '01') ? '01' : '02';
+
+                }
+
+            }
+
             $company = Company::active();
             $values = [
                 'user_id' => auth()->id(),
@@ -454,7 +485,17 @@
                 'supplier' => PersonInput::set($inputs['supplier_id']),
                 'soap_type_id' => $company->soap_type_id,
                 'group_id' => ($inputs->document_type_id === '01') ? '01' : '02',
-                'state_type_id' => '01'
+                'state_type_id' => '01',
+
+                'type' => $inputs['note_credit_or_debit_type_id']? $type: null,
+                'note' => $inputs['note_credit_or_debit_type_id']? [
+                    'note_type' => $type,
+                    'note_credit_type_id' => ($type === 'credit') ? $note_credit_or_debit_type_id : null,
+                    'note_debit_type_id' => ($type === 'debit') ? $note_credit_or_debit_type_id : null,
+                    'note_description' => $note_description,
+                    'affected_purchase_id' => $affected_purchase_id,
+                    'data_affected_document' => $data_affected_document
+                ] : null
             ];
 
             $inputs->merge($values);

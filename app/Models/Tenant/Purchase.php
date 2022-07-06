@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Modules\Purchase\Models\PurchaseOrder;
 use stdClass;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\Tenant\Note;
 
 /**
  * Class Purchase
@@ -62,7 +63,7 @@ class Purchase extends ModelTenant
 {
     // use SoftDeletes;
 
-    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments'];
+    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments','note'];
 
     protected $fillable = [
         'user_id',
@@ -762,5 +763,13 @@ class Purchase extends ModelTenant
         return url("purchases/print/{$this->external_id}/{$format}");
     }
         
+    public function note()
+    {
+        return $this->hasOne(Note::class);
+    }
 
+    public function affected_purchases()
+        {
+            return $this->hasMany(Note::class, 'affected_purchase_id');
+        }
 }
