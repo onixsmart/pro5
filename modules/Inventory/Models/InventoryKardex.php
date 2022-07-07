@@ -190,10 +190,12 @@ class InventoryKardex extends ModelTenant
                 break;
 
             case $models[1]:
+                $cpe_doc_asoc = isset($inventory_kardexable->notes_purchase) ? $inventory_kardexable->notes_purchase->affected_purchase->getNumberFullAttribute() : '-';
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
                 $data['type_transaction'] = ($qty < 0) ? "Anulación Compra" : "Compra";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                $data['doc_asoc'] = $cpe_doc_asoc;
                 break;
             case $models[2]: // Nota de venta
 

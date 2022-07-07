@@ -849,28 +849,7 @@
                         return (s.document_type_id === document_type.id && s.number.substr(0, 1) === firstChar)
                     });
                 }
-                if(this.purchase_value){
-                   /*  if(this.form.document_type_id=='07'){
-                        this.form.type='credit';
-                    }
-
-                    if(this.form.document_type_id=='08'){
-                        this.form.type='debit';
-                    } */
-
-                    if(this.document.purchase_payments.length>0){
-                        this.form.payments.push({
-                            id: null,
-                            purchase_id: null,
-                            date_of_payment: moment().format('YYYY-MM-DD'),
-                            payment_method_type_id: this.document.purchase_payments?this.document.purchase_payments.payment_method_type_id:'01',
-                            reference: this.document.purchase_payments?this.document.purchase_payments.reference:null,
-                            payment_destination_id: this.document.purchase_payments?this.document.purchase_payments.payment_destination_id:null,
-                            payment: this.document.total,
-                        });
-                    }
-                    
-                }
+                
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
 
                 this.initData()
@@ -971,17 +950,23 @@
             },
             async submit() {
 
-                /* if (this.purchase_value) {
-                    this.form.note={
-                        document_type_id: this.form.document_type_id,
-                        purchase_id: null,
-                        note_type: this.form.type,
-                        note_credit_type_id: this.form.type=='credit'?this.form.note_credit_or_debit_type_id:null,
-                        note_debit_type_id: this.form.type=='debit'?this.form.note_credit_or_debit_type_id:null,
-                        note_description: this.form.note_description,
-                        affected_purchase_id: this.document.id,
-                    };
-                } */
+                if(this.purchase_value){
+
+                    if(this.document.purchase_payments.length>0){
+                        let method_id=this.document.purchase_payments?this.document.purchase_payments[0].payment_method_type_id:'01';
+                        let destination_id=this.document.purchase_payments?this.document.purchase_payments[0].payment_destination_id:null;
+                        let reference=this.document.purchase_payments?this.document.purchase_payments[0].reference:null;
+                        this.form.payments.push({
+                            date_of_payment: moment().format('YYYY-MM-DD'),
+                            payment_method_type_id: method_id,
+                            reference: reference,
+                            payment_destination_id: destination_id,
+                            payment: this.document.total,
+                        });
+                    }
+                    
+                }
+                console.log(this.document.purchase_payments);
 
                 if(this.isCreditNote && this.hasDiscounts && this.form.total > this.document.total){
                     return this.$message.error(`El monto total de la nota de credito debe ser menor o igual al monto del documento relacionado (${this.document.total})`)

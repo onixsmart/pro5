@@ -49,7 +49,7 @@
     use Symfony\Component\HttpFoundation\StreamedResponse;
     use Throwable;
     use App\Models\Tenant\GeneralPaymentCondition;
-    use App\Models\Tenant\Note;
+    use App\Models\Tenant\NotesPurchase;
     use App\CoreFacturalo\Requests\Inputs\Functions;
 
     class PurchaseController extends Controller
@@ -418,7 +418,7 @@
                     
             
                     if(isset($data['note'])){
-                        $doc->note()->create($data['note']);
+                        $doc->notes_purchase()->create($data['note']);
                     }
 
                     $this->savePurchaseFee($doc, $data['fee']);
@@ -477,14 +477,14 @@
                 }
 
             }
-
+            $purchase_group=($inputs->document_type_id === '01') ? '01' : '02';
             $company = Company::active();
             $values = [
                 'user_id' => auth()->id(),
                 'external_id' => Str::uuid()->toString(),
                 'supplier' => PersonInput::set($inputs['supplier_id']),
                 'soap_type_id' => $company->soap_type_id,
-                'group_id' => ($inputs->document_type_id === '01') ? '01' : '02',
+                'group_id' => $inputs['note_credit_or_debit_type_id']? $group_id:$purchase_group,
                 'state_type_id' => '01',
 
                 'type' => $inputs['note_credit_or_debit_type_id']? $type: null,
@@ -494,7 +494,7 @@
                     'note_debit_type_id' => ($type === 'debit') ? $note_credit_or_debit_type_id : null,
                     'note_description' => $note_description,
                     'affected_purchase_id' => $affected_purchase_id,
-                    'data_affected_document' => $data_affected_document
+                    'data_affected_purchase' => $data_affected_document
                 ] : null
             ];
 

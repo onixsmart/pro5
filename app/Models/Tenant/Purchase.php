@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Modules\Purchase\Models\PurchaseOrder;
 use stdClass;
 use Illuminate\Database\Eloquent\Collection;
-use App\Models\Tenant\Note;
+use App\Models\Tenant\NotesPurchase;
 
 /**
  * Class Purchase
@@ -63,7 +63,7 @@ class Purchase extends ModelTenant
 {
     // use SoftDeletes;
 
-    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments','note'];
+    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments','notes_purchase'];
 
     protected $fillable = [
         'user_id',
@@ -523,6 +523,7 @@ class Purchase extends ModelTenant
             'customer_number'                             => $customer_number,
             'customer_name'                             => $customer_name,
             'series'                             => $this->series,
+            'document_type_id' =>$this->document_type_id,
             'document_type_description'      => $this->document_type->description,
             'group_id'                       => $this->group_id,
             'guides'                       => $guides,
@@ -763,13 +764,13 @@ class Purchase extends ModelTenant
         return url("purchases/print/{$this->external_id}/{$format}");
     }
         
-    public function note()
+    public function notes_purchase()
     {
-        return $this->hasOne(Note::class);
+        return $this->hasOne(NotesPurchase::class);
     }
 
     public function affected_purchases()
         {
-            return $this->hasMany(Note::class, 'affected_purchase_id');
+            return $this->hasMany(NotesPurchase::class, 'affected_purchase_id');
         }
 }
