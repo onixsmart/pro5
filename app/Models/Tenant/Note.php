@@ -4,6 +4,7 @@ namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\NoteCreditType;
 use App\Models\Tenant\Catalogs\NoteDebitType;
+use App\Models\Tenant\Purchase;
 
 /**
  * App\Models\Tenant\Note
@@ -22,6 +23,7 @@ class Note extends ModelTenant
 {
     protected $with = [
         'affected_document',
+        'affected_purchase',
         'note_credit_type',
         'note_debit_type'
     ];
@@ -29,11 +31,13 @@ class Note extends ModelTenant
 
     protected $fillable = [
         'document_id',
+        'purchase_id',
         'note_type',
         'note_credit_type_id',
         'note_debit_type_id',
         'note_description',
         'affected_document_id',
+        'affected_purchase_id',
         'data_affected_document',
 
     ];
@@ -47,12 +51,23 @@ class Note extends ModelTenant
         return $this->belongsTo(Document::class);
     }
 
+    public function purchase()
+    {
+        // return $this->hasOne(Document::class);
+        return $this->belongsTo(Purchase::class);
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function affected_document()
     {
         return $this->belongsTo(Document::class, 'affected_document_id');
+    }
+
+    public function affected_purchase()
+    {
+        return $this->belongsTo(Purchase::class, 'affected_purchase_id');
     }
 
     /**
@@ -94,6 +109,9 @@ class Note extends ModelTenant
      */
     public function getDocument(){
         return Document::find($this->document_id);
+    }
+    public function getPurchase(){
+        return Purchase::find($this->purchase_id);
     }
 
 }

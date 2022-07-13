@@ -30,7 +30,7 @@ class PurchaseRequest extends FormRequest
             'items' => [
                 'required',
                 'array',
-            ],
+            ]
 		];
 	}
 }

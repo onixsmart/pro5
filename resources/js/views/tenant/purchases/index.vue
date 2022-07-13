@@ -112,6 +112,7 @@
                         <td v-if="columns.total_perception.visible" class="text-right">{{ row.total_perception ? row.total_perception : 0 }}</td>
                         <td class="text-right">{{ row.total   }}</td>
                         <td class="text-right">
+                            <a v-if="row.state_type_id != '11'&&(row.document_type_id=='01'||row.document_type_id=='02')" :href="`/documents/note/${row.id}/purchase`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Nota</a>
                             <template v-if="permissions.edit_purchase">
                                 <a v-if="row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             </template>
@@ -121,7 +122,6 @@
                             <template v-if="permissions.delete_purchase&&row.state_type_id=='11'">
                                 <button v-if="row.state_type_id == '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                             </template>
-                            
                             <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptions(row.id)">Opciones</button>
                             <button
                                 type="button"
