@@ -44,6 +44,8 @@ class ClientCollection extends ResourceCollection
                 'max_users' => (int) $row->plan->limit_users,
                 'count_establishment' => $row->count_establishment,
                 'max_establishment' => (int) $row->plan->limit_establishments,
+                'count_sale' => $row->count_sale,
+                'max_sale' => (int) $row->plan->limit_sales,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
 

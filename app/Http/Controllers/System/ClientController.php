@@ -173,6 +173,9 @@
                 $row->count_establishment = DB::connection('tenant')
                     ->table('establishments')
                     ->count();
+                $row->count_establishment = DB::connection('tenant')
+                ->table('establishments')
+                ->count();
                 $quantity_pending_documents = $this->getQuantityPendingDocuments();
                 $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
                 $row->document_not_sent = $quantity_pending_documents['document_not_sent'];

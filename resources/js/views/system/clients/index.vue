@@ -382,7 +382,7 @@
                                     <strong>{{ row.max_users }}</strong>
                                 </template>
                             </td>
-
+                            <!-- LIMITE DE ESTABLECIMIENTOS -->
                             <td>
                                 <template v-if="row.max_establishment !== 0 && row.count_establishment > row.max_establishment">
                                     <el-popover
@@ -410,7 +410,34 @@
                                     <strong>{{ row.max_establishment }}</strong>
                                 </template>
                             </td>
-                            <td>prueba</td>
+                            <!-- LIMITE DE VENTAS POR MES -->
+                            <td>
+                                <template v-if="row.max_sales !== 0 && row.count_sale > row.max_sale">
+                                    <el-popover
+                                        :content="text_limit_establishments"
+                                        placement="top-start"
+                                        trigger="hover"
+                                        width="220"
+                                    >
+                                        <label slot="reference"
+                                               class="text-danger">
+                                            <strong>{{ row.count_sale }}</strong>
+                                        </label>
+                                    </el-popover>
+                                </template>
+                                <template v-else>
+                                    <label>
+                                        <strong>{{ row.count_sale }}</strong>
+                                    </label>
+                                </template>
+                                /
+                                <template v-if="row.max_sale == 0">
+                                    <i class="fas fa-infinity"></i>
+                                </template>
+                                <template v-else>
+                                    <strong>{{ row.max_sale }}</strong>
+                                </template>
+                            </td>
 
                             <td class="text-center">{{ row.created_at }}</td>
                             <td>{{ row.queries_to_apiperu }}</td>

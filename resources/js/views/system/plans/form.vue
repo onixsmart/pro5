@@ -65,6 +65,11 @@
                             <small class="form-control-feedback d-block" v-if="errorLEstablishments.limit_establishments" v-text="errorLEstablishments.limit_establishments[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-6 align-content-center">
+                        <div class="form-group" :class="{'has-danger': errorLEstablishments.limit_establishments}">
+                            <el-checkbox v-model="establishments_unlimited" @change="setUnlimitEstablishments">Ilimitado</el-checkbox>
+                        </div>
+                    </div>
                 </div>
                 <!-- <div class="row">
                     <div class="col-md-12 mt-3">
@@ -107,6 +112,7 @@
                 documents_unlimited:null,
                 users_unlimited:null,
                 sales_unlimited:false,
+                establishments_unlimited:false,
                 limit_users:null,
                 limit_documents:null,
                 limit_sales:null,
@@ -129,6 +135,7 @@
                 this.documents_unlimited = false
                 this.users_unlimited = false
                 this.sales_unlimited = false
+                this.establishments_unlimited = false
                 this.errors = {}
                 this.errorLDocument = {}
                 this.errorLUser = {}
@@ -190,11 +197,12 @@
                 this.form.plan_documents = Object.values(data.plan_documents)
                 this.users_unlimited = (data.limit_users == 0) ? true : false
                 this.documents_unlimited = (data.limit_documents == 0) ? true : false
-                this.sales_unlimited = (data.limit_sales==0) ? true:false                
+                this.sales_unlimited = (data.limit_sales==0) ? true:false    
+                this.establishments_unlimited = (data.limit_establishments==0) ? true:false             
                 this.limit_users = (this.users_unlimited) ? "∞": data.limit_users
                 this.limit_documents = (this.documents_unlimited) ? "∞":  data.limit_documents
                 this.limit_sales = (this.sales_unlimited) ? "∞": data.limit_sales
-                this.limit_establishments = data.limit_establishments
+                this.limit_establishments = (this.establishments_unlimited) ? "∞": data.limit_establishments
 
             },
             transform(){
@@ -215,6 +223,12 @@
                     this.form.limit_sales = 0
                 }else{
                     this.form.limit_sales = this.limit_sales
+                }
+
+                if(this.establishments_unlimited){
+                    this.form.limit_establishments = 0
+                }else{
+                    this.form.limit_establishments = this.limit_establishments
                 }
                 
             },
@@ -273,15 +287,19 @@
             validateLEstablishments(){
 
                 this.errorLEstablishments = {}  
-                 
-                if(this.limit_establishments < 1){
-                    
-                    this.$set(this.errorLEstablishments, 'limit_establishments', ['limite de establecimientos debe ser mayor a cero']);
-                }else{
-                    this.form.limit_establishments = this.limit_establishments
+                
+                if(!this.establishments_unlimited){
+                    if(this.limit_establishments < 1)
+                        this.$set(this.errorLEstablishments, 'limit_establishments', ['limite de establecimientos debe ser mayor a cero']);
                 }
+                
                 return this.errorLEstablishments
-            },  
+            },
+            setUnlimitEstablishments(){
+                this.limit_establishments = (this.establishments_unlimited) ? "∞" : null
+                this.form.limit_establishments = (this.limit_establishments == "∞") ? 0 : this.limit_establishments
+
+            },
         }
     }
 </script>
