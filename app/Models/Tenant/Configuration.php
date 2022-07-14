@@ -257,6 +257,7 @@
             'list_items_by_warehouse',
             'hide_pdf_view_documents',
             'ticket_single_shipment',
+            'affect_all_documents',
         ];
 
         protected $casts = [
@@ -353,6 +354,7 @@
             'list_items_by_warehouse' => 'bool',
             'hide_pdf_view_documents' => 'bool',
             'ticket_single_shipment' => 'bool',
+            'affect_all_documents'=>'bool',
             
         ];
 
@@ -565,6 +567,7 @@
                 'list_items_by_warehouse' => $this->list_items_by_warehouse,
                 'hide_pdf_view_documents' => $this->hide_pdf_view_documents,
                 'ticket_single_shipment' => $this->ticket_single_shipment,
+                'affect_all_documents' => (bool)$this->affect_all_documents,
                 
             ];
         }
