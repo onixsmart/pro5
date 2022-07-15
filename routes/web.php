@@ -266,6 +266,7 @@ if ($hostname) {
             Route::get('documents/table/{table}', 'Tenant\DocumentController@table');
             Route::get('documents/re_store/{document}', 'Tenant\DocumentController@reStore');
             Route::get('documents/locked_emission', 'Tenant\DocumentController@messageLockedEmission');
+            Route::get('documents/locked_sales', 'Tenant\DocumentController@messageLockedSales');
             Route::get('documents/note/has-documents/{document}', 'Tenant\NoteController@hasDocuments');
 
             Route::get('document_payments/records/{document_id}', 'Tenant\DocumentPaymentController@records');

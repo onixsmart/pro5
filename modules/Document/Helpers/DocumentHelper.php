@@ -133,7 +133,7 @@ class DocumentHelper
                 $start_end_date = self::getStartEndDateForFilterDocument($start_billing_cycle);
     
                 $quantity_sales = Document::whereBetween('date_of_issue', [ $start_end_date['start_date'], $start_end_date['end_date'] ])->select('total')->sum('total');
-    
+                dd($quantity_sales);
                 if($quantity_sales > $limit_sales)
                 {
                     return [

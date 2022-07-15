@@ -35,6 +35,16 @@
                 </div>
             </div>
 
+            <div class="row">
+
+                <div v-if="!locked_sales.success"
+                     class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold">
+                    <el-alert :title="locked_sales.message"
+                              show-icon
+                              type="warning"></el-alert>
+                </div>
+            </div>
+
             <div class="row" v-if="form.send_to_pse">
 
                 <div class="col-lg-12 col-md-12 col-sm-12" v-if="form.response_signature_pse">
@@ -221,6 +231,7 @@ export default {
             ],
             company: {},
             locked_emission: {},
+            locked_sales: {},
             // config:{}
         }
     },
@@ -306,6 +317,10 @@ export default {
                 success: true,
                 message: null
             }
+            this.locked_sales = {
+                success: true,
+                message: null
+            }
             this.company = {
                 soap_type_id: null,
             }
@@ -318,6 +333,10 @@ export default {
             this.loading = true;
             await this.$http.get(`/${this.resource}/locked_emission`).then(response => {
                 this.locked_emission = response.data
+            }).finally(() => this.loading = false);
+
+            await this.$http.get(`/${this.resource}/locked_sales`).then(response => {
+                this.locked_sales = response.data
             }).finally(() => this.loading = false);
         },
         async getCompany() {
