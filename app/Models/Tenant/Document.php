@@ -1396,7 +1396,7 @@
         public function isSingleDocumentShipment()
         {
             return $this->document_type_id === self::DOCUMENT_TYPE_TICKET && $this->ticket_single_shipment;
-                
+        }        
         /**
          * 
          * Filtrar registros para listado de documentos - app
