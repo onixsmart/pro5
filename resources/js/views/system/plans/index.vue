@@ -25,7 +25,12 @@
 
                                     <li v-if="row.limit_documents === 0"><strong>Comprobantes</strong> ilimitados</li>                                
                                     <li v-else><strong>{{row.limit_documents}}</strong> comprobantes</li>
-                                
+
+                                    <li v-if="row.limit_establishments === 0"><strong>Establecimientos</strong> ilimitados</li>
+                                    <li v-else><strong>{{row.limit_establishments}}</strong> Establecimientos</li>
+
+                                    <li v-if="row.limit_sales === 0"><strong>Ventas (Mes)</strong> ilimitados</li>                                
+                                    <li v-else><strong>{{row.limit_sales}}</strong> Ventas (Mes)</li>
                                     <!-- <template v-for="(plan_document, i) in getDescriptions(row.plan_documents)">
                                         <li :key="i" v-if="plan_document">{{plan_document.description}}</li>
                                     </template>                                    -->
