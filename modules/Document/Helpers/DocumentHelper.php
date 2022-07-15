@@ -116,5 +116,41 @@ class DocumentHelper
         ];
 
     }
+
+    public static function LimitSalesDocuments($configuration = null)
+    {
+
+        $configuration = $configuration ?? Configuration::firstOrFail();
+
+        $limit_sales = $configuration->limit_sales;
+
+        if($limit_sales !== 0)
+        {
+            $start_billing_cycle = self::getStartBillingCycleFromSystem();
+            
+            if($start_billing_cycle){
+
+                $start_end_date = self::getStartEndDateForFilterDocument($start_billing_cycle);
+    
+                $quantity_sales = Document::whereBetween('date_of_issue', [ $start_end_date['start_date'], $start_end_date['end_date'] ])->select('total')->sum('total');
+    
+                if($quantity_sales > $limit_sales)
+                {
+                    return [
+                        'success' => true,
+                        'message' => 'Ha superado el límite permitido de ventas por mes'
+                    ];
+                }
+
+            }
+
+        }
+
+        return [
+            'success' => false,
+            'message' => ''
+        ];
+
+    }
  
 }

@@ -37,6 +37,8 @@ class LockedEmissionProvider extends ServiceProvider
         $this->locked_users();
         $this->locked_establishments();
         $this->update_quantity_documents();
+        $this->update_sales_documents();
+        $this->locked_sales();
     }
 
 
@@ -48,6 +50,19 @@ class LockedEmissionProvider extends ServiceProvider
             $configuration->quantity_documents++; 
             $configuration->save();
         
+        }); 
+    }
+
+    private function update_sales_documents()
+    {
+        Document::created(function ($document) {
+            
+            $document=Document::find($document->id);
+
+
+            $configuration = Configuration::first();
+            $configuration->quantity_sales+=$document->total; 
+            $configuration->save();
         }); 
     }
     
@@ -120,5 +135,22 @@ class LockedEmissionProvider extends ServiceProvider
             }
 
         });
+    }
+
+    private function locked_sales()
+    {
+
+        Document::created(function ($document) {
+
+            $configuration = Configuration::firstOrFail();
+            
+            if($configuration->locked_sales)
+            {
+                $exceed_sales = DocumentHelper::LimitSalesDocuments($configuration);
+                if($exceed_sales['success']) throw new Exception($exceed_sales['message']);
+            }
+
+        });
+
     }
 }

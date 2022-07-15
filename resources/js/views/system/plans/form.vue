@@ -14,8 +14,8 @@
                             <small class="form-control-feedback d-block" v-if="errorLSales.limit_sales" v-text="errorLSales.limit_sales[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6 align-content-center">
-                        <div class="form-group" :class="{'has-danger': errorLSales.limit_sales}">
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="form-group h-50" :class="{'has-danger': errorLSales.limit_sales}">
                             <el-checkbox v-model="sales_unlimited" @change="setUnlimitSales">Ilimitado</el-checkbox>
                         </div>
                     </div>
@@ -61,12 +61,12 @@
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errorLEstablishments.limit_establishments }">
                             <label class="control-label">Límite de Establecimientos</label>
-                            <el-input v-model="limit_establishments" @input="validateLEstablishments"></el-input>
+                            <el-input v-model="limit_establishments" @input="validateLEstablishments" :disabled="establishments_unlimited"></el-input>
                             <small class="form-control-feedback d-block" v-if="errorLEstablishments.limit_establishments" v-text="errorLEstablishments.limit_establishments[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6 align-content-center">
-                        <div class="form-group" :class="{'has-danger': errorLEstablishments.limit_establishments}">
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="form-group h-50" :class="{'has-danger': errorLEstablishments.limit_establishments}">
                             <el-checkbox v-model="establishments_unlimited" @change="setUnlimitEstablishments">Ilimitado</el-checkbox>
                         </div>
                     </div>

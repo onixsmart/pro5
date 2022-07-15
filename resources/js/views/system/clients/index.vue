@@ -255,8 +255,8 @@
                             <th class="text-right">Limitar Doc.</th>
                             <th class="text-center">Limitar Usuarios</th>
 
-                            <th class="text-right">Limitar Ventas <br>(mes)</th>
                             <th class="text-center">Limitar Establecimientos</th>
+                            <th class="text-right">Limitar Ventas <br>(mes)</th>
 
                             <th class="text-right">Acciones</th>
                             <th class="text-right">Pagos</th>
@@ -412,9 +412,9 @@
                             </td>
                             <!-- LIMITE DE VENTAS POR MES -->
                             <td>
-                                <template v-if="row.max_sales !== 0 && row.count_sale > row.max_sale">
+                                <template v-if="row.max_sale !== 0 && row.count_sale > row.max_sale">
                                     <el-popover
-                                        :content="text_limit_establishments"
+                                        :content="text_limit_sales"
                                         placement="top-start"
                                         trigger="hover"
                                         width="220"
@@ -591,6 +591,7 @@ export default {
             text_limit_doc: null,
             text_limit_users: null,
             text_limit_establishments: null,
+            text_limit_sales: null,
             loaded: false,
             year: moment().format('YYYY'),
             total_documents: 0,
@@ -627,6 +628,7 @@ export default {
         this.text_limit_doc = "El límite de comprobantes fue superado";
         this.text_limit_users = "El límite de usuarios fue superado";
         this.text_limit_establishments = "El límite de establecimientos fue superado";
+        this.text_limit_sales = "El límite de ventas (mes) fue superado";
     },
     methods: {
         changeLockedTenant(row) {
