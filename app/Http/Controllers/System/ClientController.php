@@ -873,6 +873,7 @@
             }
 
             return $this->generalResponse(false, 'El valor ingresado no coincide con el nombre o número de ruc de la empresa.');
+        }
         public function lockedEstablishment(Request $request)
         {
 
