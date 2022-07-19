@@ -262,6 +262,10 @@
             'hide_pdf_view_documents',
             'ticket_single_shipment',
             'affect_all_documents',
+            'dashboard_sales',
+            'dashboard_general',
+            'dashboard_clients',
+            'dashboard_products',
         ];
 
         protected $casts = [
@@ -572,7 +576,10 @@
                 'hide_pdf_view_documents' => $this->hide_pdf_view_documents,
                 'ticket_single_shipment' => $this->ticket_single_shipment,
                 'affect_all_documents' => (bool)$this->affect_all_documents,
-                
+                'dashboard_sales' => (bool)$this->dashboard_sales,
+                'dashboard_general' => (bool)$this->dashboard_general,
+                'dashboard_clients' => (bool)$this->dashboard_clients,
+                'dashboard_products' => (bool)$this->dashboard_products,
             ];
         }
 
