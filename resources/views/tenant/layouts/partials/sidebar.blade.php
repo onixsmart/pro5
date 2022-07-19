@@ -1072,36 +1072,26 @@
                                 <span>Hoteles</span>
                             </a>
                             <ul class="nav nav-children">
-                                @if(in_array('hotels_reception', $vc_module_levels))
                                     <li class="{{ (($firstLevel === 'hotels') && ($secondLevel === 'reception')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ url('hotels/reception') }}">Recepción</a>
                                     </li>
-                                @endif
-                                @if(in_array('hotels_rates', $vc_module_levels))
                                     <li class="{{ (($firstLevel === 'hotels') && ($secondLevel === 'rates')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ url('hotels/rates') }}">Tarifas</a>
                                     </li>
-                                @endif
-                                @if(in_array('hotels_floors', $vc_module_levels))
                                     <li class="{{ (($firstLevel === 'hotels') && ($secondLevel === 'floors')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ url('hotels/floors') }}">Pisos</a>
                                     </li>
-                                @endif
-                                @if(in_array('hotels_cats', $vc_module_levels))
                                     <li class="{{ (($firstLevel === 'hotels') && ($secondLevel === 'categories')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ url('hotels/categories') }}">Categorías</a>
                                     </li>
-                                @endif
-                                @if(in_array('hotels_rooms', $vc_module_levels))
                                     <li class="{{ (($firstLevel === 'hotels') && ($secondLevel === 'rooms')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ url('hotels/rooms') }}">Habitaciones</a>
                                     </li>
-                                @endif
                             </ul>
                         </li>
                     @endif
@@ -1124,7 +1114,6 @@
                                 <span>Trámite documentario</span>
                             </a>
                             <ul class="nav nav-children">
-                                @if(in_array('documentary_offices', $vc_module_levels))
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'offices')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
                                            href="{{ route('documentary.offices') }}">Listado de Etapas</a>
@@ -1133,8 +1122,6 @@
                                         <a class="nav-link"
                                            href="{{ route('documentary.status') }}">Listado de Estados</a>
                                     </li>
-                                @endif
-                                    @if(in_array('documentary_process', $vc_module_levels))
 
 
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'requirements')) ? 'nav-active' : '' }}">
@@ -1146,7 +1133,6 @@
                                         <a class="nav-link"
                                            href="{{ route('documentary.processes') }}">Tipos de Trámites</a>
                                     </li>
-                                @endif
                                 {{--
                             @if(in_array('documentary_documents', $vc_module_levels))
                             <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'documents')) ? 'nav-active' : '' }}">
@@ -1159,7 +1145,6 @@
                             </li>
                             @endif
                                 --}}
-                                @if(in_array('documentary_files', $vc_module_levels))
                                     {{--
                                     <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'files')) ? 'nav-active' : '' }}">
                                         <a class="nav-link"
@@ -1174,7 +1159,6 @@
                                         <a class="nav-link"
                                            href="{{ route('documentary.stadistic') }}">Estadisticas de Trámites</a>
                                     </li>
-                                @endif
                             </ul>
                         </li>
                     @endif
@@ -1189,7 +1173,6 @@
                                 <span>Farmacia</span>
                             </a>
                             <ul class="nav nav-children">
-                                @if(in_array('digemid', $vc_module_levels))
                                     {{-- <li class="{{ (($firstLevel === 'documentary-procedure') && ($secondLevel === 'offices')) ? 'nav-active' : '' }}">
                                         <a class="nav-link" href="{{ route('documentary.offices') }}">Oficinas</a>
                                     </li> --}}
@@ -1197,7 +1180,6 @@
                                         <a class="nav-link"
                                            href="{{ route('tenant.digemid.index') }}">Productos</a>
                                     </li>
-                                @endif
                             </ul>
                         </li>
                     @endif
