@@ -571,7 +571,7 @@ export default {
             this.document.total_other_taxes = q.total_other_taxes
             this.document.total_taxes = q.total_taxes
             this.document.total_value = q.total_value
-            this.document.subtotal = q.subtotal
+            this.document.subtotal = (q.subtotal==0||q.subtotal!=q.total)?q.total:q.subtotal
             this.document.total = q.total
             this.document.operation_type_id = '0101'
 
