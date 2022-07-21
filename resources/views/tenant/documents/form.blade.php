@@ -20,14 +20,16 @@
 @endpush
 
 @section('content')
-    <tenant-documents-invoice
+    <tenant-documents-invoice-generate
         :is_contingency="{{ json_encode($is_contingency) }}"
         :person-types="{{ json_encode($person_types) }}"
         :type-user="{{json_encode(Auth::user()->type)}}"
         :configuration="{{\App\Models\Tenant\Configuration::getPublicConfig()}}"
         :document-id="{{ $documentId ?? 0 }}"
         :is-update="{{ json_encode($isUpdate ?? false) }}"
-        :id-user="{{json_encode(Auth::user()->id)}}"></tenant-documents-invoice>
+        :table="{{ json_encode($table ?? null) }}"
+        :table-id="{{ json_encode($table_id ?? null) }}"
+        :id-user="{{json_encode(Auth::user()->id)}}"></tenant-documents-invoice-generate>
 @endsection
 
 @push('scripts')

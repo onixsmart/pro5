@@ -1471,6 +1471,7 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import Keypress from "vue-keypress";
 
 export default {
+    name: 'DocumentGenerate',
     props: [
         'idUser',
         'typeUser',
@@ -1759,7 +1760,7 @@ export default {
         ]),
         startConnectionQzTray(){
 
-            if (!qz.websocket.isActive() && this.isAutoPrint) 
+            if (!qz.websocket.isActive() && this.isAutoPrint)
             {
                 startConnection();
             }
@@ -3493,7 +3494,7 @@ export default {
                     this.$eventHub.$emit('reloadDataItems', null)
                     this.resetForm();
                     this.documentNewId = response.data.data.id;
-                    
+
                     this.showOptionsDialog(response)
 
                     this.form_cash_document.document_id = response.data.data.id;
@@ -3538,7 +3539,7 @@ export default {
             {
                 this.showDialogOptions = true
             }
-            
+
         },
         autoPrintDocument(){
 
@@ -3572,7 +3573,7 @@ export default {
 
                 qz.print(config, printData)
                     .then(()=>{
-                        
+
                         this.$notify({
                             title: '',
                             message: 'Impresión en proceso...',

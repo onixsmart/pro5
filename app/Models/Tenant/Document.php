@@ -1123,13 +1123,10 @@
             $allowed_document_types = [
                 '01' => 'FACT',
                 '03' => 'BOLE',
-                // '07' => 'NOCR',
-                // '08' => 'NODB',
-                // '09' => 'GUIA',
-                // 'RC' => 'RESU',
-                // 'RA' => 'ANUL',
-                // 'RR' => 'REAN', //por validar
+                '07' => 'NOCR',
+                '08' => 'NODB',
             ];
+
 
             return $allowed_document_types[$this->document_type_id];
 
@@ -1396,7 +1393,9 @@
         public function isSingleDocumentShipment()
         {
             return $this->document_type_id === self::DOCUMENT_TYPE_TICKET && $this->ticket_single_shipment;
-        }        
+        }
+        
+                
         /**
          * 
          * Filtrar registros para listado de documentos - app

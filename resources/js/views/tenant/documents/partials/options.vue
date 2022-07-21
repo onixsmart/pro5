@@ -13,7 +13,7 @@
             @success="checkKey"
         />
         -->
-        <Keypress key-event="keyup" :multiple-keys="multiple" @success="checkKeyWithAlt" />
+        <Keypress key-event="keyup" :multiple-keys="multiple" @success="checkKeyWithAlt"/>
         <div v-loading="loading">
             <div v-if="form.response_message"
                  class="row mb-4">
@@ -63,15 +63,15 @@
 
                 <div class="col text-center font-weight-bold mt-3">
                     <button class="btn btn-lg btn-info waves-effect waves-light"
-                                   type="button"
-                                   @click="clickPrint('a4')">
-                            <i class="fa fa-file-alt"></i>
+                            type="button"
+                            @click="clickPrint('a4')">
+                        <i class="fa fa-file-alt"></i>
                     </button>
                     <p>A4</p>
                 </div>
 
                 <div v-if="ShowTicket80"
-                    class="col text-center font-weight-bold mt-3">
+                     class="col text-center font-weight-bold mt-3">
 
                     <button class="btn btn-lg btn-info waves-effect waves-light"
                             type="button"
@@ -93,7 +93,7 @@
                 </div>
 
                 <div v-if="ShowTicket50"
-                    class="col text-center font-weight-bold mt-3">
+                     class="col text-center font-weight-bold mt-3">
 
                     <el-popover
                         placement="top-start"
@@ -206,7 +206,7 @@ import {mapState, mapActions} from "vuex/dist/vuex.mjs";
 import Keypress from "vue-keypress";
 
 export default {
-    props: ['showDialog', 'recordId', 'showClose', 'isContingency', 'generatDispatch', 'dispatchId', 'isUpdate', 'configuration'],
+    props: ['showDialog', 'recordId', 'showClose', 'isContingency', 'generatDispatch', 'dispatchId', 'isUpdate', 'configuration', 'table'],
     components: {
         Keypress
     },
@@ -407,27 +407,35 @@ export default {
                 })
         },
         clickFinalize() {
-            location.href = (this.isContingency) ? `/contingencies` : `/${this.resource}`
+            if(this.table) {
+                location.href = `/${this.table}`;
+            } else {
+                location.href = (this.isContingency) ? `/contingencies` : `/${this.resource}`
+            }
         },
         clickNewDocument() {
-            this.clickClose()
+            if(this.table) {
+                location.href = `/${this.table}/create`;
+            } else {
+                this.clickClose();
+            }
         },
         clickClose() {
             this.$emit('update:showDialog', false)
             this.initForm()
         },
-        checkKey(e){
+        checkKey(e) {
             let code = e.event.code;
         },
-        checkKeyWithAlt(e){
+        checkKeyWithAlt(e) {
             let code = e.event.code;
-            if(
+            if (
                 // this.showDialogOptions === true &&
                 code === 'KeyN'
-            ){
+            ) {
                 this.clickClose()
             }
-            if(code === 'KeyP'){
+            if (code === 'KeyP') {
                 this.clickPrint('ticket_50'); // Imprime ticket 50 con letra P
             }
 
