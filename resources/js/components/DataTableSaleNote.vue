@@ -56,7 +56,7 @@
                             <i class="fa fa-search"></i>
                         </el-button>
                     </div>
-                    <el-checkbox v-model="search_by_plate" :disabled="recordItem != null">
+                    <el-checkbox v-model="search_by_plate">
                         Filtrar por placa
                     </el-checkbox>
                     <div v-if="search_by_plate" class="col-lg-2 col-md-2 col-sm-12 pb-2">
@@ -64,7 +64,7 @@
                             <el-input v-model="search.license_plate"  placeholder="Placa" clearable></el-input>
                         </div>
                     </div>
-                    
+
                 </div>
 
             </div>
