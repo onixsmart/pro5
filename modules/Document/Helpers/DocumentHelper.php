@@ -124,6 +124,12 @@ class DocumentHelper
 
         $limit_sales = $configuration->limit_sales;
 
+        $total_quantity_sales=0;
+
+        $quantity_sales=0;
+
+        $quantity_sales_notes=0;
+
         if($limit_sales !== 0)
         {
             $start_billing_cycle = self::getStartBillingCycleFromSystem();
@@ -132,9 +138,15 @@ class DocumentHelper
 
                 $start_end_date = self::getStartEndDateForFilterDocument($start_billing_cycle);
     
-                $quantity_sales = Document::whereBetween('date_of_issue', [ $start_end_date['start_date'], $start_end_date['end_date'] ])->select('total')->sum('total');
-    
-                if($quantity_sales > $limit_sales)
+                $quantity_sales = Document::whereBetween('date_of_issue', [ $start_end_date['start_date'], $start_end_date['end_date'] ])->whereStateTypeAccepted()->select('total')->sum('total');
+                
+                if ($configuration->locked_sales_notes) {
+                    $quantity_sales_notes = SaleNote::whereBetween('date_of_issue', [ $start_end_date['start_date'], $start_end_date['end_date'] ])->whereStateTypeAccepted()->select('total')->sum('total');
+                }
+
+                $total_quantity_sales=$quantity_sales+$quantity_sales_notes;
+
+                if($total_quantity_sales > $limit_sales)
                 {
                     return [
                         'success' => true,

@@ -1353,4 +1353,20 @@ class DocumentController extends Controller
         return response()->json(Document::where('external_id', $request->external_id)->first());
     }
 
+    public function messageLockedSales(){
+
+        $exceed_limit = DocumentHelper::LimitSalesDocuments();
+        if($exceed_limit['success'])
+        {
+            return [
+                'success' => false,
+                'message' => $exceed_limit['message'],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => '',
+        ];
+    }
 }

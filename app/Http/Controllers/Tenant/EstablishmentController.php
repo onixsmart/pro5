@@ -99,4 +99,21 @@ class EstablishmentController extends Controller
             'message' => 'Establecimiento eliminado con éxito'
         ];
     }
+
+    public function messageLockedEstablishments(){
+
+        /* $exceed_limit = DocumentHelper::LimitSalesDocuments();
+        if($exceed_limit['success'])
+        {
+            return [
+                'success' => false,
+                'message' => $exceed_limit['message'],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => '',
+        ]; */
+    }
 }

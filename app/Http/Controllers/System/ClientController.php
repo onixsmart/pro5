@@ -408,6 +408,7 @@
                     'plan' => json_encode($plan),
                     'config_system_env' => $request->config_system_env,
                     'limit_documents' => $plan->limit_documents,
+                    'limit_sales' => $plan->limit_sales,
                     'smtp_host' => $client->smtp_host,
                     'smtp_port' => $client->smtp_port,
                     'smtp_user' => $client->smtp_user,
@@ -593,6 +594,7 @@
                 $client->number = $request->input('number');
                 $client->plan_id = $request->input('plan_id');
                 $client->locked_emission = $request->input('locked_emission');
+                $client->locked_sales = $request->input('locked_sales');
                 $client->save();
 
                 DB::connection('system')->commit();
@@ -627,9 +629,12 @@
                 'send_auto' => true,
                 'locked_emission' => $request->input('locked_emission'),
                 'locked_tenant' => false,
-                'locked_users' => false,
+                'locked_establishments' => false,
+                'locked_sales' => false,
                 'limit_documents' => $plan->limit_documents,
                 'limit_users' => $plan->limit_users,
+                'limit_establishments' => $plan->limit_establishments,
+                'limit_sales' => $plan->limit_sales,
                 'plan' => json_encode($plan),
                 'date_time_start' => date('Y-m-d H:i:s'),
                 'quantity_documents' => 0,
