@@ -631,6 +631,7 @@
                 'locked_tenant' => false,
                 'locked_establishments' => false,
                 'locked_sales' => false,
+                'locked_sales_notes' => false,
                 'limit_documents' => $plan->limit_documents,
                 'limit_users' => $plan->limit_users,
                 'limit_establishments' => $plan->limit_establishments,

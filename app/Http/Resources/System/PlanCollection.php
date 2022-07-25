@@ -23,6 +23,7 @@ class PlanCollection extends ResourceCollection
                 'limit_documents' => $row->limit_documents,
                 'limit_sales' => $row->limit_sales,
                 'limit_establishments' => $row->limit_establishments,
+                'locked_sales_notes' => (bool) $row->locked_sales_notes,
                 // 'plan_documents' => $row->plan_documents, 
                 'locked' => (bool) $row->locked, 
             ];
