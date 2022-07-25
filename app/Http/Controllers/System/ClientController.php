@@ -170,7 +170,6 @@
                 $row->count_user = DB::connection('tenant')
                     ->table('users')
                     ->count();
-<<<<<<< HEAD
                 //LIMITE DE VENTAS Y ESTABLECIMIENTOS
                 $row->count_establishment = DB::connection('tenant')
                     ->table('establishments')
@@ -180,12 +179,10 @@
                     ->first()
                     ->quantity_sales;
 
-=======
                 $row->count_sales_notes = DB::connection('tenant')
                 ->table('configurations')
                 ->first()
                 ->quantity_sales_notes;
->>>>>>> #911
                 $quantity_pending_documents = $this->getQuantityPendingDocuments();
                 $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
                 $row->document_not_sent = $quantity_pending_documents['document_not_sent'];
