@@ -39,6 +39,7 @@ class ClientCollection extends ResourceCollection
                 'locked_establishments' => (bool) $row->locked_establishments,
                 'locked_sales' => (bool) $row->locked_sales,
                 'count_doc' => $row->count_doc,
+                'count_sales_notes' => $row->count_sales_notes,
                 'max_documents' => (int) $row->plan->limit_documents,
                 'count_user' => $row->count_user,
                 'max_users' => (int) $row->plan->limit_users,
@@ -54,6 +55,7 @@ class ClientCollection extends ResourceCollection
                 // 'init_cycle' => optional($row->init_cycle)->format('Y-m-d'),
                 // 'end_cycle' => optional($row->end_cycle)->format('Y-m-d'),
                 'count_doc_month' => $row->count_doc_month,
+                'count_sales_notes_month' => $row->count_sales_notes_month,
 
                 'select_date_billing' => '',
                 'soap_type' => $row->soap_type,

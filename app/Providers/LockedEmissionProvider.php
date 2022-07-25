@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 use App\Models\Tenant\Establishment;
 
+use App\Models\Tenant\SaleNote;
 
 class LockedEmissionProvider extends ServiceProvider
 {
@@ -37,6 +38,7 @@ class LockedEmissionProvider extends ServiceProvider
         $this->locked_users();
         $this->locked_establishments();
         $this->update_quantity_documents();
+        $this->update_quantity_sales_notes();
         $this->update_sales_documents();
         $this->locked_sales();
     }
@@ -151,6 +153,16 @@ class LockedEmissionProvider extends ServiceProvider
             }
 
         });
+    }
 
+    private function update_quantity_sales_notes()
+    {
+        SaleNote::created(function ($document) {
+            
+            $configuration = Configuration::first();
+            $configuration->quantity_sales_notes++; 
+            $configuration->save();
+        
+        }); 
     }
 }
