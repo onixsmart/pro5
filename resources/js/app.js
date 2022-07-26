@@ -287,6 +287,8 @@ Vue.component('system-companies-form', require('./views/system/companies/form.vu
 
 Vue.component('system-accounting-index', require('@viewsModuleAccount/system/accounting/index.vue'));
 
+Vue.component('system-message-index', require('./views/system/message/index.vue'));
+
 // Hoteles :: Tarifas
 Vue.component('tenant-hotel-rates', require('@viewsModuleHotel/rates/List.vue'));
 // Hoteles :: Categorías

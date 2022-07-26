@@ -800,6 +800,9 @@ if ($hostname) {
             Route::get('backup/last-backup', 'System\BackupController@mostRecent');
             Route::get('backup/download/{filename}', 'System\BackupController@download');
 
+            // messages
+            Route::get('messages', 'System\MessageController@index')->name('system.message');
+            
             /*
             Route::get('ajuste_claves_mysql', function(){
 
