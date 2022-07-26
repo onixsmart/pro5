@@ -254,7 +254,7 @@
                         })
                 }
             },
-            submit() {
+            async submit() {
                 const data = new FormData();
                 for (var key in this.form) {
                     const value = this.form[key];
@@ -266,6 +266,11 @@
                     data.append('file', this.file);
                 }
                 this.loading_submit = true
+
+                await this.$http.get(`/${this.resource}/locked_establishments`).then(response => {
+                    this.$message.error(response.data.message);
+                }).finally(() => this.loading = false);
+
                 this.$http.post(`/${this.resource}`, data)
                     .then(response => {
                         if (response.data.success) {

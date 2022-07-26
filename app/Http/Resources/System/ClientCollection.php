@@ -38,6 +38,7 @@ class ClientCollection extends ResourceCollection
                 'locked_tenant' => (bool) $row->locked_tenant,
                 'locked_establishments' => (bool) $row->locked_establishments,
                 'locked_sales' => (bool) $row->locked_sales,
+                'locked_sales_notes' => (bool) $row->locked_sales_notes,
                 'count_doc' => $row->count_doc,
                 'count_sales_notes' => $row->count_sales_notes,
                 'max_documents' => (int) $row->plan->limit_documents,

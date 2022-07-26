@@ -1374,5 +1374,4 @@ class DocumentController extends Controller
             'message' => '',
         ];
     }
-
 }

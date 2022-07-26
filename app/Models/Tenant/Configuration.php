@@ -182,6 +182,7 @@
             'locked_users',
             'locked_establishments',
             'locked_sales',
+            'locked_sales_notes',
             'login',
             'name_product_pdf_to_xml',
             'navbar',

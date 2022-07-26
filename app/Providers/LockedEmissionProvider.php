@@ -12,6 +12,7 @@ use Modules\Document\Helpers\DocumentHelper;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\SaleNote;
 
 use App\Models\Tenant\SaleNote;
 
@@ -40,6 +41,9 @@ class LockedEmissionProvider extends ServiceProvider
         $this->update_quantity_documents();
         $this->update_quantity_sales_notes();
         $this->update_sales_documents();
+        $this->update_sales_documents_state();
+        $this->update_sales_notes();
+        $this->update_sales_notes_state();
         $this->locked_sales();
     }
 
@@ -63,9 +67,28 @@ class LockedEmissionProvider extends ServiceProvider
 
 
             $configuration = Configuration::first();
-            $configuration->quantity_sales+=$document->total; 
+            if ($document->document_type_id=='07') {
+                $configuration->quantity_sales-=$document->total;
+            }else{
+                $configuration->quantity_sales+=$document->total; 
+            }
             $configuration->save();
-        }); 
+        });
+    }
+
+    private function update_sales_documents_state()
+    {
+        Document::updated(function ($document) {
+            
+            $document=Document::find($document->id);
+
+
+            $configuration = Configuration::first();
+            if ($document->state_type_id=='11') {
+                $configuration->quantity_sales-=$document->total;
+            }
+            $configuration->save();
+        });
     }
     
 
@@ -163,6 +186,38 @@ class LockedEmissionProvider extends ServiceProvider
             $configuration->quantity_sales_notes++; 
             $configuration->save();
         
+        }); 
+    }
+
+    private function update_sales_notes()
+    {
+        SaleNote::created(function ($document) {
+            
+            $document=SaleNote::find($document->id);
+
+            $configuration = Configuration::first();
+            if ($configuration->locked_sales_notes) {
+                
+                $configuration->quantity_sales+=$document->total; 
+                $configuration->save();
+            }
+        }); 
+    }
+
+    private function update_sales_notes_state()
+    {
+        SaleNote::updated(function ($document) {
+            
+            $document=SaleNote::find($document->id);
+
+            $configuration = Configuration::first();
+            if ($configuration->locked_sales_notes) {
+                
+                if ($document->state_type_id=='11') {
+                    $configuration->quantity_sales-=$document->total;
+                }
+                $configuration->save();
+            }
         }); 
     }
 }

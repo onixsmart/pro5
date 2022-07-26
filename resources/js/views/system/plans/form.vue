@@ -14,12 +14,18 @@
                             <small class="form-control-feedback d-block" v-if="errorLSales.limit_sales" v-text="errorLSales.limit_sales[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6 d-flex align-items-end">
+                    <div class="col-md-3 d-flex align-items-end">
                         <div class="form-group h-50" :class="{'has-danger': errorLSales.limit_sales}">
                             <el-checkbox v-model="sales_unlimited" @change="setUnlimitSales">Ilimitado</el-checkbox>
                         </div>
                     </div>
                     
+                    <div class="col-md-3 d-flex align-items-end">
+                        <div class="form-group h-50" :class="{'has-danger': errors.locked_sales_notes}">
+                            <el-checkbox v-model="form.locked_sales_notes">Notas de Venta</el-checkbox>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -112,6 +118,7 @@
                 documents_unlimited:null,
                 users_unlimited:null,
                 sales_unlimited:false,
+                sales_notes_unlimited:false,
                 establishments_unlimited:false,
                 limit_users:null,
                 limit_documents:null,
@@ -149,6 +156,7 @@
                     limit_documents: null,
                     limit_sales:null,
                     limit_establishments:null,
+                    locked_sales_notes:false,
                     plan_documents:[]
                 }
             },

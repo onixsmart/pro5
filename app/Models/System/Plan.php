@@ -17,6 +17,7 @@ class Plan extends Model
         'limit_documents',
         'limit_sales',
         'limit_establishments',
+        'locked_sales_notes',
         'plan_documents', 
         'locked', 
     ];

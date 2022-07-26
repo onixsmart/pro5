@@ -416,6 +416,7 @@
                     'config_system_env' => $request->config_system_env,
                     'limit_documents' => $plan->limit_documents,
                     'limit_sales' => $plan->limit_sales,
+                    'locked_sales_notes' => $plan->locked_sales_notes,
                     'smtp_host' => $client->smtp_host,
                     'smtp_port' => $client->smtp_port,
                     'smtp_user' => $client->smtp_user,
@@ -601,6 +602,7 @@
                 $client->number = $request->input('number');
                 $client->plan_id = $request->input('plan_id');
                 $client->locked_emission = $request->input('locked_emission');
+                $client->locked_sales = $request->input('locked_sales');
                 $client->save();
 
                 DB::connection('system')->commit();
@@ -635,9 +637,15 @@
                 'send_auto' => true,
                 'locked_emission' => $request->input('locked_emission'),
                 'locked_tenant' => false,
+<<<<<<< HEAD
                 'locked_users' => false,
                 'locked_establishments' => false,
                 'locked_sales' => false,
+=======
+                'locked_establishments' => false,
+                'locked_sales' => false,
+                'locked_sales_notes' => false,
+>>>>>>> #838
                 'limit_documents' => $plan->limit_documents,
                 'limit_users' => $plan->limit_users,
                 'limit_establishments' => $plan->limit_establishments,
