@@ -13,6 +13,8 @@ use App\Http\Resources\Tenant\EstablishmentCollection;
 use App\Models\Tenant\Warehouse;
 use App\Models\Tenant\Person;
 
+use App\Models\Tenant\Configuration;
+
 class EstablishmentController extends Controller
 {
     public function index()
@@ -102,18 +104,24 @@ class EstablishmentController extends Controller
 
     public function messageLockedEstablishments(){
 
-        /* $exceed_limit = DocumentHelper::LimitSalesDocuments();
-        if($exceed_limit['success'])
-        {
-            return [
-                'success' => false,
-                'message' => $exceed_limit['message'],
-            ];
+        $configuration = Configuration::first();
+
+        $quantity_establishments = Establishment::count();
+
+        if($configuration->locked_establishments &&  $configuration->plan->limit_establishments !== 0){
+
+            if($quantity_establishments >= $configuration->plan->limit_establishments )
+            {
+                return [
+                    'success' => true,
+                    'message' => 'Ha superado el límite permitido para la creación de establecimientos'
+                ];
+            }
         }
 
         return [
-            'success' => true,
-            'message' => '',
-        ]; */
+            'success' => false,
+            'message' => ''
+        ];
     }
 }

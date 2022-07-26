@@ -409,6 +409,7 @@
                     'config_system_env' => $request->config_system_env,
                     'limit_documents' => $plan->limit_documents,
                     'limit_sales' => $plan->limit_sales,
+                    'locked_sales_notes' => $plan->locked_sales_notes,
                     'smtp_host' => $client->smtp_host,
                     'smtp_port' => $client->smtp_port,
                     'smtp_user' => $client->smtp_user,
