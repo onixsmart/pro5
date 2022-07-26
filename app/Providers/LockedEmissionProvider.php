@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\SaleNote;
 
-use App\Models\Tenant\SaleNote;
 
 class LockedEmissionProvider extends ServiceProvider
 {
