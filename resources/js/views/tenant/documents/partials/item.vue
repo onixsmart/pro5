@@ -705,14 +705,14 @@ export default {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
         this.initForm()
-        if (this.displayDiscount !== undefined) {
-            if (this.displayDiscount == true) {
-                this.showDiscounts = true;
-            } else {
-                this.showDiscounts = false;
-
-            }
-        }
+        // if (this.displayDiscount !== undefined) {
+        //     if (this.displayDiscount == true) {
+        //         this.showDiscounts = true;
+        //     } else {
+        //         this.showDiscounts = false;
+        //
+        //     }
+        // }
     },
     mounted() {
         this.getTables()
