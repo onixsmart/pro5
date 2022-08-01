@@ -637,15 +637,9 @@
                 'send_auto' => true,
                 'locked_emission' => $request->input('locked_emission'),
                 'locked_tenant' => false,
-<<<<<<< HEAD
-                'locked_users' => false,
-                'locked_establishments' => false,
-                'locked_sales' => false,
-=======
                 'locked_establishments' => false,
                 'locked_sales' => false,
                 'locked_sales_notes' => false,
->>>>>>> #838
                 'limit_documents' => $plan->limit_documents,
                 'limit_users' => $plan->limit_users,
                 'limit_establishments' => $plan->limit_establishments,
