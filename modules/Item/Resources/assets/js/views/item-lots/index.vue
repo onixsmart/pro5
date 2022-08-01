@@ -14,9 +14,9 @@
                 <h3 class="my-0">Listado de {{ title }}</h3>
             </div>
             <div class="card-body">
-             
+
                 <div v-loading="loading_submit">
-                    <div class="row ">   
+                    <div class="row ">
                         <div class="col-md-12 col-lg-12 col-xl-12 ">
                             <div class="row">
                                 <div class="col-lg-4 col-md-4 col-sm-12 pb-2">
@@ -63,6 +63,7 @@
                                             <th>Fecha</th>
                                             <th>Estado</th>
                                             <th>Vendido</th>
+                                            <th>Comprobante</th>
                                             <th class="text-right">Acciones</th>
                                         </tr>
                                     </thead>
@@ -74,6 +75,7 @@
                                             <td>{{ row.date }}</td>
                                             <td>{{ row.state }}</td>
                                             <td>{{ row.status }}</td>
+                                            <td>{{ row.document_number }}</td>
                                             <td class="text-right">
                                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)" v-if="!row.has_sale">Editar</button>
                                             </td>
@@ -91,22 +93,22 @@
                                 </div>
                             </div>
                         </div>
- 
+
                     </div>
                 </div>
             </div>
 
-            <item-lot-form 
+            <item-lot-form
                 :showDialog.sync="showDialog"
                 :recordId="recordId"
-                    ></item-lot-form> 
+                    ></item-lot-form>
         </div>
     </div>
 </template>
 
 <script>
 
-    import ItemLotForm from './form.vue' 
+    import ItemLotForm from './form.vue'
     import queryString from 'query-string'
 
     export default {
@@ -114,7 +116,7 @@
         data() {
             return {
                 title: null,
-                showDialog: false, 
+                showDialog: false,
                 resource: 'item-lots',
                 recordId: null,
                 search: {
@@ -145,7 +147,7 @@
             })
 
         },
-        methods: { 
+        methods: {
             customIndex(index) {
                 return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
             },

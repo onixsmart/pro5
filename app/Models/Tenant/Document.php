@@ -7,7 +7,6 @@
     use App\Models\Tenant\Catalogs\DocumentType;
     use App\Traits\SellerIdTrait;
     use Carbon\Carbon;
-    use Eloquent;
     use ErrorException;
     use Exception;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
@@ -22,13 +21,12 @@
     use Illuminate\Support\Collection;
     use Modules\BusinessTurn\Models\DocumentHotel;
     use Modules\BusinessTurn\Models\DocumentTransport;
+    use Modules\Item\Models\ItemLot;
     use Modules\Item\Models\WebPlatform;
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
-    use phpDocumentor\Reflection\Utils;
     use Modules\Pos\Models\Tip;
     use Illuminate\Support\Facades\DB;
-
 
     /**
      * App\Models\Tenant\Document
@@ -1394,7 +1392,6 @@
             return $this->document_type_id === self::DOCUMENT_TYPE_TICKET && $this->ticket_single_shipment;
         }
 
-
         /**
          *
          * Filtrar registros para listado de documentos - app
@@ -1424,5 +1421,12 @@
             return $query;
         }
 
+        /**
+         * @return MorphMany
+         */
+        public function item_lot()
+        {
+            return $this->morphMany(ItemLot::class, 'item_loteable');
+        }
 
     }

@@ -32,3 +32,22 @@ if (!function_exists('func_filter_items')) {
         return $query;
     }
 }
+
+if (!function_exists('func_pdf_get_lots')) {
+    function func_pdf_get_lots($lots)
+    {
+        $lots_sale = [];
+        foreach($lots as $index => $lot){
+            if( isset($lot->has_sale) && $lot->has_sale) {
+                $lots_sale[] = $lot->series;
+            }
+        }
+        $array_chunks = array_chunk($lots_sale, 4);
+        $text = [];
+        foreach ($array_chunks as $chunks) {
+            $text[] = implode(', ', $chunks);
+        }
+
+        return implode(',<br/>', $text);
+    }
+}
