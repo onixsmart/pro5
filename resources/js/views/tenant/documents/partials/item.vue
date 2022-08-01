@@ -20,7 +20,7 @@
                              :class="{'has-danger': errors.item_id}"
                              class="form-group">
                             <label class="control-label">
-                                Producto/Servicio
+                                Producto/Servicio2
                                 <a v-if="can_add_new_product"
                                    href="#"
                                    @click.prevent="showDialogNewItem = true">
@@ -374,8 +374,7 @@
                             </div>
                         </div>
 
-                        <div v-if="showDiscounts"
-                             class="col-md-12 mt-2">
+                        <div class="col-md-12 mt-2">
                             <el-collapse v-model="activePanel">
 
 <!--                                <el-collapse-item-->
