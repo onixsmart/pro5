@@ -13,6 +13,9 @@ use Modules\Inventory\Http\Resources\ReportValuedKardexCollection;
 use Modules\Report\Traits\ReportTrait;
 use Modules\Inventory\Helpers\InventoryValuedKardex;
 use Modules\Inventory\Exports\ValuedKardexFormatSunatExport;
+use App\Models\Tenant\DownloadTray;
+use Modules\Inventory\Jobs\ProcessKardexSunat;
+use Modules\Inventory\Http\Controllers\Hostname;
 
 
 class ReportValuedKardexController extends Controller
@@ -133,6 +136,34 @@ class ReportValuedKardexController extends Controller
 
         return $valuedKardexFormatSunatExport->download('Reporte_Kardex_Valorizado_Sunat_13_1' . Carbon::now() . '.xlsx');
 
+    }
+
+    public function excelSunat(Request $request)
+    {
+        $host = $request->getHost();
+        $tray = DownloadTray::create([
+            'user_id' => auth()->user()->id,
+            'module' => 'KARDEX',
+            'format' => $request->input('format'),
+            'date_init' => date('Y-m-d H:i:s'),
+            'type' => 'Reporte Kardex Sunat'
+        ]);
+        $trayId = $tray->id;
+        $hostname = Hostname::where('fqdn',$host)->first();
+        if(empty($hostname)) {
+            $company = Company::active();
+            $number = $company->number;
+            $client = Client::where('number', $number)->first();
+            $website_id = $client->hostname->website_id;
+        }else{
+            $website_id = $hostname->website_id;
+        }
+        ProcessKardexSunat::dispatch($website_id,$trayId, ($request->warehouse_id == 'all' ? 0 :  $request->warehouse_id), $request->input('format'), $request->all() );
+
+        return  [
+            'success' => true,
+            'message' => 'El reporte se esta procesando; puede ver el proceso en bandeja de descargas.'
+        ];
     }
 
 }

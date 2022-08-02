@@ -64,6 +64,8 @@
     {
         use UsesTenantConnection;
 
+        public const SALE_DOCUMENT_TYPES = ['01', '03', '80'];
+
         public $incrementing = false;
         protected $table = "cat_document_types";
         protected $fillable = [
@@ -294,4 +296,14 @@
 
 
         }
+
+        
+        /**
+         * @return Builder
+         */
+        public function scopeOnlySaleDocuments($query)
+        {
+            return $query->onlyActive()->select('id', 'description')->whereIn('id', self::SALE_DOCUMENT_TYPES);
+        }
+
     }
