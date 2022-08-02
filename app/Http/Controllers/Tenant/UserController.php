@@ -13,6 +13,11 @@ use App\Models\Tenant\Series;
 use App\Models\Tenant\User;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Zone;
+use App\Models\System\Message as ModelMessage;
+use App\Models\System\MessageDescription;
+use Hyn\Tenancy\Environment;
+use App\Models\System\Client;
+use App\Notifications\System\Message as MessageNotification;
 
 class UserController extends Controller
 {
@@ -179,5 +184,36 @@ class UserController extends Controller
             'success' => true,
             'message' => 'Usuario eliminado con éxito'
         ];
+    }
+
+    public function getNotification(){
+        $tenancy = app(Environment::class);
+        $hostname = $tenancy->hostname();
+        $tenant_id = Client::select('id')->where('hostname_id', $hostname->id)->first();
+        $description = MessageDescription::where('client_id',$tenant_id->id)->first();
+        if ($description) {
+            //$id_message=$description->message_id;
+            //$message = ModelMessage::select('message')->where('id',$id_message);
+            $message=$description->message['message'];
+            //dd($message);
+            $tenant_id->notify(new MessageNotification($message));
+        }
+    }
+
+    public function getMessage(){
+        $this->getNotification();
+        $tenancy = app(Environment::class);
+        $hostname = $tenancy->hostname();
+        $tenant_id = Client::select('id')->where('hostname_id', $hostname->id)->first();
+        $messages=$tenant_id->notifications;
+        $message_return="";
+        foreach ($messages as $key => $value) {
+            $message_return=$value['data'];
+            
+            return [
+                'success' => true,
+                'message' => $message_return['data'],
+            ];
+        }
     }
 }

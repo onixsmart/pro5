@@ -51,7 +51,7 @@
             </div>
 
             <template v-if="records.length>0">
-                <div class="col-3 form-group">
+                <!-- <div class="col-3 form-group">
                     <el-date-picker
                         v-model="form.date_of_issue"
                         type="date"
@@ -77,7 +77,7 @@
                     <label class="control-label">Recurrente</label>
                     <el-checkbox v-model="form.month" >Mensual</el-checkbox>
                     <el-checkbox v-model="form.year" >Anual</el-checkbox>
-                </div>
+                </div> -->
 
                 <div class="col-md-12 py-2 border-top">
                     <div :class="{'has-danger': errors.message}"

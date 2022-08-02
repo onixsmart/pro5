@@ -622,6 +622,7 @@ export default {
     });
     await this.loadAll();
     await this.filterItems();
+    await this.getNotification();
   },
 
   methods: {
@@ -798,6 +799,14 @@ export default {
       this.loaders.purchase = false;
       this.loaders.items_by_sales = false;
       this.loaders.top_customers = false;
+    },
+    getNotification() {
+
+      this.$http
+        .get(`/users/getMessageNotification`)
+        .then((response) => {
+          setTimeout(() => this.$message.error(response.data.message), 5000);
+        });
     },
   },
 };

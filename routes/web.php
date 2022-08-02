@@ -160,6 +160,8 @@ if ($hostname) {
             Route::post('users/token/{user}', 'Tenant\UserController@regenerateToken');
             Route::get('users/records', 'Tenant\UserController@records');
             Route::delete('users/{user}', 'Tenant\UserController@destroy');
+            Route::get('users/notification','Tenant\UserController@getNotification');
+            Route::get('users/getMessageNotification','Tenant\UserController@getMessage')->name('tenant.users.messages');
 
             //ChargeDiscounts
             Route::get('charge_discounts', 'Tenant\ChargeDiscountController@index')->name('tenant.charge_discounts.index');
@@ -805,6 +807,7 @@ if ($hostname) {
             Route::get('messages/columns', 'System\MessageController@columns')->name('system.message.columns');
             Route::get('messages/filter', 'System\MessageController@getFilter')->name('system.message.filter');
             Route::post('messages', 'System\MessageController@store');
+            Route::get('messages/records','System\MessageController@records');
             
             /*
             Route::get('ajuste_claves_mysql', function(){

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Notifications\Notifiable;
 
+use App\Models\System\MessageDescription;
 /**
  * App\Models\System\Client
  *
@@ -199,4 +200,8 @@ class Client extends Model
         return $this->hasMany(ClientPayment::class);
     }
 
+    public function message()
+    {
+        return $this->hasMany(MessageDescription::class);
+    }
 }

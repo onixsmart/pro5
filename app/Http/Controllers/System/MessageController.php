@@ -6,11 +6,15 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller; 
 use Illuminate\Support\Facades\DB;
 use App\Models\System\Client;
+use App\Models\System\User;
 use App\Http\Resources\System\MessageCollection;
 use Notification;
 use Illuminate\Support\Facades\Notification as SendNotification;
-use App\Notifications\Message;
+use App\Notifications\System\Message;
 use App\Models\System\Notification as ModelNotification;
+use App\Models\System\Message as ModelMessage;
+use App\Models\System\MessageDescription;
+use App\Http\Resources\System\MessageNotificationCollection;
 
 class MessageController extends Controller
 {
@@ -29,6 +33,13 @@ class MessageController extends Controller
         ];
     }
 
+    public function records(){
+        $records = ModelMessage::latest()
+        ->get();
+
+        return new MessageNotificationCollection($records);
+    }
+
     public function getFilter(Request $request){
 
         $records = Client::where($request->column, 'like', "%{$request->value}%")
@@ -38,21 +49,27 @@ class MessageController extends Controller
     }
 
     public function store(Request $request){
+
         //dd($request->all());
         $req=$request->all();
         $id=$req['client_id'];
-        $data = ModelNotification::firstOrNew(['id' => $id]);
-        $data->id = $id;
-        $data->type = 'message';
-        $data->notifiable_type = 'message';
-        $data->notifiable_id = $id;
-        $data->data=$req['message'];
-        $data->save();
+
+        $message=New ModelMessage();
+        $message->message=$req['message'];
+        $message->save();
+
+        if(!empty($req['selecteds'])){
+            $ids=$req['selecteds'];
+            foreach ($ids as $key => $value) {
+                $description = new MessageDescription();
+                $description->client_id = $value;
+                $description->message_id= $message->id;
+                $description->save();
+            }
+        }
         
-    }
-
-    public function getRecords(){
-
+        //Notification::send($idUser, new Message($id));
+        
     }
 
 }

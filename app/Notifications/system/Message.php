@@ -1,24 +1,27 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\System;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Notification as SendNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Models\System\User;
 
 class Message extends Notification
 {
     use Queueable;
 
+    public $message;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($message)
     {
-        //
+        $this->message=$message;
     }
 
     /**
@@ -55,7 +58,8 @@ class Message extends Notification
     public function toArray($notifiable)
     {
         return [
-            'name' => $this->data,
+            'data' => $this->message,
         ];
+
     }
 }

@@ -24,13 +24,15 @@
                             <!-- <th>#</th> -->
                             <th>Mensaje</th>
                             <th>Ultima ejecucion</th>
-                            <th>Recurrente</th>
-                            <th>Acciones</th>
+                            <!-- <th>Recurrente</th> -->
+                            <!-- <th>Acciones</th> -->
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
+                            {{row.message}}
                         </tr>
+                        <tr>{{ row.updated }}</tr>
                         </tbody>
                     </table>
                 </div>
