@@ -222,7 +222,7 @@
                         Route::get('/excel-format-sunat', 'ReportValuedKardexController@excelFormatSunat');
                         Route::get('/filter', 'ReportValuedKardexController@filter');
                         Route::get('/records', 'ReportValuedKardexController@records');
-                        Route::get('/excel-sunat','ReportValuedKardexController@excelSunat')
+                        Route::post('/excel-sunat','ReportValuedKardexController@excelSunat');
 
                     });
 

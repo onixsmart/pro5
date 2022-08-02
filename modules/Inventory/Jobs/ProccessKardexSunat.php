@@ -15,13 +15,15 @@
     use App\CoreFacturalo\Helpers\Storage\StorageDocument;
     use App\Models\Tenant\Company;
     use App\Models\Tenant\Establishment;
-    use Modules\Inventory\Exports\InventoryExport;
+    use Modules\Inventory\Exports\ValuedKardexSunatExport;
     use Barryvdh\DomPDF\Facade as PDF;
     use Modules\Inventory\Models\ItemWarehouse;
     use Mpdf\HTMLParserMode;
     use Mpdf\Mpdf;
     use Mpdf\Config\ConfigVariables;
     use Mpdf\Config\FontVariables;
+    use Modules\Inventory\Helpers\SunatValuedKardex;
+    use Modules\Report\Traits\ReportTrait;
 
     class ProcessKardexSunat implements ShouldQueue
     {
@@ -30,6 +32,7 @@
         use Queueable;
         use SerializesModels;
         use StorageDocument;
+        use ReportTrait;
 
         public $website_id;
         public $tray_id;
@@ -93,7 +96,20 @@
                     }
                     //ini_set('max_execution_time', 0);
 
-                    $records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
+                    //$records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
+
+                    $data_of_period = $this->getDataOfPeriod($request);
+
+
+                    $params = (object)[
+                        'establishment_id' => $request['establishment_id'],
+                        'date_start' => $data_of_period['d_start'],
+                        'date_end' => $data_of_period['d_end'],
+                    ];
+
+                    $data = SunatValuedKardex::getDataFormatSunat($params);
+                    $additionalData = SunatValuedKardex::getDataAdditional($request, $params, $data['items']);
+                    $records = $data['records'];
 
                     if (!is_object($tray)) {
                         //Log::debug('DE ' . var_export($tray, true));
@@ -104,17 +120,17 @@
                         Log::debug($records);
                         $filename = 'KARDEX_ReporteInv_' . date('YmdHis') . '-' . $tray->user_id;
                         Log::debug("Render excel init");
-                        $inventoryExport = new InventoryExport();
-                        $inventoryExport
+                        $kardexExport = new ValuedKardexSunatExport();
+                        $kardexExport
+                            ->additionalData($additionalData)
                             ->records($records)
                             ->company($company)
-                            ->establishment($establishment)
-                            ->format($format);
+                            ->establishment($establishment);
                         Log::debug("Render excel finish");
 
                         Log::debug("Upload excel init");
 
-                        $inventoryExport->store(DIRECTORY_SEPARATOR . "download_tray_xlsx" . DIRECTORY_SEPARATOR . $filename . '.xlsx', 'tenant');
+                        $kardexExport->store(DIRECTORY_SEPARATOR . "download_tray_xlsx" . DIRECTORY_SEPARATOR . $filename . '.xlsx', 'tenant');
 
                         Log::debug("Upload excel finish");
                         $tray->file_name = $filename;

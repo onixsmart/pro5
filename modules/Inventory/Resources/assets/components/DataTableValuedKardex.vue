@@ -289,10 +289,10 @@ export default {
             this.loadingXlsx = (format === 'xlsx');
             this.errors = {};
             await this.$http({
-                url: `/${this.resource}/export-sunat`,
+                url: `/${this.resource}/excel-sunat`,
                 method: 'POST',
                 data: {
-                    'format': format,
+                    'format': 'xlsx',
                     'filter': this.form.filter,
                     'warehouse_id': this.form.warehouse_id,
                     brand_id: this.form.brand_id,

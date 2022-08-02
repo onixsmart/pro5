@@ -15,6 +15,7 @@ use Modules\Inventory\Helpers\InventoryValuedKardex;
 use Modules\Inventory\Exports\ValuedKardexFormatSunatExport;
 use App\Models\Tenant\DownloadTray;
 use Modules\Inventory\Jobs\ProcessKardexSunat;
+use Modules\Inventory\Http\Controllers\Hostname;
 
 
 class ReportValuedKardexController extends Controller
@@ -157,7 +158,7 @@ class ReportValuedKardexController extends Controller
         }else{
             $website_id = $hostname->website_id;
         }
-        ProcessInventoryReport::dispatch($website_id,$trayId, ($request->warehouse_id == 'all' ? 0 :  $request->warehouse_id), $request->input('format'), $request->all() );
+        ProcessKardexSunat::dispatch($website_id,$trayId, ($request->warehouse_id == 'all' ? 0 :  $request->warehouse_id), $request->input('format'), $request->all() );
 
         return  [
             'success' => true,
