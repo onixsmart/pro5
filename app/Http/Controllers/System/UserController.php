@@ -9,6 +9,7 @@ use Hyn\Tenancy\Environment;
 use App\Models\System\Client;
 use Illuminate\Support\Facades\DB;
 use App\Models\System\Configuration;
+use App\Models\System\Client;
 
 class UserController extends Controller
 {

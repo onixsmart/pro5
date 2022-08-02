@@ -6,7 +6,9 @@ use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Traits\UsesSystemConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Notifications\Notifiable;
 
+use App\Models\System\MessageDescription;
 /**
  * App\Models\System\Client
  *
@@ -60,6 +62,7 @@ use Illuminate\Support\Facades\Config;
 class Client extends Model
 {
     use UsesSystemConnection;
+    use Notifiable;
 
     protected $with = ['hostname','plan'];
     protected $fillable = [
@@ -199,4 +202,8 @@ class Client extends Model
         return $this->hasMany(ClientPayment::class);
     }
 
+    public function message()
+    {
+        return $this->hasMany(MessageDescription::class);
+    }
 }

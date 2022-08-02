@@ -89,7 +89,15 @@
                 </ul>
             </nav>
 
-
+            <nav id="menu" class="nav-main" role="navigation">
+                <ul class="nav nav-main">
+                    <li class="{{ ($path[0] === 'messages')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{route('system.message')}}">
+                            <i class="fas fa-paper-plane"></i><span>Mensaje</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
 
         <script>
             // Maintain Scroll Position
