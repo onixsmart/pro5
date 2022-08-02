@@ -15,7 +15,7 @@ use Modules\Inventory\Helpers\InventoryValuedKardex;
 use Modules\Inventory\Exports\ValuedKardexFormatSunatExport;
 use App\Models\Tenant\DownloadTray;
 use Modules\Inventory\Jobs\ProcessKardexSunat;
-use Modules\Inventory\Http\Controllers\Hostname;
+use Hyn\Tenancy\Models\Hostname;
 
 
 class ReportValuedKardexController extends Controller
