@@ -73,6 +73,14 @@
 
                         </template>
 
+                        <template v-if="records.length>0">
+
+                            <el-button class="submit" type="success" @click.prevent="clickExportSunat('xlsx')"><i
+                                class="fa fa-file-excel"></i> Formato Sunat 13.1
+                            </el-button>
+
+                        </template>
+
                         <!-- <el-tooltip class="item"
                                     content="Formato SUNAT 13.1"
                                     effect="dark"
@@ -274,6 +282,50 @@ export default {
             }
             // this.loadAll();
         },
+        async clickExportSunat(format) {
+            this.loading = true;
+            this.loadingSubmit = true;
+            this.loadingPdf = (format === 'pdf');
+            this.loadingXlsx = (format === 'xlsx');
+            this.errors = {};
+            await this.$http({
+                url: `/${this.resource}/export-sunat`,
+                method: 'POST',
+                data: {
+                    'format': format,
+                    'filter': this.form.filter,
+                    'warehouse_id': this.form.warehouse_id,
+                    brand_id: this.form.brand_id,
+                    category_id: this.form.category_id,
+                },
+            })
+                .then(response => {
+                    let res = response.data;
+                    if (res.success) {
+                        this.$message.success(res.message);
+                    } else {
+                        this.$message.error('Error al exportar');
+                        /*const url = window.URL.createObjectURL(new Blob([res]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', 'ReporteInv_' + moment().format('HHmmss') + '.' + format);
+                        document.body.appendChild(link);
+                        link.click();*/
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    this.errors = error;
+                })
+                .then(() => {
+                    this.loadingPdf = false;
+                    this.loadingXlsx = false;
+                    this.loading = false;
+                });
+            // this.loadingSubmit = false;
+            //
+
+        }
     }
 }
 </script>
