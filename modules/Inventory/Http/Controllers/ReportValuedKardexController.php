@@ -14,9 +14,10 @@ use Modules\Report\Traits\ReportTrait;
 use Modules\Inventory\Helpers\InventoryValuedKardex;
 use Modules\Inventory\Exports\ValuedKardexFormatSunatExport;
 use App\Models\Tenant\DownloadTray;
-use Modules\Inventory\Jobs\ProcessKardexSunat;
+use Modules\Inventory\Jobs\ProccessKardexSunat;
 use Hyn\Tenancy\Models\Hostname;
-
+use Modules\Inventory\Helpers\SunatValuedKardex;
+use Modules\Inventory\Exports\ValuedKardexSunatExport;
 
 class ReportValuedKardexController extends Controller
 {
@@ -158,12 +159,44 @@ class ReportValuedKardexController extends Controller
         }else{
             $website_id = $hostname->website_id;
         }
-        ProcessKardexSunat::dispatch($website_id,$trayId, ($request->warehouse_id == 'all' ? 0 :  $request->warehouse_id), $request->input('format'), $request->all() );
+        ProccessKardexSunat::dispatch($website_id,$trayId,  0 , $request->input('format'), $request->all() );
 
         return  [
             'success' => true,
             'message' => 'El reporte se esta procesando; puede ver el proceso en bandeja de descargas.'
         ];
     }
+
+    /* public function excelSunat(Request $request)
+    {
+
+        // dd($request->all());
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : null;
+        $data_of_period = $this->getDataOfPeriod($request);
+
+
+        $params = (object)[
+            'establishment_id' => $request['establishment_id'],
+            'date_start' => $data_of_period['d_start'],
+            'date_end' => $data_of_period['d_end'],
+        ];
+        
+        $data = SunatValuedKardex::getDataFormatSunat($params);
+        $additionalData = SunatValuedKardex::getDataAdditional($request, $params, $data['items']);
+        //dd($additionalData);
+        $records = $data['records'];
+
+
+        $valuedKardexFormatSunatExport = new ValuedKardexSunatExport();
+        $valuedKardexFormatSunatExport
+            ->additionalData($additionalData)
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment);
+
+        return $valuedKardexFormatSunatExport->download('Reporte_Kardex_Sunat_13_1' . Carbon::now() . '.xlsx');
+
+    } */
 
 }

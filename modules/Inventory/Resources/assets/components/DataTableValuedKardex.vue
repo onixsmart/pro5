@@ -282,6 +282,12 @@ export default {
             }
             // this.loadAll();
         },
+        /* clickExportSunat(type) {
+            let query = queryString.stringify({
+                ...this.form
+            });
+            window.open(`/${this.resource}/excel-sunat/?${query}`, '_blank');
+        }, */
         async clickExportSunat(format) {
             this.loading = true;
             this.loadingSubmit = true;
@@ -297,6 +303,12 @@ export default {
                     'warehouse_id': this.form.warehouse_id,
                     brand_id: this.form.brand_id,
                     category_id: this.form.category_id,
+                    establishment_id: this.form.establishment_id,
+                    period: this.form.period,
+                    date_start: this.form.date_start,
+                    date_end: this.form.date_end,
+                    month_start: this.form.month_start,
+                    month_end: this.form.month_end,
                 },
             })
                 .then(response => {
@@ -305,12 +317,6 @@ export default {
                         this.$message.success(res.message);
                     } else {
                         this.$message.error('Error al exportar');
-                        /*const url = window.URL.createObjectURL(new Blob([res]));
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.setAttribute('download', 'ReporteInv_' + moment().format('HHmmss') + '.' + format);
-                        document.body.appendChild(link);
-                        link.click();*/
                     }
                 })
                 .catch(error => {
@@ -322,9 +328,6 @@ export default {
                     this.loadingXlsx = false;
                     this.loading = false;
                 });
-            // this.loadingSubmit = false;
-            //
-
         }
     }
 }

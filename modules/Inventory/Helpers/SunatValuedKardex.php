@@ -99,20 +99,48 @@ class SunatValuedKardex
 
     public static function getDataFormatSunat($params)
     {
-
-        $item = Item::whereFilterValuedKardexFormatSunat($params);
-
-        $purchase_items = $item->purchase_item;
-        $document_items = $item->document_items;
-        $dispatch_items = $item->dispatch_items;
+        $items = Item::where('unit_type_id','not like','ZZ')->where('active','!=',0)->get();
         
-        $all_record_items = ($purchase_items->merge($dispatch_items))->merge($document_items);
+        $items_all = [];
+        
+        $all_record_items = [];
 
-        // dd(($all_record_items));
+        foreach ($items as $key => $item) {
+            $item_description = $item::whereFilterValuedKardexFormatSunat($params)->findOrFail($item->id);
+            //$item_description = ;
+            //dd($item_description);
+                $items_all[]=$item_description;
+            
+            $document_items = $item_description->document_items;
+            $document_items = self::transformItems($document_items);
+            //dd($document_items);
+            foreach ($document_items as $key => $value) {
+                $all_record_items[]=$value;
+            }
+            $purchase_items = $item_description->purchase_item;
+            $purchase_items = self::transformItems($purchase_items);
+            foreach ($purchase_items as $key => $value) {
+                $all_record_items[]=$value;
+            }
+            $dispatch_items = $item_description->dispatch_items;
+            $dispatch_items = self::transformItems($dispatch_items);
+            foreach ($dispatch_items as $key => $value) {
+                $all_record_items[]=$value;
+            }
+        }
+        //dd(($purchase_items));
+        //$all_record_items = ($purchase_items->merge($dispatch_items))->merge($document_items);
+        /* $pru=[];
+        foreach ($all_record_items as $key => $value) {
+            if($value['output_unit_price']==null){
+                $pru[]=$value;
+            }
+        }
+        dd($pru); */
         // dd(self::getRecordsFromItems($all_record_items));
-
+        
         return [
-            'items' => $items,
+            'items' => $items_all,
             'records' => self::getRecordsFromItems($all_record_items)
         ];
 
@@ -122,14 +150,14 @@ class SunatValuedKardex
     {
 
         $data = [];
-        foreach ($items as $key => $value) {
-            $data['internal_id'] = $value->internal_id;
-            $data['table_five'] = '01';
-            $data['description'] = $value->description;
-            $data['unit_type_table_six'] = $value->findUnitTypeCodeTableSix();
-        }
+        /* foreach ($items as $key => $value) {
+            $data[$key]['internal_id'] = $value->internal_id;
+            $data[$key]['table_five'] = '01';
+            $data[$key]['description'] = $value->description;
+            $data[$key]['unit_type_table_six'] = $value->findUnitTypeCodeTableSix();
 
-        // dd($request->all(), $params, $item);
+            
+        } */
         if($request->period == 'month'){
         
             $data['period'] = Carbon::parse($request->month_end)->format('Y');
@@ -141,6 +169,8 @@ class SunatValuedKardex
             $data['month'] = null;
 
         }
+        // dd($request->all(), $params, $item);
+        
 
         return $data;
 
@@ -160,36 +190,37 @@ class SunatValuedKardex
                 ->all();
     }
      
-    private static function getRecordsFromItems($collection)
+    private static function getRecordsFromItems($new_collection)
     {
 
         // dd($collection);
-        $new_collection = self::transformItems($collection);
+        //$new_collection = self::transformItems($collection);
         // dd($new_collection);
 
         $data = [];
         $balance_quantity = 0;
         $balance_total_cost = 0;
         $balance_unit_cost = 0;
-
+        
 
         foreach ($new_collection as $key => $temp_data) {
-
+            //dd($temp_data['type']);
             //buscar nota de credito y asignar valores, es necesario que se encuentre el doc relacionado 
             // en el arreglo, ya que desde el mismo obtiene el doc y su costo promedio
-
-            if($temp_data['model_type'] == 'document' && $temp_data['document_type_id'] == '07'){
+            
+            if($temp_data['model_type'] == 'document' && $temp_data['document_type_id'] == '07'&&$temp_data['affected_document_id']!=null){
 
                 $affected_document = collect($data)->first(function($row) use($temp_data){
                     return $row['model_type'] == 'document' && in_array($row['document_type_id'], ['01', '03']) && $row['id'] === $temp_data['affected_document_id'];
                 });
-
-                $temp_data['input_unit_price'] = $affected_document['output_unit_price'];
+                /* $aff[]=$affected_document; */
+                
+                $temp_data['input_unit_price'] = isset($affected_document['output_unit_price'])?$affected_document['output_unit_price']:0;
                 $temp_data['input_total'] = $temp_data['input_unit_price'] * $temp_data['input_quantity'];
                 $temp_data['total'] = $temp_data['input_unit_price'] * $temp_data['input_quantity'];
             }
 
-
+            
             $balance_quantity +=  $temp_data['quantity'] * $temp_data['factor'];
 
             //asignar valor acumulado del documento previo del grupo saldo - campo costo unitario 
@@ -220,7 +251,7 @@ class SunatValuedKardex
             $data[$key] = $temp_data;
 
         }
-
+        //dd($data);
         return $data;
 
     }

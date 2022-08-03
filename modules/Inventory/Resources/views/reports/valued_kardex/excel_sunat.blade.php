@@ -46,7 +46,7 @@
         </tr> 
         <tr>
             <td>
-                <p><b>APELLIDOS Y NOMBRES, DENOMINACIÓN O RAZÓN SOCIAL:</b> </p>
+                <p><b>RAZÓN SOCIAL:</b> </p>
             </td>  
             <td>
                 {{ $company->name }}
@@ -62,38 +62,6 @@
         </tr> 
         <tr>
             <td>
-                <p><b>CÓDIGO DE LA EXISTENCIA:</b></p>
-            </td>  
-            <td>
-                {{ $additionalData['internal_id'] }}
-            </td>
-        </tr> 
-        <tr>
-            <td>
-                <p><b>TIPO:</b> </p>
-            </td>  
-            <td>
-                01
-            </td>
-        </tr> 
-        <tr>
-            <td>
-                <p><b>DESCRIPCIÓN:</b></p>
-            </td>  
-            <td>
-                {{ $additionalData['description'] }}
-            </td>
-        </tr> 
-        <tr>
-            <td>
-                <p><b>CÓDIGO DE LA UNIDAD DE MEDIDA:</b> </p>
-            </td> 
-            <td>
-                {{ $additionalData['unit_type_table_six']['code'] }} - {{ $additionalData['unit_type_table_six']['description'] }}
-            </td> 
-        </tr> 
-        <tr>
-            <td>
                 <p><b>MÉTODO DE VALUACIÓN:</b> </p>
             </td>  
             <td>
@@ -104,7 +72,7 @@
     
     <table>
         <tr>
-            <td colspan="4" align="center">
+            <td colspan="3" align="center">
                 <p><b>DOCUMENTO DE TRASLADO, COMPROBANTE DOCUMENTO INTERNO O SIMILAR</b></p>
             </td> 
             <td rowspan="2" align="center">
@@ -187,6 +155,7 @@
                 'balance_cost' => 0,
             ];
 
+            //dd($records);
         @endphp
 
         @foreach ($records as $row)
@@ -281,7 +250,7 @@
             
         </tr>
         <tr>
-            <td colspan="5" align="right">
+            <td colspan="4" align="right">
                 TOTALES
             </td>
             <td>

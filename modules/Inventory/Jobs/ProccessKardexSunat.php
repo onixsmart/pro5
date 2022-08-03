@@ -25,7 +25,7 @@
     use Modules\Inventory\Helpers\SunatValuedKardex;
     use Modules\Report\Traits\ReportTrait;
 
-    class ProcessKardexSunat implements ShouldQueue
+    class ProccessKardexSunat implements ShouldQueue
     {
         use Dispatchable;
         use InteractsWithQueue;
@@ -62,7 +62,7 @@
          */
         public function handle()
         {
-            Log::debug("ProcessInventoryReport Start WebsiteId => " . $this->website_id);
+            Log::debug("ProcessKardexReport Start WebsiteId => " . $this->website_id);
 
             $website = Website::find($this->website_id);
             $tenancy = app(Environment::class);
@@ -98,17 +98,17 @@
 
                     //$records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
 
-                    $data_of_period = $this->getDataOfPeriod($request);
+                    $data_of_period = $this->getDataOfPeriod($this->params);
 
 
-                    $params = (object)[
-                        'establishment_id' => $request['establishment_id'],
+                    $params_sunat = (object)[
+                        'establishment_id' => $this->params['establishment_id'],
                         'date_start' => $data_of_period['d_start'],
                         'date_end' => $data_of_period['d_end'],
                     ];
-
-                    $data = SunatValuedKardex::getDataFormatSunat($params);
-                    $additionalData = SunatValuedKardex::getDataAdditional($request, $params, $data['items']);
+                    
+                    $data = SunatValuedKardex::getDataFormatSunat($params_sunat);
+                    $additionalData = SunatValuedKardex::getDataAdditional($this->params, $params_sunat, $data['items']);
                     $records = $data['records'];
 
                     if (!is_object($tray)) {
@@ -142,11 +142,11 @@
                     $tray->save();
 
                 } catch (Exception $e) {
-                    Log::debug("ProcessInventoryReport Error transaction" . $e);
+                    Log::debug("ProcessKardexReport Error transaction" . $e);
                 }
             }
 
-            Log::debug("ProcessInventoryReport Finish transaction");
+            Log::debug("ProcessKardexReport Finish transaction");
         }
 
         public function getRecordsTranform($warehouse_id, $filter)
