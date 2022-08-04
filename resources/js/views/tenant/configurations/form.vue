@@ -1728,7 +1728,6 @@
                         <span slot="label">Reportes</span>
                         <report-configurations-index></report-configurations-index>
                     </el-tab-pane>
-                    
                     <el-tab-pane class="mb-3" name="eleven">
                         <span slot="label">Dashboard</span>
                         <div class="row">
