@@ -226,7 +226,6 @@ class UnpaidController extends Controller
                     $customer_name +
                     $customer_address +
                     $p_order +
-                    $legends +
                     $bank_accounts +
                     $total_exportation +
                     $total_free +
