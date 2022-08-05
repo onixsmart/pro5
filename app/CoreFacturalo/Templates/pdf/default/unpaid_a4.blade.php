@@ -158,11 +158,13 @@
                 @endif
             </td>
             <td class="text-left align-top">{{ $row->item->model ?? '' }}</td>
+            @if($row->item->IdLoteSelected)
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
                 {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
 
             </td>
+            @endif
             <td class="text-center align-top">
 
                 @isset($row->item->lots)
