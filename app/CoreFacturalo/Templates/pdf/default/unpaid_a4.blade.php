@@ -161,7 +161,7 @@
             @if($row->item->IdLoteSelected)
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
+                {{ $row->item->IdLoteSelected ? $itemLotGroup->getLote($row->item->IdLoteSelected):'' }}
 
             </td>
             @endif
