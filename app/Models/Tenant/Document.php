@@ -253,7 +253,7 @@
             'unique_filename', //registra nombre de archivo unico (campo validador para evitar duplicidad)
 
             'ticket_single_shipment',
-
+            'folio'
         ];
 
         protected $casts = [
