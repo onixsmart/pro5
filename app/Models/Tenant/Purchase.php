@@ -63,7 +63,7 @@ class Purchase extends ModelTenant
 {
     // use SoftDeletes;
 
-    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments','notes_purchase'];
+    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments'];
 
     protected $fillable = [
         'user_id',
@@ -766,13 +766,5 @@ class Purchase extends ModelTenant
         return url("purchases/print/{$this->external_id}/{$format}");
     }
         
-    public function notes_purchase()
-    {
-        return $this->hasOne(NotesPurchase::class);
-    }
 
-    public function affected_purchases()
-        {
-            return $this->hasMany(NotesPurchase::class, 'affected_purchase_id');
-        }
 }
