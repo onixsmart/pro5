@@ -260,9 +260,23 @@ class SunatValuedKardex
     {
         
         $temp_data = [];
+        $cont_input_doc=0;
+        $cont_out_doc=0;
+        $price_acum_input=0;
+        $price_acum_out=0;
 
+        $cont_input_dis=0;
+        $cont_out_dis=0;
+        $price_acum_input_dis=0;
+        $price_acum_out_dis=0;
+
+        $cont_input_pur=0;
+        $cont_out_pur=0;
+        $price_acum_input_pur=0;
+        $price_acum_out_pur=0;
         if($record_item instanceof DocumentItem){
-
+            
+            
             $document = $record_item->document;
             $affected_document_id = null;
 
@@ -282,18 +296,20 @@ class SunatValuedKardex
             $operation_type = null;
             
             if($type == 'input'){
-                
+                $price_acum_input+=$record_item->unit_price;
+                $cont_input_doc+=1;
                 $input_quantity =  $record_item->quantity;
-                $input_unit_price =  $record_item->unit_price;
+                $input_unit_price = ($document->unit_price+$record_item->unit_price)/2;
                 $input_total = $record_item->total;
                 $operation_type = 'DEVOLUCIÓN';
                 $operation_type_code = '05';
                 $factor = 1;
 
             }else{
-
+                $cont_out_doc+=1;
+                $price_acum_out+=$record_item->unit_price;
                 $output_quantity =  $record_item->quantity;
-                $output_unit_price =  $record_item->unit_price;
+                $output_unit_price =  ($document->unit_price+$record_item->unit_price)/2;
                 $output_total =  $record_item->total;
                 $operation_type = 'VENTA';
                 $factor = -1;
@@ -338,6 +354,9 @@ class SunatValuedKardex
 
             $document = $record_item->purchase;
 
+            $price_acum_input_pur+=$record_item->unit_price;
+            $cont_input_pur+=1;
+
             $temp_data = [
                 'id' => $document->id,
                 'type' => 'input',
@@ -351,7 +370,7 @@ class SunatValuedKardex
                 'operation_type_code' => '02',
 
                 'input_quantity' => $record_item->quantity,
-                'input_unit_price' => $record_item->unit_price,
+                'input_unit_price' => ($document->unit_price+$record_item->unit_price)/2,
                 'input_total' => $record_item->total,
 
                 'output_quantity' => null,
@@ -385,9 +404,10 @@ class SunatValuedKardex
             $operation_type = null;
             
             if($type == 'input'){
-                
+                $price_acum_input_dis+=$record_item->unit_price;
+                $cont_input_dis+=1;
                 $input_quantity =  $record_item->quantity;
-                $input_unit_price =  $record_item->relation_item->purchase_unit_price;
+                $input_unit_price =  ($document->unit_price+$record_item->unit_price)/2;
                 $input_total = $record_item->quantity * $record_item->relation_item->purchase_unit_price;
                 $operation_type = 'COMPRA';
                 $operation_type_code = $record_item->dispatch->transfer_reason_type_id;
@@ -395,8 +415,11 @@ class SunatValuedKardex
 
             }else{
 
+                $cont_out_dis+=1;
+                $price_acum_out_dis+=$record_item->unit_price;
+
                 $output_quantity =  $record_item->quantity;
-                $output_unit_price =  $record_item->relation_item->sale_unit_price;
+                $output_unit_price =  ($document->unit_price+$record_item->unit_price)/2;
                 $output_total =  $record_item->quantity * $record_item->relation_item->sale_unit_price;
 
                 $operation_type = null;
