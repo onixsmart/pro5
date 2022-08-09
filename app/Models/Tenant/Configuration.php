@@ -261,12 +261,7 @@
             'generate_order_note_from_quotation',
             'list_items_by_warehouse',
             'hide_pdf_view_documents',
-            'ticket_single_shipment',
-            'affect_all_documents',
-            'dashboard_sales',
-            'dashboard_general',
-            'dashboard_clients',
-            'dashboard_products',
+            'quantity_sales_notes',
         ];
 
         protected $casts = [
