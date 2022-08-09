@@ -408,9 +408,18 @@
          *
          * @return \Illuminate\Database\Query\Builder|Builder|null
          */
-        public function scopeWhereTypeUser($query)
+        public function scopeWhereTypeUser($query,$params=[])
         {
-            $user = auth()->user();
+            
+            if(isset($params->user_id)) {
+                $user_id = (int)$params->user_id;
+                $user = User::find($user_id);
+                if(!$user) {
+                    $user = new User();
+                }
+            }else{
+                $user = auth()->user();
+            }
             return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
         }
 
@@ -577,10 +586,16 @@
          */
         public function scopeWhereValuedKardexFormatSunat($query, $params)
         {
-            return $query->whereIn('transfer_reason_type_id', ['01', '02', '04', '13'])
-                ->whereStateTypeAccepted()
-                ->whereTypeUser()
-                ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+            $query->whereIn('transfer_reason_type_id', ['01', '02', '04', '13'])
+                ->whereStateTypeAccepted();
+            if ($params->user_id) {
+                $query=$query->whereTypeUser($params);
+            } else {
+                $query=$query->whereTypeUser();
+            }
+            
+            
+            return $query=$query->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
         }
 
 

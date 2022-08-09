@@ -18,6 +18,7 @@ use Modules\Inventory\Jobs\ProccessKardexSunat;
 use Hyn\Tenancy\Models\Hostname;
 use Modules\Inventory\Helpers\SunatValuedKardex;
 use Modules\Inventory\Exports\ValuedKardexSunatExport;
+use Illuminate\Support\Arr;
 
 class ReportValuedKardexController extends Controller
 {
@@ -141,6 +142,8 @@ class ReportValuedKardexController extends Controller
 
     public function excelSunat(Request $request)
     {
+        $user_id = auth()->user()->id;
+        $new_request=Arr::add($request->all(), 'user_id', $user_id);
         $host = $request->getHost();
         $tray = DownloadTray::create([
             'user_id' => auth()->user()->id,
@@ -149,6 +152,7 @@ class ReportValuedKardexController extends Controller
             'date_init' => date('Y-m-d H:i:s'),
             'type' => 'Reporte Kardex Sunat'
         ]);
+        //dd($new_request);
         $trayId = $tray->id;
         $hostname = Hostname::where('fqdn',$host)->first();
         if(empty($hostname)) {
@@ -159,7 +163,8 @@ class ReportValuedKardexController extends Controller
         }else{
             $website_id = $hostname->website_id;
         }
-        ProccessKardexSunat::dispatch($website_id,$trayId,  0 , $request->input('format'), $request->all() );
+       //dd($new_request);
+        ProccessKardexSunat::dispatch($website_id,$trayId,  0 , $request->input('format'), $new_request );
 
         return  [
             'success' => true,

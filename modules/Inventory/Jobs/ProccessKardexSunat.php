@@ -105,12 +105,12 @@
                         'establishment_id' => $this->params['establishment_id'],
                         'date_start' => $data_of_period['d_start'],
                         'date_end' => $data_of_period['d_end'],
+                        'user_id' => $this->params['user_id'],
                     ];
                     
                     $data = SunatValuedKardex::getDataFormatSunat($params_sunat);
                     $additionalData = SunatValuedKardex::getDataAdditional($this->params, $params_sunat, $data['items']);
                     $records = $data['records'];
-
                     if (!is_object($tray)) {
                         //Log::debug('DE ' . var_export($tray, true));
                     }

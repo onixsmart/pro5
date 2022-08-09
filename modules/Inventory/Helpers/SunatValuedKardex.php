@@ -158,10 +158,10 @@ class SunatValuedKardex
 
             
         } */
-        if($request->period == 'month'){
+        if($request['period'] == 'month'){
         
-            $data['period'] = Carbon::parse($request->month_end)->format('Y');
-            $data['month'] = Carbon::parse($request->month_end)->format('m');
+            $data['period'] = Carbon::parse($request['month_end'])->format('Y');
+            $data['month'] = Carbon::parse($request['month_end'])->format('m');
         
         }else{
             

@@ -375,8 +375,16 @@ class Purchase extends ModelTenant
     public function scopeWhereTypeUser( $query, $params= [])
     {
         /** @var \App\Models\Tenant\User $user */
-        if(isset($params['user_id'])) {
+        /* if(isset($params['user_id'])) {
             $user_id = (int)$params['user_id'];
+            $user = User::find($user_id);
+            if(!$user) {
+                $user = new User();
+            }
+        }
+        
+        else */if(isset($params->user_id)) {
+            $user_id = (int)$params->user_id;
             $user = User::find($user_id);
             if(!$user) {
                 $user = new User();
@@ -582,9 +590,15 @@ class Purchase extends ModelTenant
      */
     public function scopeWhereValuedKardexFormatSunat($query, $params)
     {
-        return $query->whereStateTypeAccepted()
-                    ->whereTypeUser()
-                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+        $query->whereStateTypeAccepted();
+                if ($params->user_id) {
+                    $query=$query->whereTypeUser($params);
+                } else {
+                    $query=$query->whereTypeUser();
+                }
+                
+                
+            return $query=$query->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
     }
 
     /**
