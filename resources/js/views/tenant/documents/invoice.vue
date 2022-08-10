@@ -3483,10 +3483,11 @@ export default {
             this.loading_submit = true
 
             await this.$http.get(`/${this.resource}/locked_sales`).then(response => {
+                console.log('inicio');
                 if(response.data.success){
                     this.$message.error(response.data.message);
                 }
-            }).finally(() => this.loading = false);
+            }).finally(() => this.loading_submit = false);
 
 
             let path = `/${this.resource}`;
