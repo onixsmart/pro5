@@ -125,33 +125,32 @@ class DocumentHelper
 
         $limit_sales = $configuration->limit_sales;
 
-        $total_quantity_sales=0;
+        /* $total_quantity_sales=0;
 
         $quantity_sales=0;
 
-        $quantity_sales_notes=0;
+        $quantity_sales_notes=0; */
 
         if($limit_sales !== 0)
         {
-            $start_billing_cycle = self::getStartBillingCycleFromSystem();
+            /* $start_billing_cycle = self::getStartBillingCycleFromSystem(); */
             
             if($start_billing_cycle){
 
-                $start_end_date = self::getStartEndDateForFilterDocument($start_billing_cycle);
+                /* $start_end_date = self::getStartEndDateForFilterDocument($start_billing_cycle);
     
                 $quantity_sales = Document::whereBetween('date_of_issue', [ $start_end_date['start_date'], $start_end_date['end_date'] ])->whereStateTypeAccepted()->select('total')->sum('total');
                 
                 if ($configuration->locked_sales_notes) {
                     $quantity_sales_notes = SaleNote::whereBetween('date_of_issue', [ $start_end_date['start_date'], $start_end_date['end_date'] ])->whereStateTypeAccepted()->select('total')->sum('total');
-                }
+                } */
 
-                $total_quantity_sales=$quantity_sales+$quantity_sales_notes;
+                $total_quantity_sales=$configuration->quantity_sales;
 
                 if($total_quantity_sales > $limit_sales)
                 {
                     return [
                         'success' => true,
-                        'count' => $total_quantity_sales,
                         'message' => 'Ha superado el límite permitido de ventas por mes'
                     ];
                 }

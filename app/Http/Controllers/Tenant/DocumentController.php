@@ -1365,7 +1365,6 @@ class DocumentController extends Controller
         {
             return [
                 'success' => true,
-                'count' => $exceed_limit['count'],
                 'message' => $exceed_limit['message'],
             ];
         }
