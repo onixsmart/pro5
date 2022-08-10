@@ -23,6 +23,10 @@
     use Illuminate\Support\Facades\DB;
     use Modules\Document\Helpers\DocumentHelper;
     use Modules\MobileApp\Models\System\AppModule;
+    use App\Models\Tenant\{
+        Document,
+        SaleNote
+    };
 
 
     class ClientController extends Controller
@@ -217,6 +221,16 @@
                     ->first()
                     ->quantity_sales_notes;
                     //dd($row->count_sales_notes);
+
+                    $count_total_sales_documents=$this->getTotalSalesLimit($init, $end);
+
+                    if ($row->count_sale==0&&$count_total_sales_documents>$row->count_sale) {
+                        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['quantity_sales' => $count_total_sales_documents]);
+                        $row->count_sale = DB::connection('tenant')
+                        ->table('configurations')
+                        ->first()
+                        ->quantity_sales;
+                    }
 
                 }
 
@@ -1040,5 +1054,14 @@
             ];
         }
 
+        private function getTotalSalesLimit($date_init,$date_final)
+        {
+            $quantity_sales = Document::whereBetween('date_of_issue', [ $date_init, $date_final ])->whereStateTypeAccepted()->select('total')->sum('total');
+                
+            $quantity_sales_notes = SaleNote::whereBetween('date_of_issue', [  $date_init, $date_final  ])->whereStateTypeAccepted()->select('total')->sum('total');
+
+            return $quantity_sales+$quantity_sales_notes;
+
+        }
 
     }

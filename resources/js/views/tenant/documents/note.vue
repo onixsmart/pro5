@@ -973,6 +973,13 @@
                 }
 
                 this.loading_submit = true
+
+                await this.$http.get(`/documents/locked_sales`).then(response => {
+                    if(response.data.success){
+                        this.$message.error(response.data.message);
+                    }
+                }).finally(() => this.loading = false);
+
                 let new_resource= this.purchase_value? this.resource_purchase:this.resource;
                 await this.$http.post(`/${new_resource}`, this.form)
                     .then(response => {
