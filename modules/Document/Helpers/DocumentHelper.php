@@ -6,7 +6,8 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\Tenant\{
     Configuration,
-    Document
+    Document,
+    SaleNote
 };
 use Hyn\Tenancy\Environment;
 use App\Models\System\Client;
@@ -150,6 +151,7 @@ class DocumentHelper
                 {
                     return [
                         'success' => true,
+                        'count' => $total_quantity_sales,
                         'message' => 'Ha superado el límite permitido de ventas por mes'
                     ];
                 }

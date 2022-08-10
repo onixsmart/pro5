@@ -3430,7 +3430,9 @@ export default {
             this.loading_submit = true
 
             await this.$http.get(`/${this.resource}/locked_sales`).then(response => {
-                this.$message.error(response.data.message);
+                if(response.data.success){
+                    this.$message.error(response.data.message);
+                }
             }).finally(() => this.loading = false);
 
 
