@@ -133,7 +133,7 @@ class DocumentHelper
 
         if($limit_sales !== 0)
         {
-            /* $start_billing_cycle = self::getStartBillingCycleFromSystem(); */
+            $start_billing_cycle = self::getStartBillingCycleFromSystem();
             
             if($start_billing_cycle){
 
