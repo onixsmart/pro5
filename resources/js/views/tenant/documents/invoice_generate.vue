@@ -3483,6 +3483,13 @@ export default {
             }
 
             this.loading_submit = true
+
+            await this.$http.get(`/${this.resource}/locked_sales`).then(response => {
+                if(response.data.success){
+                    this.$message.error(response.data.message);
+                }
+            }).finally(() => this.loading_submit = false);
+
             let path = `/${this.resource}`;
             if (this.isUpdate) {
                 path = `/${this.resource}/${this.form.id}/update`;
