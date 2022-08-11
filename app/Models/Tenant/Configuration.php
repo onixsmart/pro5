@@ -260,7 +260,13 @@
             'order_cash_income',
             'generate_order_note_from_quotation',
             'list_items_by_warehouse',
+            'ticket_single_shipment',
             'hide_pdf_view_documents',
+            'dashboard_sales',
+            'dashboard_general',
+            'dashboard_clients',
+            'dashboard_products',
+            'affect_all_documents',
             'quantity_sales_notes',
         ];
 

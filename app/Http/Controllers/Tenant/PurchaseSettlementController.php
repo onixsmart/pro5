@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Tenant\PurchaseSettlementCollection;
 use App\Models\Tenant\PurchaseSettlement;
+use App\Models\Tenant\PurchaseSettlementPayment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\CoreFacturalo\Facturalo;
@@ -13,6 +14,8 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\GeneralPaymentCondition;
+
+use App\Models\Tenant\User;
 
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
@@ -87,6 +90,19 @@ class PurchaseSettlementController extends Controller
         });
 
         $document = $fact->getDocument();
+
+        foreach ($data['payments'] as $payment) {
+
+            $record_payment = new PurchaseSettlementPayment;
+            $record_payment->purchase_settlement_id=$document->id;
+            $record_payment->date_of_payment=$payment['date_of_payment'];
+            $record_payment->payment_method_type_id=$payment['payment_method_type_id'];
+            $record_payment->reference=$payment['reference'];
+            $record_payment->payment=$payment['payment'];
+            $record_payment->save();
+            $this->createGlobalPayment($record_payment, $payment);
+        }
+
         $response = $fact->getResponse();
 
         return [
@@ -122,6 +138,9 @@ class PurchaseSettlementController extends Controller
             'send_xml_signed'=>true,
             'format_pdf'=>'a4',
         ];
+        $suplier_info = PersonInput::set($inputs['supplier_id']);
+        $suplier_info['address_type_id'] = '01';
+        //dd($suplier_info);
         $last_number = PurchaseSettlement::getLastNumberBySerie($inputs['series']);
         // se actualiza el numero actual en $imputs
         $number_new= $last_number + 1;
@@ -131,7 +150,7 @@ class PurchaseSettlementController extends Controller
         $values = [
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),
-            'supplier' => PersonInput::set($inputs['supplier_id']),
+            'supplier' => $suplier_info,
             'soap_type_id' => $company->soap_type_id,
             'state_type_id' => '01',
             'establishment'=>EstablishmentInput::set($inputs['establishment_id']),
@@ -152,6 +171,17 @@ class PurchaseSettlementController extends Controller
 
     public function tables()
     {
+        $user = new User();
+        if(\Auth::user()){
+            $user = \Auth::user();
+        }
+        $document_id =  $user->document_id;
+        $series_id =  $user->series_id;
+        $establishment_id =  $user->establishment_id;
+        $userId =  $user->id;
+        $userType = $user->type;
+        $series = $user->getSeries();
+
         $suppliers = $this->table('suppliers');
         $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
         $currency_types = CurrencyType::whereActive()->get();
@@ -167,7 +197,7 @@ class PurchaseSettlementController extends Controller
         $payment_conditions = GeneralPaymentCondition::where('id','01')->get();
 
         return compact('suppliers', 'establishment', 'currency_types', 'discount_types', 'configuration', 'payment_conditions',
-            'charge_types', 'document_types_invoice', 'company', 'payment_method_types', 'payment_destinations', 'customers');
+            'charge_types', 'document_types_invoice', 'company', 'payment_method_types', 'payment_destinations', 'customers', 'series_id', 'series','document_id');
     }
 
     public function table($table)

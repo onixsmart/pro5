@@ -651,7 +651,6 @@ export default {
         WarehousesDetail,
         Keypress,
         LotsGroup,
-        HistorySalesForm,
         SelectLotsForm,
         HistorySalesForm,
         'vue-ckeditor': VueCkeditor.component

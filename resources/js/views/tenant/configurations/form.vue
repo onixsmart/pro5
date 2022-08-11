@@ -1985,11 +1985,12 @@ export default {
                 hide_pdf_view_documents: false,
                 ticket_single_shipment: false,
 
-                affect_all_documents:false,
                 dashboard_sales:true,
                 dashboard_products:false,
                 dashboard_general:true,
                 dashboard_clients:true,
+
+                affect_all_documents:false,
             };
         },
         UpdateFormPurchase(e) {
