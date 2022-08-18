@@ -51,9 +51,9 @@
             </div>
 
             <template v-if="records.length>0">
-                <!-- <div class="col-3 form-group">
+                <div class="col-3 form-group">
                     <el-date-picker
-                        v-model="form.date_of_issue"
+                        v-model="form.date_start"
                         type="date"
                         style="width: 100%"
                         placeholder="Fecha de ejecucion"
@@ -64,7 +64,7 @@
 
                 <div class="col-3 form-group">
                     <el-time-picker
-                        v-model="form.hour_of_issue"
+                        v-model="form.time_start"
                         type="date"
                         style="width: 100%"
                         placeholder="Hora de ejecucion"
@@ -75,9 +75,9 @@
 
                 <div class="col-3 form-group">
                     <label class="control-label">Recurrente</label>
-                    <el-checkbox v-model="form.month" >Mensual</el-checkbox>
-                    <el-checkbox v-model="form.year" >Anual</el-checkbox>
-                </div> -->
+                    <el-radio v-model="form.recurrence" label="1">Mensual</el-radio>
+                    <el-radio v-model="form.recurrence" label="0">Anual</el-radio>
+                </div>
 
                 <div class="col-md-12 py-2 border-top">
                     <div :class="{'has-danger': errors.message}"
@@ -155,10 +155,9 @@ export default {
             form: {
                 client_id: null,
                 message:null,
-                date_of_issue:null,
-                hour_of_issue:null,
-                month:false,
-                year:false,
+                date_start:null,
+                time_start:null,
+                recurrence:null,
                 selecteds: [],
             },
             records: [],

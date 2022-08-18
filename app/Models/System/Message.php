@@ -13,6 +13,9 @@ class Message extends Model
 
     protected $fillable = [
         'message',
+        'date_start',
+        'time_start',
+        'recurrence',
     ];
 
     public function messageDescription()

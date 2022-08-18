@@ -34,7 +34,7 @@ class MessageController extends Controller
     }
 
     public function records(){
-        $records = ModelMessage::latest()
+        $records = ModelMessage::first()
         ->get();
 
         return new MessageNotificationCollection($records);
@@ -56,6 +56,9 @@ class MessageController extends Controller
 
         $message=New ModelMessage();
         $message->message=$req['message'];
+        $message->date_start=$req['date_start'];
+        $message->time_start=$req['time_start'];
+        $message->recurrence=$req['recurrence'];
         $message->save();
 
         if(!empty($req['selecteds'])){
