@@ -808,6 +808,7 @@ if ($hostname) {
             Route::get('messages/filter', 'System\MessageController@getFilter')->name('system.message.filter');
             Route::post('messages', 'System\MessageController@store');
             Route::get('messages/records','System\MessageController@records');
+            Route::delete('messages','System\MessageController@destroy');
             
             /*
             Route::get('ajuste_claves_mysql', function(){

@@ -84,7 +84,13 @@
             },
             clickActions(id) {
                 
+            },
+            clickDelete(id) {
+                this.destroy(`/${this.resource}/${id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                )
             }
+
         }
     }
 </script>

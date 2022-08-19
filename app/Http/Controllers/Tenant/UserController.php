@@ -201,7 +201,6 @@ class UserController extends Controller
     }
 
     public function getMessage(){
-        /* $this->getNotification();
         $tenancy = app(Environment::class);
         $hostname = $tenancy->hostname();
         $tenant_id = Client::select('id')->where('hostname_id', $hostname->id)->first();
@@ -214,6 +213,6 @@ class UserController extends Controller
                 'success' => true,
                 'message' => $message_return['data'],
             ];
-        } */
+        }
     }
 }

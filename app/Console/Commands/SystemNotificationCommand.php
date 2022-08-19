@@ -42,22 +42,43 @@ class SystemNotificationCommand extends Command
      * @return mixed
      */
     public function handle() {
-
-        //$this->info('Ejecutando a la hora del mensaje');
         foreach (Message::where('time_start', Carbon::now()->format('H:i').':00')->get() as $message) {
             try {
                 $message_text=$message->message;
                 $message_info=$message->messageDescription;
-                if (count($message_info)>0) {
-                   foreach ($message_info as $value) {
-                        $id_client=$value->client_id;
-                        $tenant_id = Client::select('id')->where('id', $id_client)->first();
-                        //Envio de notificacion al tenant
-                        $tenant_id->notify(new MessageNotification($message_text));
+                $message_date=$message->date_start;
+                $message_month=Carbon::parse($message_date)->addMonth(1)->format('m');
+                $message_year=Carbon::parse($message_date)->addYear(1)->format('Y');
+                if ($message->recurrence==1) {
+                    if(Carbon::now()format('m')==$message_month){
+                        if (count($message_info)>0) {
+                            foreach ($message_info as $value) {
+                                 $id_client=$value->client_id;
+                                 $tenant_id = Client::select('id')->where('id', $id_client)->first();
+                                 //Envio de notificacion al tenant
+                                 $tenant_id->notify(new MessageNotification($message_text));
+         
+                            }
+                         }
+                    }
+                } 
 
-                   }
-                }
-                Log::info('Notification for ' . $id_client . ' Message success');
+                if ($message->recurrence==0) {
+                    if(Carbon::now()format('Y')==$message_year){
+                        if (count($message_info)>0) {
+                            foreach ($message_info as $value) {
+                                 $id_client=$value->client_id;
+                                 $tenant_id = Client::select('id')->where('id', $id_client)->first();
+                                 //Envio de notificacion al tenant
+                                 $tenant_id->notify(new MessageNotification($message_text));
+         
+                            }
+                         }
+                    }
+                } 
+                
+                
+                Log::info('Notification for ' . $tenant_id . ' Message success');
                 $this->info('Ejecutando mensaje');
 
             }
