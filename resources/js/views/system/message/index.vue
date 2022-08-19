@@ -22,20 +22,25 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <!-- <th>#</th> -->
+                            <th>#</th>
                             <th>Mensaje</th>
                             <th>Ultima ejecucion</th>
-                            <!-- <th>Recurrente</th> -->
-                            <!-- <th>Acciones</th> -->
+                            <th>Recurrente</th>
+                            <th>Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <template v-for="(row, index) in records">
-                        <tr>
-                            {{row.message}}
-                        </tr>
-                        <tr>{{ row.updated }}</tr>
-                        </template>
+                            <tr v-for="(row, index) in records" :key="index">
+                                <td>{{(index+1)}}</td>
+                                <td>{{row.message}}</td>
+                                <td>{{ row.updated }}</td>
+                                <td>{{row.recurrence}}</td>
+                                <td>
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
+
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickDelete(row.id)">Eliminar</button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -63,23 +68,31 @@
                 records: [],
             }
         },
-        created() {            
-                
+        created() {
             this.$eventHub.$on('reloadData', () => {
                 this.getData()
             })
             this.getData()
         },
         methods: {
-            clickCreate() {
-                this.showNew = true
-            },
             getData() {
                 this.$http.get(`/${this.resource}/records`)
                     .then(response => {
-                        this.records = response.data.data                         
+                        this.records = response.data.data
                     })
             },
+            clickCreate() {
+                this.showNew = true
+            },
+            clickActions(id) {
+                
+            },
+            clickDelete(id) {
+                this.destroy(`/${this.resource}/${id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                )
+            }
+
         }
     }
 </script>

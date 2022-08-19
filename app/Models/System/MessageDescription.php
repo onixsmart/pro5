@@ -30,4 +30,8 @@ class MessageDescription extends Model
     {
         return $this->belongsTo(Message::class);
     }
+
+    public function scopeClientGet($query){
+        return $query->client->notifications->first()->updated_at;
+    }
 }

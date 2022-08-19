@@ -34,7 +34,8 @@ class MessageController extends Controller
     }
 
     public function records(){
-        $records = ModelMessage::all();
+        $records = ModelMessage::first()
+        ->get();
 
         return new MessageNotificationCollection($records);
     }
@@ -55,6 +56,9 @@ class MessageController extends Controller
 
         $message=New ModelMessage();
         $message->message=$req['message'];
+        $message->date_start=$req['date_start'];
+        $message->time_start=$req['time_start'];
+        $message->recurrence=$req['recurrence'];
         $message->save();
 
         if(!empty($req['selecteds'])){
@@ -69,6 +73,17 @@ class MessageController extends Controller
         
         //Notification::send($idUser, new Message($id));
         
+    }
+
+    public function destroy($id)
+    {
+        $message = MessageDescription::findOrFail($id);
+        $message->delete();
+
+        return [
+            'success' => true,
+            'message' => 'Eliminado con éxito'
+        ];
     }
 
 }
