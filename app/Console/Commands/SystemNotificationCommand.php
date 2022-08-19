@@ -50,7 +50,7 @@ class SystemNotificationCommand extends Command
                 $message_month=Carbon::parse($message_date)->addMonth(1)->format('m');
                 $message_year=Carbon::parse($message_date)->addYear(1)->format('Y');
                 if ($message->recurrence==1) {
-                    if(Carbon::now()format('m')==$message_month){
+                    if(Carbon::now()->format('m')==$message_month){
                         if (count($message_info)>0) {
                             foreach ($message_info as $value) {
                                  $id_client=$value->client_id;
@@ -64,7 +64,7 @@ class SystemNotificationCommand extends Command
                 } 
 
                 if ($message->recurrence==0) {
-                    if(Carbon::now()format('Y')==$message_year){
+                    if(Carbon::now()->format('Y')==$message_year){
                         if (count($message_info)>0) {
                             foreach ($message_info as $value) {
                                  $id_client=$value->client_id;
