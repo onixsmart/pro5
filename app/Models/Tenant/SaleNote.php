@@ -721,6 +721,15 @@
             $mails = $person->getCollectionData();
             $customer_email=  $mails['optional_email_send'];
 
+            $date_pay=$this->payments;
+            $payment='';
+            if (count($date_pay)>0) {
+                foreach ($date_pay as $pay) {
+                    $pay=json_decode(json_encode($pay));
+                    $payment=Carbon::parse($pay->date_of_payment)->format('Y-m-d');
+                }
+            }
+
             return [
                 'id' => $this->id,
                 'soap_type_id' => $this->soap_type_id,
@@ -791,6 +800,7 @@
                 'seller' => $this->seller,
                 'filename' => $this->filename,
                 'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
+                'date_of_payment'              => $payment,
 // 'number' => $this->number,
             ];
         }
