@@ -1951,6 +1951,13 @@ export default {
             }
             item.presentation = {};
             item.unit_price = item.sale_unit_price;
+
+            let catchItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
+
+            if (catchItem !== undefined) {
+                item.unit_price = catchItem.unit_price;
+            }
+
             item.item = {
                 amount_plastic_bag_taxes: item.amount_plastic_bag_taxes,
                 attributes: item.attributes,
@@ -1996,7 +2003,9 @@ export default {
 
             let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
             if (tempItem !== undefined) {
-                item.quantity = tempItem.quantity
+                item.quantity = tempItem.quantity;
+                item.unit_price_value = tempItem.unit_price;
+                item.input_unit_price_value = tempItem.unit_price;
             }
             // item.quantity = itemsParsed.find(ip => ip.item_id == item.id).quantity;
             item.warehouse_id = null;
