@@ -64,7 +64,6 @@
         public function handle()
         {
             Log::debug("ProcessDocumentReport Start");
-            Log::debug("fdgfgfd");
             $tray = DownloadTray::find($this->tray_id);
             $path = null;
 

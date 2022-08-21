@@ -125,13 +125,14 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                 foreach ($records as $key => $value) {
                     $document_type = $value->getDocumentType();
                     $clear_type[] = $document_type->id;
-                    $clear_serie[] = $value->series;
+                    $clear_series[] = $value->series;
                     
                 }
                 $clear_type=array_unique($clear_type);
-                $clear_serie=array_unique($clear_serie);
+                $clear_series=array_unique($clear_series);
+                $clear_type=array_values($clear_type);
+                $clear_series=array_values($clear_series);
                 
-                //dd($clear_serie);
             @endphp
             {{-- @foreach($document_types as $type) --}}
             
@@ -148,16 +149,16 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                             $title=$document_types[$c]->description;
                             //dd($series_document);
                         @endphp
-                        @for ($cs = 0; $cs < count($clear_serie); $cs++)
+                        @for ($cs = 0; $cs < count($clear_series); $cs++)
                         @for ($s = 0; $s < count($series_document); $s++)
                             @php
                                 $serie_type=$series_document[$s];
-                                
+                                //dd($serie_type['number']==$clear_series[$cs]);
                             @endphp
-                            @if ($serie_type->number==$clear_serie[$cs])
+                            @if ($serie_type['number']==$clear_series[$cs])
                                 @php
-
-                                    $serie_number=$serie_type->number;
+                                    //dd($serie_type['number']);
+                                    $serie_number=$serie_type['number'];
                                 @endphp
                 <h3>{{$title}} - {{$serie_number}}</h3>
                 <table class="">
@@ -257,7 +258,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
     
                         ?>
                         @if ($document_types[$c]->id==$document_type->id)
-                        @if ($serie_type->number==$value->series)
+                        @if ($serie_type['number']==$value->series)
                         <tr>
                             <td class="celda">{{$t+1}}</td>
                             <td class="celda">
