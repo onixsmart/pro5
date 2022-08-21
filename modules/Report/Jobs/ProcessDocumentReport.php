@@ -81,11 +81,11 @@
                     $params=json_decode(json_encode($this->params));
                     //dd($columns->guides);
                     $company = Company::first();
-                    $establishment = ($params->establishment_id) ? Establishment::findOrFail($params->establishment_id) : auth()->user()->establishment;
+                    $establishment = ($params['establishment_id']) ? Establishment::findOrFail($params['establishment_id']) : auth()->user()->establishment;
 
                     $documentTypeId = "01";
-                    if ($request->has('document_type_id')) {
-                        $documentTypeId = str_replace('"', '', $request->document_type_id);
+                    if ($params['document_type_id']) {
+                        $documentTypeId = str_replace('"', '', $params['document_type_id']);
                     }
                     $documentType = DocumentType::find($documentTypeId);
                     if (null === $documentType) {
@@ -94,9 +94,9 @@
 
                     $classType = $documentType->getCurrentRelatiomClass();
 
-                    $records = $this->getRecords($request->all(), $classType);
+                    $records = $this->getRecords($params, $classType);
                     $records= $records->get();
-                    $filters = $request->all();
+                    $filters = $params;
                     //ini_set('max_execution_time', 0);
 
                     //$records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
@@ -174,7 +174,7 @@
                         $categories = [];
                         $categories_services = [];
 
-                        if($request->include_categories == "true"){
+                        if($params['include_categories'] == "true"){
                             $categories = ReportDocumentController::getCategories($records, false);
                             $categories_services = ReportDocumentController::getCategories($records, true);
                         }
