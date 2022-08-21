@@ -80,6 +80,8 @@
                     $columns=$this->columns;
                     $params=json_decode(json_encode($this->params));
                     //dd($columns->guides);
+                    Log::debug($this->params);
+                    Log::debug($params);
                     $company = Company::first();
                     $establishment = ($params['establishment_id']) ? Establishment::findOrFail($params['establishment_id']) : auth()->user()->establishment;
 
