@@ -78,9 +78,10 @@
             } else {
                 try {
                     $columns=$this->columns;
+                    $params=json_decode(json_encode($this->params));
                     //dd($columns->guides);
                     $company = Company::first();
-                    $establishment = ($this->params->establishment_id) ? Establishment::findOrFail($this->params->establishment_id) : auth()->user()->establishment;
+                    $establishment = ($params->establishment_id) ? Establishment::findOrFail($params->establishment_id) : auth()->user()->establishment;
 
                     $documentTypeId = "01";
                     if ($request->has('document_type_id')) {
