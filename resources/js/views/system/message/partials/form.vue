@@ -3,14 +3,14 @@
         :title="titleDialog"
         width="40%"
         :visible="showNew"
-        @open="onOpened"
+        @open="create"
         :close-on-click-modal="false"
         :close-on-press-escape="false"
         append-to-body
         :show-close="false"
     >
         <div class="row">
-            <div class="col-4">
+            <div class="col-md-4" v-if="!recordId">
                 <el-select
                     v-model="search.column"
                     @click="getDataClients"
@@ -25,7 +25,7 @@
                     ></el-option>
                 </el-select>
             </div>
-            <div class="col-5 form-group">
+            <div class="col-md-5 form-group" v-if="!recordId">
                 <el-select
                     v-model="form.client_id"
                     filterable
@@ -44,14 +44,14 @@
                     </el-option>
                 </el-select>
             </div>
-            <div class="col-2 form-group">
+            <div class="col-md-2 form-group" v-if="!recordId">
                 <el-button class="btn-block" @click="getDataClients" type="primary">
                     <i class="fa fa-search"></i>
                 </el-button>
             </div>
 
-            <template v-if="records.length>0">
-                <div class="col-3 form-group">
+            <template >
+                <div class="col-md-3 form-group">
                     <el-date-picker
                         v-model="form.date_start"
                         type="date"
@@ -62,7 +62,7 @@
                     </el-date-picker>
                 </div>
 
-                <div class="col-3 form-group">
+                <div class="col-md-3 form-group">
                     <el-time-picker
                         v-model="form.time_start"
                         type="date"
@@ -72,9 +72,10 @@
                     >
                     </el-time-picker>
                 </div>
-
-                <div class="col-3 form-group">
+                <div class="col-md-3 form-group" v-if="!recordId">
                     <label class="control-label">Recurrente</label>
+                </div>
+                <div class="col-md-2 form-group" v-if="!recordId">
                     <el-radio v-model="form.recurrence" label="1">Mensual</el-radio>
                     <el-radio v-model="form.recurrence" label="0">Anual</el-radio>
                 </div>
@@ -95,7 +96,7 @@
             
         </div>
 
-        <div class="table-responsive pt-5" v-if="records">
+        <div class="table-responsive pt-5" v-if="!recordId">
             <span>Seleccione uno o más clientes para poder continuar</span>
             <table class="table table-hover table-stripe">
                 <thead>
@@ -120,16 +121,16 @@
                 </tr>
                 </tbody>
             </table>
-            <div class="text-center">
-                <el-button
-                    type="primary"
-                    :disabled="loading"
-                    @click.prevent="submit()"
-                >Guardar
-                </el-button
-                >
-                <el-button @click.prevent="close()" >Cerrar</el-button>
-            </div>
+        </div>
+        <div class="text-center">
+            <el-button
+                type="primary"
+                :disabled="loading"
+                @click.prevent="submit()"
+            >Guardar
+            </el-button
+            >
+            <el-button @click.prevent="close()" >Cerrar</el-button>
         </div>
     </el-dialog>
 </template>
@@ -140,6 +141,7 @@ import queryString from "query-string";
 export default {
     props: [
         "showNew",
+        "recordId"
     ],
     data() {
         return {
@@ -168,7 +170,7 @@ export default {
         };
     },
     async mounted() {
-        this.titleDialog =  "Enviar mensaje a clientes"
+        //this.titleDialog =  "Enviar mensaje a clientes"
         await this.$http
         .get(`/${this.resource}/columns`)
         .then(response => {
@@ -177,6 +179,15 @@ export default {
         });
     },
     methods: {
+        create() {
+            this.form.client_id = null;
+            this.titleDialog = (this.recordId)? 'Editar mensaje a clientes':'Nuevo mensaje a clientes'
+            if (this.recordId) {
+                this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
+                    this.form = response.data.data[0]
+                })
+            }
+        },
         findClients(query) {
             this.getRecord=false;
             this.search.value = query;
@@ -205,16 +216,19 @@ export default {
             });
         },
         onOpened() {
-            this.form.client_id = null;
+            
         },
         close() {
             this.records = [];
             this.$emit("update:showNew", false);
         },
         async submit() {
+            this.form.client_id=!this.recordId?null:this.recordId;
             this.$http.post(`${this.resource}`, this.form)
                     .then(response => {
-                        console.log(response.data)
+                        this.$message.success(response.data.message)
+                        this.$eventHub.$emit('reloadData')
+                        this.close()
                     })
                     .catch(error => {
                         if (error.response.status === 422) {

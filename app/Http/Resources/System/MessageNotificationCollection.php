@@ -27,9 +27,12 @@ class MessageNotificationCollection extends ResourceCollection
             //dd($recurrence);
 
             return [
+                'id'=>$row->id,
                 'message' => $row->message,
                 'update' => '',
                 'recurrence' => $recurrence,
+                'date_start' => $row->date_start,
+                'time_start' => $row->time_start,
             ];
         });
 

@@ -48,6 +48,7 @@
 
         <message-form
             :showNew.sync="showNew"
+            :recordId="newRecord"
         ></message-form>
     </div>
 </template>
@@ -55,15 +56,17 @@
 <script>
 
     import MessageForm from './partials/form.vue'
+    import {deletable} from "../../../mixins/deletable" 
 
     export default {
+        mixins: [deletable],
         components:{MessageForm},
         data() {
             return {
                 showNew: false,
                 resource: 'messages',
-                recordId: null,
                 records: [],
+                newRecord: null,
             }
         },
         created() {
@@ -79,8 +82,10 @@
                         this.records = response.data.data
                     })
             },
-            clickCreate() {
+            clickCreate(id) {
+                this.newRecord=id
                 this.showNew = true
+                
             },
             clickActions(id) {
                 
