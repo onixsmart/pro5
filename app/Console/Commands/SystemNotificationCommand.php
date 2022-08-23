@@ -47,36 +47,53 @@ class SystemNotificationCommand extends Command
                 $message_text=$message->message;
                 $message_info=$message->messageDescription;
                 $message_date=$message->date_start;
-                $message_month=Carbon::parse($message_date)->addMonth(1)->format('m');
-                $message_year=Carbon::parse($message_date)->addYear(1)->format('Y');
+                $message_day=Carbon::parse($message_date)->format('d');
+                $message_month=Carbon::parse($message_date)->format('m');
+                $message_year=Carbon::parse($message_date)->format('Y');
                 if ($message->recurrence==1) {
                     if(Carbon::now()->format('m')==$message_month){
-                        if (count($message_info)>0) {
-                            foreach ($message_info as $value) {
-                                 $id_client=$value->client_id;
-                                 $tenant_id = Client::select('id')->where('id', $id_client)->first();
-                                 //Envio de notificacion al tenant
-                                 $tenant_id->notify(new MessageNotification($message_text));
-         
+                        
+                        if(Carbon::now()->format('d')==$message_day){
+                            if (count($message_info)>0) {
+                                foreach ($message_info as $value) {
+                                    $id_client=$value->client_id;
+                                    $tenant_id = Client::select('id')->where('id', $id_client)->first();
+                                    //Envio de notificacion al tenant
+                                    $tenant_id->notify(new MessageNotification($message_text));
+            
+                                }
+                                $message_month=Carbon::parse($message_date)->addMonth(1);
+                                Message::where('id',$message->id)->update([
+                                    'date_start' => $message_month
+                                ]);
                             }
-                         }
+                        }
                     }
                 } 
 
                 if ($message->recurrence==0) {
                     if(Carbon::now()->format('Y')==$message_year){
-                        if (count($message_info)>0) {
-                            foreach ($message_info as $value) {
-                                 $id_client=$value->client_id;
-                                 $tenant_id = Client::select('id')->where('id', $id_client)->first();
-                                 //Envio de notificacion al tenant
-                                 $tenant_id->notify(new MessageNotification($message_text));
+                        if(Carbon::now()->format('m')==$message_month){
+                            if(Carbon::now()->format('d')==$message_day){
+                                if (count($message_info)>0) {
+                                    foreach ($message_info as $value) {
+                                        $id_client=$value->client_id;
+                                        $tenant_id = Client::select('id')->where('id', $id_client)->first();
+                                        //Envio de notificacion al tenant
+                                        $tenant_id->notify(new MessageNotification($message_text));
          
+                                    }
+                                    $message_month=Carbon::parse($message_date)->addYear(1);
+                                    Message::where('id',$message->id)->update([
+                                            'date_start' => $message_month
+                                        ]);
+                                    }
+                                }
                             }
-                         }
+                        }
                     }
-                } 
                 
+            
                 
                 Log::info('Notification for ' . $tenant_id . ' Message success');
                 $this->info('Ejecutando mensaje');
