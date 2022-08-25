@@ -263,6 +263,7 @@
             'dashboard_products',
             'affect_all_documents',
             'quantity_sales_notes',
+            'equivalent_product',
         ];
 
         protected $casts = [
@@ -360,6 +361,7 @@
             'ticket_single_shipment' => 'bool',
             'hide_pdf_view_documents' => 'bool',
             'affect_all_documents'=>'bool',
+            'equivalent_product' => 'bool',
             
         ];
 
@@ -577,6 +579,7 @@
                 'dashboard_clients' => (bool)$this->dashboard_clients,
                 'dashboard_products' => (bool)$this->dashboard_products,
                 'affect_all_documents' => (bool)$this->affect_all_documents,
+                'equivalent_product' => (bool)$this->equivalent_product,
                 
             ];
         }
