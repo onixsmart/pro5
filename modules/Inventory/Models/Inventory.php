@@ -56,30 +56,33 @@
             'item'
         ];
 
-        protected $casts = [
-            'item_id' => 'int',
-
-            'warehouse_id' => 'int',
-            'warehouse_destination_id' => 'int',
-            'quantity' => 'float',
-            'inventories_transfer_id' => 'int',
-            'date_of_issue' => 'date',
-        ];
         protected $fillable = [
             'type',
             'description',
             'item_id',
             'warehouse_id',
-
             'warehouse_destination_id',
             'quantity',
+            'unit_price',
+            'unit_cost',
             'inventory_transaction_id',
             'lot_code',
             'detail',
             'inventories_transfer_id',
             'comments',
             'date_of_issue',
-            'created_at'
+            'created_at',
+        ];
+
+        protected $casts = [
+            'item_id' => 'int',
+            'warehouse_id' => 'int',
+            'warehouse_destination_id' => 'int',
+            'inventories_transfer_id' => 'int',
+            'date_of_issue' => 'date',
+            'quantity' => 'float',
+            'unit_price' => 'float',
+            'unit_cost' => 'float',
         ];
 
         /**
@@ -133,7 +136,7 @@
         {
             return $this->morphMany(ItemLot::class, 'item_loteable');
         }
-    
+
     /**
      * Obtener datos para reporte movimientos
      *

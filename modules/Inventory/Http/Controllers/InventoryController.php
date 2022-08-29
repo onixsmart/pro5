@@ -2,9 +2,11 @@
 
 namespace Modules\Inventory\Http\Controllers;
 
+use App\Models\Tenant\Item;
 use Exception;
 //use App\Models\Tenant\Item;
 use Illuminate\Http\Request;
+use Modules\Inventory\Models\InventoryConfiguration;
 use Modules\Item\Models\ItemLot;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -52,7 +54,7 @@ class InventoryController extends Controller
 							})
 							->orderBy('item_id');
 		}
-		else 
+		else
 		{
 			$records = $this->getCommonRecords($request);
 		}
@@ -61,9 +63,9 @@ class InventoryController extends Controller
 	}
 
 
-		
+
 	/**
-	 * 
+	 *
 	 * Obtener registros
 	 *
 	 * @param  Request $request
@@ -92,9 +94,12 @@ class InventoryController extends Controller
 
 	public function tables()
 	{
+	    $inventory_configuration = InventoryConfiguration::query()->first();
+
 		return [
 			'items'      => $this->optionsItem(),
-			'warehouses' => $this->optionsWarehouse()
+			'warehouses' => $this->optionsWarehouse(),
+            'inventory_configuration' => $inventory_configuration
 		];
 	}
 
@@ -184,6 +189,7 @@ class InventoryController extends Controller
 			$warehouse_id = $request->input('warehouse_id');
 			$inventory_transaction_id = $request->input('inventory_transaction_id');
 			$quantity = $request->input('quantity');
+            $unit_cost = $request->input('unit_cost');
 			$lot_code = $request->input('lot_code');
 			$comments = $request->input('comments');
 			$created_at = $request->input('created_at');
@@ -203,12 +209,19 @@ class InventoryController extends Controller
 				];
 			}
 
+            $item = Item::query()
+                ->select('id', 'sale_unit_price')
+                ->find($item_id);
+
 			$inventory = new Inventory();
 			$inventory->type = null;
 			$inventory->description = $inventory_transaction->name;
 			$inventory->item_id = $item_id;
 			$inventory->warehouse_id = $warehouse_id;
 			$inventory->quantity = $quantity;
+            $inventory->unit_price = $item->sale_unit_price;
+            $inventory->unit_cost = $unit_cost;
+
 			$inventory->inventory_transaction_id = $inventory_transaction_id;
 			$inventory->lot_code = $lot_code;
 			$inventory->comments = $comments;
@@ -216,7 +229,7 @@ class InventoryController extends Controller
 			if($created_at) {
 			  $inventory->date_of_issue = $created_at;
 			}
-			
+
 			$inventory->save();
 
 			$lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled : false;

@@ -86,6 +86,9 @@
                     <li>
                         <a href="{{url('list-transfer-reason-types')}}">Tipos de motivos de transferencias</a>
                     </li>
+                    <li>
+                        <a href="{{url('existence_types')}}">Tipo de existencias</a>
+                    </li>
                     @endif
                 </ul>
             </div>

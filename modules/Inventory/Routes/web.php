@@ -10,8 +10,14 @@
 
                 Route::get('advanced-items-search', 'ItemController@advancedItemsSearch');
 
-                // Config inventory
+                Route::prefix('existence_types')->group(function () {
+                    Route::get('/', 'ExistenceTypeController@index')->name('existence_types.index');
+                    Route::get('records', 'ExistenceTypeController@records');
+                    Route::get('record/{existence_type}', 'ExistenceTypeController@record');
+                    Route::post('/', 'ExistenceTypeController@store');
+                });
 
+                // Config inventory
                 Route::prefix('warehouses')->group(function () {
                     Route::get('/', 'WarehouseController@index')->name('warehouses.index');
                     Route::get('records', 'WarehouseController@records');
@@ -297,6 +303,7 @@
                     Route::get('download/{external_id}/{format?}', 'DevolutionController@download');
 
                 });
+
 
             });
         });

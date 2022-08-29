@@ -16,13 +16,13 @@ class InventoryController extends Controller
     public function index() {
         return view('tenant.inventories.index');
     }
-    
+
     public function columns() {
         return [
             'item_id' => 'Producto'
         ];
     }
-    
+
     public function records(Request $request) {
         $item_description = $request->input('value');
         $records = ItemWarehouse::with(['item', 'warehouse'])
@@ -67,12 +67,22 @@ class InventoryController extends Controller
             // $item_warehouse->stock = $quantity;
             // $item_warehouse->save();
 
+            $item = Item::query()
+                ->select('id', 'sale_unit_price')
+                ->find($item_id);
+
+            $quantity = $request->input('quantity');
+            $unit_price = $item->sale_unit_price;
+            $unit_cost = $request->input('unit_cost');
+
             $inventory = new Inventory();
             $inventory->type = 1;
             $inventory->description = 'Stock inicial';
             $inventory->item_id = $item_id;
             $inventory->warehouse_id = $warehouse_id;
             $inventory->quantity = $quantity;
+            $inventory->unit_price = $unit_price;
+            $inventory->unit_cost = $unit_cost;
             $inventory->save();
 
             return  [
@@ -106,7 +116,7 @@ class InventoryController extends Controller
                     'message' => 'La cantidad a trasladar no puede ser mayor al que se tiene en el almacén.'
                 ];
             }
-            
+
             //Transaction
             // $item_warehouse_new = ItemWarehouse::firstOrNew(['item_id' => $item_id,
             //                                                  'warehouse_id' => $warehouse_new_id]);

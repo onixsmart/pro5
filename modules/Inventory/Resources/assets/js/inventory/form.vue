@@ -47,6 +47,19 @@
                                    v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-4" v-if="inventory_configuration && inventory_configuration.cost_control">
+                        <div class="form-group" :class="{'has-danger': errors.unit_cost}">
+                            <label class="control-label">Costo</label>
+                            <el-input-number
+                                v-model="form.unit_cost"
+                                :min="0"
+                                :controls="false"
+                            ></el-input-number>
+                            <small class="form-control-feedback" v-if="errors.unit_cost"
+                                   v-text="errors.unit_cost[0]"></small>
+
+                        </div>
+                    </div>
                     <div class="col-md-4" v-if="type == 'input' && form.lots_enabled">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
                             <label class="control-label">
@@ -148,6 +161,7 @@ export default {
             items: [],
             warehouses: [],
             inventory_transactions: [],
+            inventory_configuration: null,
             precision:2,
         }
     },
@@ -202,8 +216,8 @@ export default {
                 lots: [],
                 date_of_due: null,
                 created_at: null,
-                comments: null
-
+                comments: null,
+                unit_cost: 0
             }
         },
         ChangePrecision(){
@@ -276,6 +290,13 @@ export default {
                     if (select_lots.length !== total_qty) {
                         return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
                     }
+                }
+            }
+
+            if(this.inventory_configuration.cost_control) {
+                if(this.form.unit_cost === 0) {
+                    this.$message.error('El campo costo es requerido');
+                    return false;
                 }
             }
 

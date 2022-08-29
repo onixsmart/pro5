@@ -17,10 +17,10 @@ class TenantExistenceTypesTable extends Migration
         Schema::create('existence_types', function (Blueprint $table)
         {
             $table->char('id', 2)->primary();
-            $table->string('name', 50)->index();
+            $table->string('name', 50);
         });
 
-        ExistenceType::query()->create([
+        ExistenceType::query()->insert([
             ['id' => '01', 'name' => 'Mercaderías'],
             ['id' => '02', 'name' => 'Productos Terminados'],
             ['id' => '03', 'name' => 'Materias Primas'],

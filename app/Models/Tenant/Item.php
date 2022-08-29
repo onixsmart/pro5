@@ -178,6 +178,7 @@ class Item extends ModelTenant
 
         'subject_to_detraction',
         'favorite',
+        'existence_type_id'
         // 'warehouse_id'
     ];
 
@@ -2460,9 +2461,9 @@ class Item extends ModelTenant
         return $query;
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener stock del almacen asociado al usuario
      *
      * @param  Warehouse $warehouse
@@ -2479,7 +2480,7 @@ class Item extends ModelTenant
             if($warehouse)
             {
                 $item_warehouse =  ItemWarehouse::select('stock')->where([['item_id', $this->id],['warehouse_id', $warehouse->id]])->first();
-                
+
                 if($item_warehouse) $stock = $item_warehouse->stock;
             }
         }
@@ -2487,7 +2488,7 @@ class Item extends ModelTenant
         return (float) $stock;
     }
 
-    
+
     /**
      *
      * Filtro para no incluir todas las relaciones en consulta

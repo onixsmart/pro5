@@ -14,7 +14,7 @@ class TenantAddFlasgToInventoryConfigurations extends Migration
     public function up()
     {
         Schema::table('inventory_configurations', function (Blueprint $table) {
-            $table->boolean('generate_internal_id')->default(false);
+            $table->boolean('generate_internal_id')->default(false)->after('stock_control');
         });
     }
 

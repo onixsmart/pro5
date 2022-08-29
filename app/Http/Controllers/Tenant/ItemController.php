@@ -54,6 +54,7 @@ use Maatwebsite\Excel\Excel;
 use Modules\Account\Models\Account;
 use Modules\Digemid\Models\CatDigemid;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Modules\Inventory\Models\ExistenceType;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
@@ -245,6 +246,7 @@ class ItemController extends Controller
         /** Informacion adicional */
         $configuration = $configuration->getCollectionData();
         $inventory_configuration = InventoryConfiguration::firstOrFail();
+        $existence_types = ExistenceType::query()->get();
         /*
         $configuration = Configuration::select(
             'affectation_igv_type_id',
@@ -273,7 +275,8 @@ class ItemController extends Controller
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
             'CatItemUnitsPerPackage',
-            'inventory_configuration'
+            'inventory_configuration',
+            'existence_types'
         );
     }
 
@@ -1300,7 +1303,7 @@ class ItemController extends Controller
     {
         ini_set("pcre.backtrack_limit", "50000000");
         $id = $request->id;
-        $format = $request->format;
+        $format = $request->input('format');
 
         $record = Item::find($id);
         $item_warehouse = ItemWarehouse::where([['item_id', $id], ['warehouse_id', auth()->user()

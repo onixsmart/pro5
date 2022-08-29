@@ -10,8 +10,6 @@
                @open="create">
         <form autocomplete="off"
               @submit.prevent="submit">
-
-
             <el-tabs v-model="activeName">
                 <el-tab-pane class
                              name="first">
@@ -357,7 +355,20 @@
                                        v-text="errors.cod_digemid[0]"></small>
                             </div>
                         </div>
-
+                        <div class="col-md-3" v-if="inventory_configuration && inventory_configuration.cost_control">
+                            <div :class="{'has-danger': errors.existence_type_id}" class="form-group">
+                                <label class="control-label">Tipo de existencia</label>
+                                <el-select v-model="form.existence_type_id" filterable>
+                                    <el-option v-for="option in existence_types"
+                                               :key="option.id"
+                                               :label="option.name"
+                                               :value="option.id"></el-option>
+                                </el-select>
+                                <small v-if="errors.existence_type_id"
+                                       class="form-control-feedback"
+                                       v-text="errors.existence_type_id[0]"></small>
+                            </div>
+                        </div>
                         <div class="col-12">
                             <div class="table-responsive">
                                 <table class="table table-sm mb-0 table-borderless">
@@ -482,7 +493,7 @@
                             </div>
                         </template>
 
-                        
+
                         <div class="col-md-3">
                             <div :class="{'has-danger': errors.subject_to_detraction}"
                                  class="form-group">
@@ -1255,7 +1266,8 @@ export default {
             attribute_types: [],
             activeName: 'first',
             fromPharmacy: false,
-            inventory_configuration: null
+            inventory_configuration: null,
+            existence_types: []
         }
     },
     async created() {
@@ -1277,6 +1289,7 @@ export default {
                 this.categories = data.categories
                 this.brands = data.brands
                 this.attribute_types = data.attribute_types
+                this.existence_types = data.existence_types
                 // this.config = data.configuration
                 if (this.canShowExtraData) {
                     this.$store.commit('setColors', data.colors);
@@ -1487,6 +1500,7 @@ export default {
                 purchase_system_isc_type_id: null,
                 purchase_percentage_isc: 0,
                 subject_to_detraction: false,
+                existence_type_id: null,
             }
 
             this.show_has_igv = true
@@ -1701,12 +1715,24 @@ this.activeName =  'first'
                     return this.$message.error('El porcentaje isc debe ser mayor a 0 (Compras)');
             }
 
+            if(!this.inventory_configuration.cost_control) {
+                this.form.existence_type_id = null;
+            } else {
+                if(_.isNull(this.form.existence_type_id)) {
+                    this.$message.error('El campo tipo de existencia es requerido');
+                    return false;
+                }
+                if(this.form.purchase_unit_price === 0) {
+                    this.$message.error('El precio unitario de compra es requerido');
+                    return false;
+                }
+            }
+
             this.loading_submit = true
 
 
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
-                    console.log(response.data)
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         if (this.external) {

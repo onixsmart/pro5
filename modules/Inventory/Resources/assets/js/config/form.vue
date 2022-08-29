@@ -22,6 +22,13 @@
                                 <small class="form-control-feedback" v-if="errors.generate_internal_id" v-text="errors.generate_internal_id[0]"></small>
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <label class="control-label">Control de costos (Ingresos)</label>
+                            <div class="form-group" :class="{'has-danger': errors.cost_control}">
+                                <el-switch v-model="form.cost_control" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                <small class="form-control-feedback" v-if="errors.cost_control" v-text="errors.cost_control[0]"></small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -50,6 +57,7 @@
                 this.form = {
                     id: null,
                     stock_control: false,
+                    cost_control: false,
                 };
             },
             async getRecord() {

@@ -11,6 +11,14 @@ class Inventory extends ModelTenant
         'warehouse_id',
         'warehouse_destination_id',
         'quantity',
+        'unit_price',
+        'unit_cost',
+    ];
+
+    protected $casts = [
+        'quantity' => 'float',
+        'unit_price' => 'float',
+        'unit_cost' => 'float',
     ];
 
     public function warehouse()

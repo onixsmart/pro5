@@ -1,5 +1,7 @@
 <?php
+
 namespace Modules\Inventory\Traits;
+
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Document;
@@ -178,10 +180,10 @@ trait InventoryTrait
         }
         return $query->get()->transform(function ($row) {
             $description = $row->description;
-            if($row->internal_id) {
+            if ($row->internal_id) {
                 $description .= " | {$row->internal_id}";
             }
-            if($row->barcode) {
+            if ($row->barcode) {
                 $description .= " | {$row->barcode}";
             }
             return [
@@ -217,7 +219,7 @@ trait InventoryTrait
     public function optionsItemFullProduction($search = null, $take = null)
     {
         $query = Item::query()
-            ->with('item_lots', 'item_lots.item_loteable', 'lots_group','supplies')
+            ->with('item_lots', 'item_lots.item_loteable', 'lots_group', 'supplies')
             ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ'], ['is_for_production', 1]])
             ->whereNotIsSet();
         if ($search) {
@@ -231,10 +233,10 @@ trait InventoryTrait
         return $query->get()->transform(function (Item $row) {
             return $row->getCollectionData();
             $description = $row->description;
-            if($row->internal_id) {
+            if ($row->internal_id) {
                 $description .= " | {$row->internal_id}";
             }
-            if($row->barcode) {
+            if ($row->barcode) {
                 $description .= " | {$row->barcode}";
             }
             return [
@@ -318,23 +320,27 @@ trait InventoryTrait
      *
      * @return \Illuminate\Database\Eloquent\Model|Inventory
      */
-    private function createInitialInventory($item_id, $quantity, $warehouse_id)
+    private function createInitialInventory($item_id, $quantity, $warehouse_id, $unit_price = 0, $unit_cost = 0)
     {
-        return Inventory::create([
-            'type' => 1,
-            'description' => 'Stock inicial',
-            'item_id' => $item_id,
-            'warehouse_id' => $warehouse_id,
-            'quantity' => $quantity
-        ]);
+        return Inventory::query()
+            ->create([
+                'type' => 1,
+                'description' => 'Stock inicial',
+                'item_id' => $item_id,
+                'warehouse_id' => $warehouse_id,
+                'quantity' => $quantity,
+                'unit_price' => $unit_price,
+                'unit_cost' => $unit_cost
+            ]);
     }
+
     /**
      * Crea la relacion en inventory_kardex
      *
      * @param Dispatch|Document|Devolution|Item|Inventory|Purchase|SaleNote|\App\Models\Tenant\Warehouse|Warehouse|  OrderNote|mixed $model
-     * @param int                                                                                                                    $item_id
-     * @param float                                                                                                                  $quantity
-     * @param int                                                                                                                    $warehouse_id
+     * @param int $item_id
+     * @param float $quantity
+     * @param int $warehouse_id
      */
     private function createInventoryKardex($model, $item_id, $quantity, $warehouse_id)
     {
@@ -345,6 +351,7 @@ trait InventoryTrait
             'quantity' => $quantity,
         ]);
     }
+
     /**
      * Actualiza el stock
      *
@@ -373,6 +380,7 @@ trait InventoryTrait
         }
         $item_warehouse->save();
     }
+
     /**
      * Verifica el inventario
      *
@@ -410,6 +418,7 @@ trait InventoryTrait
             }
         }
     }
+
     /**
      * Busca por id de almacen
      *
@@ -422,6 +431,7 @@ trait InventoryTrait
         return Warehouse::findOrFail($warehouse_id);
     }
     ////kardex sale note
+
     /**
      * Busca Nota de venta por id
      *
@@ -433,14 +443,15 @@ trait InventoryTrait
     {
         return SaleNoteItem::find($sale_note_item_id);
     }
+
     /**
      * Crea la relacion en inventory_kardex con sale_note
      *
      * @param SaleNote $model
-     * @param int                                                                                                                    $item_id
-     * @param float                                                                                                                  $quantity
-     * @param int                                                                                                                    $warehouse_id
-     * @param int                                                                                                                    $sale_note_item_id
+     * @param int $item_id
+     * @param float $quantity
+     * @param int $warehouse_id
+     * @param int $sale_note_item_id
      */
     private function createInventoryKardexSaleNote($model, $item_id, $quantity, $warehouse_id, $sale_note_item_id)
     {
@@ -454,6 +465,7 @@ trait InventoryTrait
         $sale_note_item->inventory_kardex_id = $sale_note_kardex->id;
         $sale_note_item->update();
     }
+
     /**
      * Borra el kardex basado en el id de  $inventory_kardex_id
      *
@@ -465,6 +477,7 @@ trait InventoryTrait
         $model->inventory_kardex()->where('id', $inventory_kardex_id)->delete();
     }
     ////kardex sale note
+
     /**
      * Elimina todos los inventory_kardex por modelo
      * @param Dispatch|Document|Devolution|Item|Inventory|Purchase|SaleNote|\App\Models\Tenant\Warehouse|Warehouse|  OrderNote|mixed $model
@@ -473,6 +486,7 @@ trait InventoryTrait
     {
         $model->inventory_kardex()->delete();
     }
+
     /**
      * Actualiza los lotes por el document Item
      *
@@ -484,21 +498,19 @@ trait InventoryTrait
         if (isset($document_item->item->IdLoteSelected)) {
             if ($document_item->item->IdLoteSelected != null) {
 
-                if(is_array($document_item->item->IdLoteSelected))
-                {
+                if (is_array($document_item->item->IdLoteSelected)) {
 
                     // presentacion - factor de lista de precios
                     $quantity_unit = isset($document_item->item->presentation->quantity_unit) ? $document_item->item->presentation->quantity_unit : 1;
                     $lotesSelecteds = $document_item->item->IdLoteSelected;
 
-                    foreach ($lotesSelecteds as $item)
-                    {
+                    foreach ($lotesSelecteds as $item) {
                         $lot = ItemLotsGroup::query()->find($item->id);
                         $lot->quantity = $lot->quantity + ($quantity_unit * $item->compromise_quantity);
                         $lot->save();
                     }
 
-                }else {
+                } else {
                     $lot = ItemLotsGroup::find($document_item->item->IdLoteSelected);
                     $lot->quantity = $lot->quantity + $document_item->quantity;
                     $lot->save();
@@ -523,12 +535,12 @@ trait InventoryTrait
      *
      * Obtener factor de presentación
      *
-     * @param  mixed $model_item
+     * @param mixed $model_item
      * @return float
      */
     public function getQuantityUnitPresentation($model_item)
     {
-        return isset($model_item->item->presentation->quantity_unit) ? (float) $model_item->item->presentation->quantity_unit : 1;
+        return isset($model_item->item->presentation->quantity_unit) ? (float)$model_item->item->presentation->quantity_unit : 1;
     }
 
 
@@ -541,24 +553,19 @@ trait InventoryTrait
     {
 
         // lotes
-        if(isset($item->item->IdLoteSelected))
-        {
-            $lot_group_selecteds =  $item->item->IdLoteSelected;
-        }
-        else
-        {
+        if (isset($item->item->IdLoteSelected)) {
+            $lot_group_selecteds = $item->item->IdLoteSelected;
+        } else {
             $i_lots_group = isset($item->item->lots_group) ? $item->item->lots_group : [];
             $lot_group_selecteds_filter = collect($i_lots_group)->where('compromise_quantity', '>', 0);
-            $lot_group_selecteds =  $lot_group_selecteds_filter->all();
+            $lot_group_selecteds = $lot_group_selecteds_filter->all();
         }
 
-        if (count($lot_group_selecteds) > 0)
-        {
+        if (count($lot_group_selecteds) > 0) {
 
             $quantity_unit = $this->getQuantityUnitPresentation($item);
 
-            foreach ($lot_group_selecteds as $lt)
-            {
+            foreach ($lot_group_selecteds as $lt) {
                 $lot = ItemLotsGroup::find($lt->id);
                 $lot->quantity = $lot->quantity + ($quantity_unit * $lt->compromise_quantity);
                 $lot->save();
@@ -567,12 +574,9 @@ trait InventoryTrait
         // lotes
 
         // series
-        if (isset($item->item->lots))
-        {
-            foreach ($item->item->lots as $it)
-            {
-                if ($it->has_sale)
-                {
+        if (isset($item->item->lots)) {
+            foreach ($item->item->lots as $it) {
+                if ($it->has_sale) {
                     $item_lot = ItemLot::find($it->id);
                     $item_lot->has_sale = false;
                     $item_lot->save();
@@ -606,6 +610,7 @@ trait InventoryTrait
             if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->sale_notes_relateds) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
         }
     }
+
     /**
      * Verifica si el producto ha tenido series en venta
      *
@@ -628,6 +633,7 @@ trait InventoryTrait
             throw new Exception("El producto {$purchase_item->item->description} contiene series vendidas!");
         }
     }
+
     /**
      * Verifica si el producto ha tenido lotes en venta
      *
@@ -638,17 +644,17 @@ trait InventoryTrait
     public function verifyHasSaleLotsGroup($purchase_item)
     {
         $lot_enabled = false;
-        if(is_array($purchase_item->item)){
-            if(in_array('lots_enabled',$purchase_item->item)){
+        if (is_array($purchase_item->item)) {
+            if (in_array('lots_enabled', $purchase_item->item)) {
                 $lot_enabled = true;
             }
-        }elseif(is_object($purchase_item->item)){
-            if(property_exists($purchase_item->item,'lots_enabled')){
+        } elseif (is_object($purchase_item->item)) {
+            if (property_exists($purchase_item->item, 'lots_enabled')) {
                 $lot_enabled = true;
             }
         }
-        if($lot_enabled) {
-        // if(array_key_exists('lots_enabled', $purchase_item->item)) {
+        if ($lot_enabled) {
+            // if(array_key_exists('lots_enabled', $purchase_item->item)) {
             if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
                 $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->first();
                 if (!$lot_group) {
@@ -658,12 +664,13 @@ trait InventoryTrait
                 // factor de lista de precios
                 $presentation_quantity = (isset($purchase_item->item->presentation->quantity_unit)) ? $purchase_item->item->presentation->quantity_unit : 1;
 
-                if ((int)$lot_group->quantity != (int) ($purchase_item->quantity * $presentation_quantity)) {
+                if ((int)$lot_group->quantity != (int)($purchase_item->quantity * $presentation_quantity)) {
                     throw new Exception("Los productos del lote {$purchase_item->lot_code} han sido vendidos!");
                 }
             }
         }
     }
+
     /**
      * Borra las series y grupos en la compra para un item
      *
@@ -679,17 +686,17 @@ trait InventoryTrait
             $it->delete();
         }
         $lot_enabled = false;
-        if(is_array($purchase_item->item)){
-            if(in_array('lots_enabled',$purchase_item->item)){
+        if (is_array($purchase_item->item)) {
+            if (in_array('lots_enabled', $purchase_item->item)) {
                 $lot_enabled = true;
             }
-        }elseif(is_object($purchase_item->item)){
-            if(property_exists($purchase_item->item,'lots_enabled')){
+        } elseif (is_object($purchase_item->item)) {
+            if (property_exists($purchase_item->item, 'lots_enabled')) {
                 $lot_enabled = true;
             }
         }
-        if($lot_enabled) {
-        //if(array_key_exists('lots_enabled', $purchase_item->item)) {
+        if ($lot_enabled) {
+            //if(array_key_exists('lots_enabled', $purchase_item->item)) {
             if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
                 $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->firstOrFail();
                 if (!$lot_group) {
@@ -699,6 +706,7 @@ trait InventoryTrait
             }
         }
     }
+
     /**
      * Actualiza el stock para compras
      *
@@ -717,7 +725,7 @@ trait InventoryTrait
     /**
      * Al borrar item, se descuenta el stock
      * @param DocumentItem $document_item
-     * @param int          $factor
+     * @param int $factor
      *
      * @throws Exception
      */
@@ -729,11 +737,9 @@ trait InventoryTrait
 
         $this->createInventoryKardex($document_item->document, $document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
 
-        if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id && !$document_item->document->sale_notes_relateds)
-        {
+        if (!$document_item->document->sale_note_id && !$document_item->document->order_note_id && !$document_item->document->dispatch_id && !$document_item->document->sale_notes_relateds) {
             $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-        } else
-        {
+        } else {
             if ($document_item->document->dispatch) {
                 if (!$document_item->document->dispatch->transfer_reason_type->discount_stock) {
                     $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
@@ -767,8 +773,7 @@ trait InventoryTrait
      */
     public function validateStockLotGroup($lot, $document_item)
     {
-        if($lot->quantity < 0)
-        {
+        if ($lot->quantity < 0) {
             throw new Exception("El lote '{$lot->code}' del producto {$document_item->item->description} no tiene suficiente stock!");
         }
     }
@@ -783,8 +788,7 @@ trait InventoryTrait
      */
     public function deleteAllItems($items)
     {
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             $item->delete();
         }
     }
