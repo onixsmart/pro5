@@ -22,7 +22,7 @@
         public function Columns()
         {
             return [
-                'cat_period_id' => 'Periodos',
+                'cat_period_id' => 'Periodos', // check
                 'name' => 'Descripción',
                 'description' => 'Nombre',
             ];
@@ -39,7 +39,23 @@
         {
             $records = UserRelSuscriptionPlan::query();
             if ($request->has('column') && !empty($request->column)) {
-                $records->where($request->column, 'like', "%{$request->value}%");
+                switch ($request->column) {
+                    case 'name':
+                        $records->whereHas('suscription_plan', function($rq) use($request){
+                            $rq->where($request->column, 'like', "%{$request->value}%");
+                        });
+                        break;
+                    case 'description':
+                        $records->whereHas('suscription_plan', function($rq) use($request){
+                            $rq->where($request->column, 'like', "%{$request->value}%");
+                        });
+                        break;
+                    default:
+                        
+                        $records->where($request->column, 'like', "%{$request->value}%");
+                        break;
+                }
+                
             }
             /** @var Builder $records */
             // $records->orderBy('name');
