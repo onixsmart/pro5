@@ -57,7 +57,7 @@ class SystemNotificationCommand extends Command
                             if (count($message_info)>0) {
                                 foreach ($message_info as $value) {
                                     $id_client=$value->client_id;
-                                    $tenant_id = Client::select('id')->where('id', $id_client)->first();
+                                    $tenant_id = Client::where('id', $id_client)->first();
                                     //Envio de notificacion al tenant
                                     $tenant_id->notify(new MessageNotification($message_text));
             
@@ -78,7 +78,7 @@ class SystemNotificationCommand extends Command
                                 if (count($message_info)>0) {
                                     foreach ($message_info as $value) {
                                         $id_client=$value->client_id;
-                                        $tenant_id = Client::select('id')->where('id', $id_client)->first();
+                                        $tenant_id = Client::where('id', $id_client)->first();
                                         //Envio de notificacion al tenant
                                         $tenant_id->notify(new MessageNotification($message_text));
          
