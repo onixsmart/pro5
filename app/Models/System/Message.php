@@ -4,7 +4,7 @@ namespace App\Models\System;
 
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\System\messageDescription;
+use App\Models\System\MessageDescription;
 
 class Message extends Model
 {
