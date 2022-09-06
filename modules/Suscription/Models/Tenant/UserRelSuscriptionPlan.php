@@ -130,7 +130,8 @@
             'total_base_other_taxes' => 'float',
             'total_other_taxes' => 'float',
             'total_taxes' => 'float',
-            'total_value' => 'float'
+            'total_value' => 'float',
+            'parent_customer'=>'array'
         ];
 
 
