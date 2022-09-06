@@ -23,8 +23,8 @@
         {
             return [
                 'cat_period_id' => 'Periodos', // check
-                'name' => 'Descripción',
-                'description' => 'Nombre',
+                'name' => 'Descripción', //check
+                'description' => 'Nombre', 
             ];
 
         }
@@ -46,8 +46,11 @@
                         });
                         break;
                     case 'description':
-                        $records->whereHas('suscription_plan', function($rq) use($request){
-                            $rq->where($request->column, 'like', "%{$request->value}%");
+                        $records->where('parent_customer->name', 'like', "%{$request->value}%");
+                        break;
+                    case 'cat_period_id':
+                        $records->whereHas('cat_period', function($rq) use($request){
+                            $rq->where('name', 'like', "%{$request->value}%");
                         });
                         break;
                     default:
