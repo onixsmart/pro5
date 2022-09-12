@@ -20,6 +20,7 @@ use Illuminate\Support\Arr;
 use Modules\Dashboard\Helpers\DashboardInventory;
 use App\Models\Tenant\Configuration;
 
+
 /**
  * Class DashboardController
  *

@@ -18,6 +18,7 @@ use App\Models\System\MessageDescription;
 use Hyn\Tenancy\Environment;
 use App\Models\System\Client;
 use App\Notifications\System\Message as MessageNotification;
+use App\Models\System\Notification;
 
 class UserController extends Controller
 {
@@ -192,19 +193,13 @@ class UserController extends Controller
         ];
     }
 
-    public function getNotification(){
-        /* $tenancy = app(Environment::class);
+    /* public function getNotifications(){
+        $tenancy = app(Environment::class);
         $hostname = $tenancy->hostname();
         $tenant_id = Client::select('id')->where('hostname_id', $hostname->id)->first();
-        $description = MessageDescription::where('client_id',$tenant_id->id)->first();
-        if ($description) {
-            //$id_message=$description->message_id;
-            //$message = ModelMessage::select('message')->where('id',$id_message);
-            $message=$description->message['message'];
-            //dd($message);
-            $tenant_id->notify(new MessageNotification($message));
-        } */
-    }
+        $notification = Notification::where('notifiable_id',$tenant_id)->get();
+        return $notifications;
+    } */
 
     public function getMessage(){
         $tenancy = app(Environment::class);

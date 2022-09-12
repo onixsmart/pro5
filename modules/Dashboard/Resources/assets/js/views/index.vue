@@ -566,10 +566,24 @@ import DashboardInventory from "./partials/dashboard_inventory.vue";
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
-  props: ["typeUser", "soapCompany",'configuration'],
-  components: { DashboardStock, LoaderGraph, RowTop, DashboardInventory },
+  props: ["typeUser", "soapCompany"],
+  components: { DashboardStock, LoaderGraph, RowTop },
+  mounted() {
+    this.getNotification();
+    if(!this.notCount){
+        let notifiUser=this.interval = setInterval(function() {
+        this.getNotification()
+        if(this.notCount) 
+        {
+            clearInterval(notifiUser);
+            this.notCount=false
+        }
+        }.bind(this), 500);
+    }
+  },
   data() {
     return {
+      notCount: false,
       loading_search: false,
       records_base: [],
       selected_customer: null,
@@ -638,7 +652,7 @@ export default {
     });
     await this.loadAll();
     await this.filterItems();
-    await this.getNotification();
+    
   },
 
   methods: {
@@ -819,12 +833,12 @@ export default {
       this.loaders.items_by_sales = false;
       this.loaders.top_customers = false;
     },
-    getNotification() {
-
-      this.$http
+    async getNotification() {
+      await this.$http
         .get(`/users/getMessageNotification`)
         .then((response) => {
           setTimeout(() => this.$message.error(response.data.message), 5000);
+          this.notCount=true
         });
     },
   },

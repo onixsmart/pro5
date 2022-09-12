@@ -188,13 +188,14 @@ export default {
                 })
             }
         },
-        findClients(query) {
+        async findClients(query) {
             this.getRecord=false;
             this.search.value = query;
             this.getDataClients();
+            await selectOption();
         },
-        getDataClients() {
-            this.$http.get(`/messages/filter?${this.getQueryParameters()}`)
+        async getDataClients() {
+            await this.$http.get(`/messages/filter?${this.getQueryParameters()}`)
             .then(response => {
                 if (this.getRecord) {
                     this.records = response.data.data;
@@ -256,13 +257,18 @@ export default {
             this.getRecord=false;
             this.$emit("update:showNew", false);
         },
-        selectOption() {
-            this.form.selecteds = [];
-            this.records.map((d) => {
-                if (d.selected) {
+        async selectOption() {
+            //this.form.selecteds = [];
+            await this.records.map((d) => {
+                //console.log(d)
+                if (!d.selected) {
+                    this.form.selecteds.splice(this.records.indexOf(d.id),1);
+                }else{
                     this.form.selecteds.push(d.id);
                 }
             });
+
+            //console.log(this.form.selecteds)
         },
     }
 };
