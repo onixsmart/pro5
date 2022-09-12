@@ -21,6 +21,7 @@ class MessageCollection extends ResourceCollection
                 'name' => $row->name,
                 'plan' => $row->plan->name,
                 'number' => $row->number,
+                'selected' => (bool)true
             ];
         });
 

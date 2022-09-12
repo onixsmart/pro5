@@ -1022,4 +1022,8 @@ $withEstablishment = true){
         ];
     }
 
+    public function receivesBroadcastNotificationsOn()
+    {
+        return 'notification_message.'.$this->id;
+    }
 }

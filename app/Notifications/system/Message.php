@@ -7,9 +7,14 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Notification as SendNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+
+use Illuminate\Notifications\Messages\BroadcastMessage;
+
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+
 use App\Models\System\User;
 
-class Message extends Notification
+class Message extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -32,7 +37,7 @@ class Message extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -62,4 +67,5 @@ class Message extends Notification
         ];
 
     }
+
 }
