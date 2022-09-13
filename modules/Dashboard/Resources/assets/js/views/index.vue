@@ -814,11 +814,11 @@ export default {
       this.loaders.items_by_sales = false;
       this.loaders.top_customers = false;
     },
-    async getNotification() {
-      await this.$http
+    getNotification() {
+      this.$http
         .get(`/users/getMessageNotification`)
         .then((response) => {
-          setTimeout(() => this.$message.error(response.data.message), 5000);
+          this.$message.error(response.data.message);
           this.notCount=true
         });
     },
