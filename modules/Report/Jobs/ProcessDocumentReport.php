@@ -2,6 +2,7 @@
 
     namespace Modules\Report\Jobs;
 
+
     use Illuminate\Bus\Queueable;
     use Illuminate\Queue\SerializesModels;
     use Illuminate\Queue\InteractsWithQueue;
@@ -22,9 +23,7 @@
     use Mpdf\Mpdf;
     use Mpdf\Config\ConfigVariables;
     use Mpdf\Config\FontVariables;
-    use Modules\Report\Http\Controllers\ReportDocumentController;
-    use App\Models\Tenant\Catalogs\DocumentType;
-    use Modules\Report\Traits\ReportTrait;
+
     use Modules\Report\Exports\DocumentExport;
 
     class ProcessDocumentReport implements ShouldQueue
@@ -34,7 +33,6 @@
         use Queueable;
         use SerializesModels;
         use StorageDocument;
-        use ReportTrait;
 
         public $tray_id;
         public $params;
@@ -75,130 +73,124 @@
         public function handle()
         {
             Log::debug("ProcessDocumentReport Start");
-            $tray = DownloadTray::find($this->tray_id);
+
+            //$tray = DownloadTray::find($this->tray_id);
             $path = null;
-
-            $tray_id = $this->tray_id;
             
-            if (empty($tray)) {
+            try {
 
-                \Log::debug("No hay datos
-                    $ tray_id       =>" . var_export($tray_id, true) . "
-                    ");
+                $tray = DownloadTray::find($this->tray_id);
 
-            } else {
-                try {
-                    //ini_set('max_execution_time', 0);
+                //ini_set('max_execution_time', 0);
 
-                    //$records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
+                //$records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
 
-                    if (!is_object($tray)) {
-                        //Log::debug('DE ' . var_export($tray, true));
-                    }
-                    $format = $tray->format;
+                $format = $tray->format;
 
-                    if ($format === 'pdf') {
+                if ($format === 'pdf') {
 
-                        ini_set("pcre.backtrack_limit", "50000000");
+                    ini_set("pcre.backtrack_limit", "50000000");
 
-                        Log::debug("Render pdf init");
+                    Log::debug("Render pdf init");
 
-                        $records=$this->params;
-                        $company=$this->company;
-                        $establishment=$this->establishment;
-                        $filters=$this->filters;
-                        $columns=$this->columns;
-                        
-                        $html = view('report::documents.report_pdf', compact("records", "company", "establishment", "filters","columns"))->render();
+                    $records=$this->params;
+                    $company=$this->company;
+                    $establishment=$this->establishment;
+                    $filters=$this->filters;
+                    $columns=$this->columns;
 
-                        ////////////////////////////////
+                    $html = view('report::documents.report_pdf', compact("records", "company", "establishment", "filters","columns"))->render();
 
-                        $base_template = $establishment->template_pdf;
+                    $html = htmlspecialchars_decode($html);
+
+                    ////////////////////////////////
+
+                    $base_template = $establishment->template_pdf;
 
 
-                        $defaultConfig = (new ConfigVariables())->getDefaults();
-                        $fontDirs = $defaultConfig['fontDir'];
+                    $defaultConfig = (new ConfigVariables())->getDefaults();
+                    $fontDirs = $defaultConfig['fontDir'];
+    
+                    $defaultFontConfig = (new FontVariables())->getDefaults();
+                    $fontData = $defaultFontConfig['fontdata'];
+
+                    $pdf_font_regular = config('tenant.pdf_name_regular');
+                    $pdf_font_bold = config('tenant.pdf_name_bold');
+    
+                    $pdf = new Mpdf([
+                        'format' => 'A4-L',
+                        'fontDir' => array_merge($fontDirs, [
+                            app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                                    DIRECTORY_SEPARATOR.'pdf'.
+                                                    DIRECTORY_SEPARATOR.$base_template.
+                                                    DIRECTORY_SEPARATOR.'font')
+                        ]),
+                        'fontdata' => $fontData + [
+                            'custom_bold' => [
+                                'R' => $pdf_font_bold.'.ttf',
+                            ],
+                            'custom_regular' => [
+                                'R' => $pdf_font_regular.'.ttf',
+                            ],
+                        ]
+                    ]);
+
+                    $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                            DIRECTORY_SEPARATOR.'pdf'.
+                                            DIRECTORY_SEPARATOR.'default'.
+                                            DIRECTORY_SEPARATOR.'style.css');
+                    
+                    $stylesheet = file_get_contents($path_css);
+                    
+                    $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+
+                    $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
         
-                        $defaultFontConfig = (new FontVariables())->getDefaults();
-                        $fontData = $defaultFontConfig['fontdata'];
+                    $filename = 'DOCUMENT_ReporteDoc_' . date('YmdHis') . '-' . $tray->user_id;
+                    Log::debug("Render pdf finish");
+                    Log::debug("Upload pdf init");
 
-                        $pdf_font_regular = config('tenant.pdf_name_regular');
-                        $pdf_font_bold = config('tenant.pdf_name_bold');
-        
-                        $pdf = new Mpdf([
-                            'format' => 'A4-L',
-                            'fontDir' => array_merge($fontDirs, [
-                                app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
-                                                        DIRECTORY_SEPARATOR.'pdf'.
-                                                        DIRECTORY_SEPARATOR.$base_template.
-                                                        DIRECTORY_SEPARATOR.'font')
-                            ]),
-                            'fontdata' => $fontData + [
-                                'custom_bold' => [
-                                    'R' => $pdf_font_bold.'.ttf',
-                                ],
-                                'custom_regular' => [
-                                    'R' => $pdf_font_regular.'.ttf',
-                                ],
-                            ]
-                        ]);
+                    
+                    $this->uploadStorage($filename, $pdf->output('', 'S'), 'download_tray_pdf');
+                    Log::debug("Upload pdf finish");
+                    
+                    $tray->file_name = $filename;
+                    $path = 'download_tray_pdf';
+                    
 
-                        $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
-                                             DIRECTORY_SEPARATOR.'pdf'.
-                                             DIRECTORY_SEPARATOR.'default'.
-                                             DIRECTORY_SEPARATOR.'style.css');
+                } else {
 
-                        $stylesheet = file_get_contents($path_css);
-                        
-                        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-                        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
-            
-                        $filename = 'DOCUMENT_ReporteDoc_' . date('YmdHis') . '-' . $tray->user_id;
-                        Log::debug("Render pdf finish");
+                    Log::debug($this->params);
+                    $filename = 'DOCUMENT_ReporteDoc_' . date('YmdHis') . '-' . $tray->user_id;
+                    Log::debug("Render excel init");
+                    $inventoryExport = new DocumentExport();
+                    $inventoryExport
+                        ->records($this->params)
+                        ->company($this->company)
+                        ->establishment($this->establishment)
+                        ->filters($this->filters)
+                        ->categories($this->categories)
+                        ->categories_services($this->categories_services)
+                        ->columns($this->columns);
+                    Log::debug("Render excel finish");
 
-                        Log::debug("Upload pdf init");
+                    Log::debug("Upload excel init");
 
-                      
-                        $this->uploadStorage($filename, $pdf->output('', 'S'), 'download_tray_pdf');
-                        Log::debug("Upload pdf finish");
-                        
-                        $tray->file_name = $filename;
-                        $path = 'download_tray_pdf';
-                        
+                    $inventoryExport->store(DIRECTORY_SEPARATOR . "download_tray_xlsx" . DIRECTORY_SEPARATOR . $filename . '.xlsx', 'tenant');
 
-                    } else {
-
-                        Log::debug($records);
-                        $filename = 'DOCUMENT_ReporteDoc_' . date('YmdHis') . '-' . $tray->user_id;
-                        Log::debug("Render excel init");
-                        $inventoryExport = new DocumentExport();
-                        $inventoryExport
-                            ->records($this->params)
-                            ->company($this->company)
-                            ->establishment($this->establishment)
-                            ->filters($this->filters)
-                            ->categories($this->categories)
-                            ->categories_services($this->categories_services)
-                            ->columns($this->columns);
-                        Log::debug("Render excel finish");
-
-                        Log::debug("Upload excel init");
-
-                        $inventoryExport->store(DIRECTORY_SEPARATOR . "download_tray_xlsx" . DIRECTORY_SEPARATOR . $filename . '.xlsx', 'tenant');
-
-                        Log::debug("Upload excel finish");
-                        $tray->file_name = $filename;
-                        $path = 'download_tray_xlsx';
-                    }
-
-                    $tray->date_end = date('Y-m-d H:i:s');
-                    $tray->status = 'FINISHED';
-                    $tray->path = $path;
-                    $tray->save();
-
-                } catch (Exception $e) {
-                    Log::debug("ProcessDocumentReport Error transaction" . $e);
+                    Log::debug("Upload excel finish");
+                    $tray->file_name = $filename;
+                    $path = 'download_tray_xlsx';
                 }
+
+                $tray->date_end = date('Y-m-d H:i:s');
+                $tray->status = 'FINISHED';
+                $tray->path = $path;
+                $tray->save();
+
+            } catch (Exception $e) {
+                Log::debug("ProcessDocumentReport Error transaction" . $e);
             }
 
             Log::debug("ProcessDocumentReport Finish transaction");
