@@ -570,16 +570,9 @@ export default {
   components: { DashboardStock, LoaderGraph, RowTop },
   mounted() {
     this.getNotification();
-    if(!this.notCount){
-        let notifiUser=this.interval = setInterval(function() {
+    this.interval = setInterval(function() {
         this.getNotification()
-        if(this.notCount) 
-        {
-            clearInterval(notifiUser);
-            this.notCount=false
-        }
-        }.bind(this), 500);
-    }
+    }.bind(this), 500);
   },
   data() {
     return {
@@ -638,6 +631,7 @@ export default {
       items: [],
       company: {},
       loaders: {},
+      date_term:null,
     };
   },
   async created() {
@@ -833,12 +827,20 @@ export default {
       this.loaders.items_by_sales = false;
       this.loaders.top_customers = false;
     },
-    async getNotification() {
-      await this.$http
+    getNotification() {
+      this.$http
         .get(`/users/getMessageNotification`)
         .then((response) => {
-          setTimeout(() => this.$message.error(response.data.message), 5000);
-          this.notCount=true
+            this.date_term=response.data.date;
+            if (response.data.message!=""&&this.date_term==moment().format("YYYY-MM-DD")) {
+                this.$message({
+                    showClose: true,
+                    message: response.data.message,
+                    type: 'error',
+                    duration: 5000
+                });
+                this.notCount=true
+            }
         });
     },
   },
