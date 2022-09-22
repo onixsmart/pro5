@@ -639,6 +639,7 @@ export default {
     this.$store.commit('setConfiguration', this.configuration)
     this.initForm();
     this.initLoaders();
+    console.log(this.configuration);
     await this.$http.get(`/${this.resource}/filter`).then((response) => {
       this.establishments = response.data.establishments;
       this.form.establishment_id =
