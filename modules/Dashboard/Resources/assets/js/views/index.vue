@@ -566,8 +566,8 @@ import DashboardInventory from "./partials/dashboard_inventory.vue";
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
-  props: ["typeUser", "soapCompany"],
-  components: { DashboardStock, LoaderGraph, RowTop },
+  props: ["typeUser", "soapCompany", 'configuration'],
+  components: { DashboardStock, LoaderGraph, RowTop , DashboardInventory },
   mounted() {
     this.getNotification();
     this.interval = setInterval(function() {
