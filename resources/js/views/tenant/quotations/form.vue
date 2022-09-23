@@ -340,6 +340,7 @@
                              :configuration="config"
                              :customer-id="form.customer_id"
                              :person-type-id="form.person_type_id"
+                             :percentage-igv="percentage_igv"
                            @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -454,6 +455,7 @@
                     this.allCustomers()
                     this.selectDestinationSale()
                 })
+            await this.getPercentageIgv();
             this.loading_form = true
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
@@ -709,10 +711,12 @@
             cleanCustomer(){
                 this.form.customer_id = null;
             },
-            changeDateOfIssue() {
-                this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+            async changeDateOfIssue() {
+                await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
+                await this.getPercentageIgv();
+                this.changeCurrencyType();
             },
             allCustomers() {
                 this.customers = this.all_customers
@@ -735,7 +739,7 @@
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 let items = []
                 this.form.items.forEach((row) => {
-                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+                    items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
                 });
                 this.form.items = items
                 this.calculateTotal()
@@ -780,7 +784,7 @@
                     }
                     total_value += parseFloat(row.total_value)
 
-                    
+
                     if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
                         let unit_value = row.total_value / row.quantity
@@ -795,7 +799,7 @@
 
                     //sum discount no base
                     this.total_discount_no_base += sumAmountDiscountsNoBaseByItem(row)
-                    
+
                 });
 
                 this.form.total_igv_free = _.round(total_igv_free, 2)

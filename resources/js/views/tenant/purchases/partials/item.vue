@@ -618,7 +618,8 @@ export default {
         'exchangeRateSale',
         'localHasGlobalIgv',
         'type',
-        'supplier_id'
+        'supplier_id',
+        'percentageIgv'
     ],
     components: {itemForm, LotsForm, Keypress,WarehousesDetail,HistorySalesForm},
     computed: {
@@ -934,7 +935,7 @@ export default {
             this.form.has_isc = this.form.item.purchase_has_isc
             this.form.percentage_isc = this.form.item.purchase_percentage_isc
             this.form.system_isc_type_id = this.form.item.purchase_system_isc_type_id
-            
+
         },
         setGlobalPurchaseCurrencyToItem(){
 
@@ -942,14 +943,14 @@ export default {
             {
                 this.form.item.currency_type_id = this.currencyTypeIdActive
             }
-            
+
         },
         setGlobalIgvToItem() {
             if (this.config.enabled_global_igv_to_purchase === true) {
                 // Ajusta el igv, si es global, se lo añade o quita al precio del item directamente
                 // this.form.purchase_has_igv = this.hasGlobalIgv
                 this.form.purchase_has_igv = this.localHasGlobalIgv
-                
+
             }
         },
 
@@ -992,7 +993,7 @@ export default {
 
             if (!affectation_igv_types_exonerated_unaffected.includes(this.form.affectation_igv_type_id)) {
 
-                unit_price = (this.form.purchase_has_igv) ? this.form.unit_price : this.form.unit_price * 1.18;
+                unit_price = (this.form.purchase_has_igv) ? this.form.unit_price : this.form.unit_price * (1 + this.percentageIgv);
 
             }
 
@@ -1004,7 +1005,7 @@ export default {
             this.form.item.unit_price = unit_price
             this.form.item.presentation = this.item_unit_type;
             this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
-            this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
+            this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv)
             this.row.lot_code = await this.lot_code
             this.row.lots = await this.lots
             this.row.update_price = this.form.update_price

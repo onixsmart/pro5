@@ -268,6 +268,19 @@
             'dashboard_products',
             'affect_all_documents',
             'quantity_sales_notes',
+            'restrict_series_selection_seller',
+
+            'enabled_point_system',
+            'point_system_sale_amount',
+            'quantity_of_points',
+            'round_points_of_sale',
+            'show_complete_name_pos',
+            'enable_categories_products_view',
+
+            'restrict_seller_discount',
+            'sellers_discount_limit',
+            'enabled_sales_agents',
+            'change_affectation_exonerated_igv',
         ];
 
         protected $casts = [
@@ -365,6 +378,19 @@
             'hide_pdf_view_documents' => 'bool',
             'ticket_single_shipment' => 'bool',
             'affect_all_documents'=>'bool',
+            'restrict_series_selection_seller'=>'bool',
+            'show_complete_name_pos'=>'bool',
+
+            'enabled_point_system'=>'bool',
+            'point_system_sale_amount'=>'float',
+            'quantity_of_points'=>'float',
+            'round_points_of_sale'=>'bool',
+            'enable_categories_products_view'=>'bool',
+            
+            'restrict_seller_discount'=>'bool',
+            'sellers_discount_limit'=>'float',
+            'enabled_sales_agents'=>'bool',
+            'change_affectation_exonerated_igv'=>'bool',
             
         ];
 
@@ -582,6 +608,23 @@
                 'dashboard_general' => (bool)$this->dashboard_general,
                 'dashboard_clients' => (bool)$this->dashboard_clients,
                 'dashboard_products' => (bool)$this->dashboard_products,
+                'affect_all_documents' => (bool)$this->affect_all_documents,
+                'restrict_series_selection_seller' => $this->restrict_series_selection_seller,
+                
+                'enabled_point_system' => $this->enabled_point_system,
+                'point_system_sale_amount' => $this->point_system_sale_amount,
+                'quantity_of_points' => $this->quantity_of_points,
+                'round_points_of_sale' => $this->round_points_of_sale,
+
+                'delete_relation_note_to_invoice' => (bool)config('tenant.delete_relation_note_to_invoice'),
+                'show_complete_name_pos' => (bool)$this->show_complete_name_pos,
+                'enable_categories_products_view' => $this->enable_categories_products_view,
+
+                'restrict_seller_discount' => $this->restrict_seller_discount,
+                'sellers_discount_limit' => $this->sellers_discount_limit,
+                'enabled_sales_agents' => $this->enabled_sales_agents,
+                'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
+                
             ];
         }
 
@@ -2244,7 +2287,7 @@
             return (bool) \Config('extra.suscription_facturalo');
         }
 
-        
+
         /**
          *
          * @param Builder $query
@@ -2255,7 +2298,7 @@
             return $query->select('separate_cash_transactions')->firstOrFail()->separate_cash_transactions;
         }
 
-        
+
         /**
          *
          * @param Builder $query
@@ -2266,9 +2309,9 @@
             return $query->select('order_cash_income')->firstOrFail()->order_cash_income;
         }
 
-         
+
         /**
-         * 
+         *
          * Obtener campo individual de la configuracion
          *
          * @param  Builder $query
@@ -2279,6 +2322,43 @@
         {
             return $query->select($column)->firstOrFail()->{$column};
         }
-        
+
+
+        /**
+         *
+         * Obtener campos de configuracion para sistema por puntos
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeGetDataPointSystem($query)
+        {
+            return $query->select([
+                        'enabled_point_system',
+                        'point_system_sale_amount',
+                        'quantity_of_points',
+                        'round_points_of_sale',
+                    ])
+                    ->firstOrFail();
+        }
+
+
+        /**
+         *
+         * Obtener campos de configuracion para registrar datos de configuracion en documents
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeGetColumnsForDocuments($query)
+        {
+            return $query->select([
+                        'enabled_point_system',
+                        'point_system_sale_amount',
+                        'quantity_of_points',
+                        'round_points_of_sale',
+                    ])
+                    ->firstOrFail();
+        }
 
     }

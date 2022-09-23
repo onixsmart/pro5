@@ -304,6 +304,16 @@
 
                 });
 
+                
+                Route::prefix('inventory-review')->group(function () {
+
+                    Route::get('', 'InventoryReviewController@index')->name('tenant.inventory-review.index');
+                    Route::get('filters', 'InventoryReviewController@filters');
+                    Route::get('records', 'InventoryReviewController@records');
+                    Route::post('export', 'InventoryReviewController@export');
+
+                });
+
             });
         });
     }

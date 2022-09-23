@@ -33,6 +33,8 @@ use Modules\Sale\Models\UserCommission;
 use App\Models\Tenant\Configuration;
 use Modules\Restaurant\Models\RestaurantRole;
 use Modules\MobileApp\Models\AppModule;
+use Modules\LevelAccess\Models\AuthorizedDiscountUser;
+
 
 /**
  * Class User
@@ -190,6 +192,21 @@ class User extends Authenticatable
         // 'api_token',
         // 'remember_token',
 
+        // informacion personal
+        'names',
+        'last_names',
+        'personal_email',
+        'corporate_email',
+        'personal_cell_phone',
+        'corporate_cell_phone',
+        'date_of_birth',
+        'contract_date',
+        'position',
+        'photo_filename',
+        // informacion personal
+
+        'multiple_default_document_types',
+
     ];
 
     /**
@@ -217,6 +234,7 @@ class User extends Authenticatable
         'edit_purchase'=>'bool',
         'annular_purchase'=>'bool',
         'delete_purchase'=>'bool',
+        'multiple_default_document_types'=>'bool',
     ];
 
     public function modules()
@@ -227,6 +245,11 @@ class User extends Authenticatable
     public function levels()
     {
         return $this->belongsToMany(ModuleLevel::class);
+    }
+
+    public function default_document_types()
+    {
+        return $this->hasMany(UserDefaultDocumentType::class);
     }
 
     public function authorizeModules($modules)
@@ -862,6 +885,15 @@ $withEstablishment = true){
     }
 
     /**
+     * @return HasMany
+     */
+    public function authorized_discount_users()
+    {
+        return $this->hasMany(AuthorizedDiscountUser::class);
+    }
+
+
+    /**
      * Devuelve las series que puede seleccionar el usuario.
      *
      * @return Series[]|Builder[]|Collection|\Illuminate\Support\Collection
@@ -1056,6 +1088,16 @@ $withEstablishment = true){
         ];
     }
 
+        
+    /**
+     *
+     * @return string
+     */
+    public function getPhotoForView()
+    {
+        return $this->photo_filename ? (new ModelTenant)->getPathPublicUploads('users', $this->photo_filename) : null;
+    }
+
     
     /**
      * 
@@ -1069,6 +1111,46 @@ $withEstablishment = true){
         return $query->withOut([
             'establishment',
         ]);
+    }
+
+
+    public function getDataOnlyAuthUser()
+    {
+        return [
+            'name' => $this->name,
+            'email' => $this->email,
+            'password' => $this->password,
+            'establishment_id' => $this->establishment_id,
+            'type' => $this->type,
+            'locked' => $this->locked,
+            'identity_document_type_id' => $this->identity_document_type_id,
+            'number' => $this->number,
+            'address' => $this->address,
+            'telephone' => $this->telephone,
+            'document_id' => $this->document_id,
+            'series_id' => $this->series_id,
+            'permission_edit_cpe' => $this->permission_edit_cpe,
+            'recreate_documents' => $this->recreate_documents,
+            'zone_id' => $this->zone_id,
+            'restaurant_role_id' => $this->restaurant_role_id,
+            'delete_payment' => $this->delete_payment,
+            'create_payment' => $this->create_payment,
+            'edit_purchase' => $this->edit_purchase,
+            'annular_purchase' => $this->annular_purchase,
+            'delete_purchase' => $this->delete_purchase,
+            'names' => $this->names,
+            'last_names' => $this->last_names,
+            'personal_email' => $this->personal_email,
+            'corporate_email' => $this->corporate_email,
+            'personal_cell_phone' => $this->personal_cell_phone,
+            'corporate_cell_phone' => $this->corporate_cell_phone,
+            'date_of_birth' => $this->date_of_birth,
+            'contract_date' => $this->contract_date,
+            'position' => $this->position,
+            'photo_filename' => $this->photo_filename,
+            'multiple_default_document_types' => $this->multiple_default_document_types,
+            'default_document_types' => $this->default_document_types,
+        ];
     }
 
 }

@@ -566,7 +566,7 @@ import DashboardInventory from "./partials/dashboard_inventory.vue";
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
-  props: ["typeUser", "soapCompany", 'configuration'],
+  props: ["typeUser", "soapCompany", "configuration"],
   components: { DashboardStock, LoaderGraph, RowTop , DashboardInventory },
   mounted() {
     this.getNotification();
@@ -639,7 +639,6 @@ export default {
     this.$store.commit('setConfiguration', this.configuration)
     this.initForm();
     this.initLoaders();
-    console.log(this.configuration);
     await this.$http.get(`/${this.resource}/filter`).then((response) => {
       this.establishments = response.data.establishments;
       this.form.establishment_id =
