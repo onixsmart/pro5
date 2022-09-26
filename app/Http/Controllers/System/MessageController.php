@@ -89,14 +89,12 @@ class MessageController extends Controller
             $message->recurrence=$req['recurrence'];
             $message->save();
     
-            if(!empty($req['selecteds'])){
-                $ids=$req['selecteds'];
-                foreach ($ids as $key => $value) {
-                    $description = new MessageDescription();
-                    $description->client_id = $value;
-                    $description->message_id= $message->id;
-                    $description->save();
-                }
+            $ids=$req['selecteds'];
+            foreach ($ids as $key => $value) {
+                $description = new MessageDescription();
+                $description->client_id = $value;
+                $description->message_id= $message->id;
+                $description->save();
             }
         }
         return [
