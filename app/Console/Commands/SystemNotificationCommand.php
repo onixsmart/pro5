@@ -51,17 +51,23 @@ class SystemNotificationCommand extends Command
                 $message_month=Carbon::parse($message_date)->format('m');
                 $message_year=Carbon::parse($message_date)->format('Y');
                 $tenant_id=null;
+                $this->info($message_info);
+                $this->info($message_month);
+                $this->info(Carbon::now()->format('m'));
                 if ($message->recurrence==1) {
                     if(Carbon::now()->format('m')==$message_month){
-                        
+                        $this->info('paso mes');
                         if(Carbon::now()->format('d')==$message_day){
                             if (count($message_info)>0) {
+                                $this->info('paso dia');
+                                $this->info($message_info);
+                                Log::info('dentro del if ' . $message_info . ' Message success');
                                 foreach ($message_info as $value) {
                                     $id_client=$value->client_id;
-                                    $tenant_id = Client::where('id', $id_client)->get();
+                                    $tenant_id = Client::where('id', $id_client)->first();
                                     //Envio de notificacion al tenant
                                     $tenant_id->notify(new MessageNotification($message_text));
-            
+                                    //Log::info('id con value' . $value . ' tenant');
                                 }
                                 $message_month=Carbon::parse($message_date)->addMonth(1);
                                 Message::where('id',$message->id)->update([

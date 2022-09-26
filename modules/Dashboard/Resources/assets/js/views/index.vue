@@ -632,6 +632,7 @@ export default {
       company: {},
       loaders: {},
       date_term:null,
+      data_message:null,
     };
   },
   async created() {
@@ -832,14 +833,18 @@ export default {
         .get(`/users/getMessageNotification`)
         .then((response) => {
             this.date_term=response.data.date;
-            if (response.data.message!=""&&this.date_term==moment().format("YYYY-MM-DD")) {
+            console.log(this.date_term)
+            console.log(moment().format("HH:MM"))
+            console.log(this.date_term==moment().format("HH:MM"))
+            if (response.data.message!=""&&this.data_message==null&&this.data_message!=response.data.message) {
                 this.$message({
                     showClose: true,
                     message: response.data.message,
                     type: 'error',
                     duration: 5000
                 });
-                this.notCount=true
+                this.data_message=response.data.message;
+
             }
         });
     },

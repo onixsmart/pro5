@@ -192,13 +192,15 @@ export default {
             this.getRecord=false;
             this.search.value = query;
             this.getDataClients();
-            await selectOption();
+            
         },
         async getDataClients() {
             await this.$http.get(`/messages/filter?${this.getQueryParameters()}`)
             .then(response => {
                 if (this.getRecord) {
                     this.records = response.data.data;
+                    this.selectOption();
+                    console.log(this.form.selecteds)
                     
                 } else {
                     this.clients = response.data.data;
@@ -225,6 +227,7 @@ export default {
         },
         async submit() {
             this.form.client_id=!this.recordId?null:this.recordId;
+            console.log(this.form.selecteds)
             this.$http.post(`${this.resource}`, this.form)
                     .then(response => {
                         this.$message.success(response.data.message)
@@ -264,11 +267,12 @@ export default {
                 if (!d.selected) {
                     this.form.selecteds.splice(this.records.indexOf(d.id),1);
                 }else{
+                    console.log(d.selected)
                     this.form.selecteds.push(d.id);
                 }
             });
 
-            //console.log(this.form.selecteds)
+            console.log(this.form.selecteds)
         },
     }
 };
