@@ -52,7 +52,10 @@ class SystemNotificationCommand extends Command
                 $message_year=Carbon::parse($message_date)->format('Y');
                 $tenant_id=null;
                 $this->info($message_info);
-                $this->info($message_month);
+                Log::info('dentro del if ' . $message_info . ' Message success');
+                Log::info($message_month);
+                Log::info($message_month);
+                $this->info($message_day);
                 $this->info(Carbon::now()->format('m'));
                 if ($message->recurrence==1) {
                     if(Carbon::now()->format('m')==$message_month){
