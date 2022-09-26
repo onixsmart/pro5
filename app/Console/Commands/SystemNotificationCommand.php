@@ -54,7 +54,8 @@ class SystemNotificationCommand extends Command
                 $this->info($message_info);
                 Log::info('dentro del if ' . $message_info . ' Message success');
                 Log::info($message_month);
-                Log::info($message_month);
+                Log::info($message_day);
+                Log::info($message_text);
                 $this->info($message_day);
                 $this->info(Carbon::now()->format('m'));
                 if ($message->recurrence==1) {
