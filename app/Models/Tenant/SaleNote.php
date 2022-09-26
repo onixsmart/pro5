@@ -17,6 +17,7 @@
     use Modules\Sale\Models\TechnicalService;
     use Modules\Pos\Models\Tip;
     use Modules\Sale\Models\Agent;
+    use App\Models\Tenant\DispatchSaleNote;
 
     /**
      * Class SaleNote
@@ -554,6 +555,11 @@
             return $this->hasMany(Document::class);
         }
 
+        public function dispatch_sale()
+        {
+            return $this->hasMany(DispatchSaleNote::class);
+        }
+
         /**
          * @return BelongsTo
          * order from ecommerce
@@ -760,6 +766,22 @@
                     $date_of_pay=$pay->date_of_payment->format('Y-m-d');
                 }
             }
+            $status_dispatch=$this->dispatch_sale;
+            
+            if (count($status_dispatch)>0) {
+                //dd($status_dispatch[0]->status);
+                if (is_null($status_dispatch[0]->status)) {
+                    $status_dispatch='PENDIENTE';
+                }else if($status_dispatch[0]->status){
+                    $status_dispatch='ENTREGADO';
+                }else{
+                    //dd('parcial');
+                    $status_dispatch='PARCIAL';
+                }
+            }else {
+                $status_dispatch='PENDIENTE';
+            }
+            
 
             return [
                 'id' => $this->id,
@@ -836,6 +858,8 @@
 // 'number' => $this->number,
                 'agent_name' => optional($this->agent)->search_description,
                 'reference_data' => $this->reference_data,
+
+                'status_dispatch'=>$status_dispatch,
             ];
         }
 

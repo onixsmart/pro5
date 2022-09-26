@@ -31,7 +31,7 @@
                         <th class="text-right"  v-if="columns.seller_name.visible" >Vendedor</th>
 
                         <th class="text-center">Fecha Emisión</th>
-                        <th class="text-center"  v-if="columns.date_payment.visible" >Fecha de pago</th>
+                        <th v-if="columns.date_payment.visible" class="text-center">Fecha de pago</th>
                         <th>Cliente</th>
                         <th>Nota de Venta</th>
                         <th>Estado</th>
@@ -59,6 +59,9 @@
                         </th>
                         <td class="text-right" v-if="columns.region.visible">
                             Region
+                        </td>
+                        <td class="text-right" v-if="columns.dispatch_status.visible">
+                            Estado de despacho
                         </td>
                          <th class="text-center" v-if="columns.type_period.visible" >
                             Tipo Periodo
@@ -137,6 +140,24 @@
 
                         <td class="text-right" v-if="columns.region.visible">
                             {{ row.customer_region }}
+                        </td>
+
+                        <td class="text-right" v-if="columns.dispatch_status.visible">
+                            <template v-if="row.status_dispatch==='ENTREGADO'">
+                                <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-success"
+                                    @click.prevent="clickDispatchStatus(row.id)" >{{row.status_dispatch}}</button>
+                            </template>
+                            
+                            <template v-if="row.status_dispatch==='PENDIENTE'">
+                                <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-danger"
+                                    @click.prevent="clickDispatchStatus(row.id)" >{{row.status_dispatch}}</button>
+                            </template>
+
+                            <template v-if="row.status_dispatch==='PARCIAL'">
+                                <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-warning"
+                                    @click.prevent="clickDispatchStatus(row.id)" >{{row.status_dispatch}}</button>
+                            </template>
+                            
                         </td>
 
                         <td class="text-right" v-if="columns.type_period.visible">
@@ -310,6 +331,11 @@
             :configuration="config"
             :showMigrate.sync="showMigrateNv"
         ></UploadToOtherServer>
+
+        <sale-note-dispatch-status :showDialog.sync="showDialogDispatch"
+                            :documentId="recordId"
+                            :typeUser="typeUser"></sale-note-dispatch-status>
+
     </div>
 </template>
 
@@ -322,6 +348,7 @@
     import {deletable} from '../../../mixins/deletable'
     import ModalGenerateCPE from './ModalGenerateCPE'
     import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+    import SaleNoteDispatchStatus from './partials/dispatch_status.vue'
 
     export default {
         props: [
@@ -337,7 +364,8 @@
             SaleNotesOptions,
             SaleNoteGenerate,
             ModalGenerateCPE,
-            UploadToOtherServer
+            UploadToOtherServer,
+            SaleNoteDispatchStatus
         },
         computed:{
             ...mapState([
@@ -352,6 +380,7 @@
                 showDialogPayments: false,
                 showDialogOptions: false,
                 showDialogGenerate: false,
+                showDialogDispatch: false,
                 saleNotesNewId: null,
                 recordId: null,
                 columns: {
@@ -421,6 +450,10 @@
                     },
                     date_payment: {
                         title: 'Fecha de pago',
+                        visible: false
+                    },
+                    dispatch_status: {
+                        title: 'Estado de despacho',
                         visible: false
                     }
 
@@ -585,6 +618,11 @@
                     })
                 this.$eventHub.$emit('reloadData')
             },
+            clickDispatchStatus(recordId) {
+                this.recordId = recordId;
+                this.showDialogDispatch = true;
+            },
+
         }
     }
 </script>
