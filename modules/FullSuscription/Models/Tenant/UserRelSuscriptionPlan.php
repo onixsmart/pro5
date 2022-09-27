@@ -104,6 +104,7 @@
             'total' => 'float',
             'quantity_period' => 'int',
             'parent_customer_id' => 'int',
+            'parent_customer' => 'array',
             'customer_id' => 'int',
             'apply_concurrency' => 'bool',
             'enabled_concurrency' => 'bool',
