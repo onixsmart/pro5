@@ -14,7 +14,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 use App\Models\System\User;
 
-class Message extends Notification
+class MessageNotification extends Notification
 {
     use Queueable;
 

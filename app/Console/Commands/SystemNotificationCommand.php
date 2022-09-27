@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Artisan;
 use Illuminate\Support\Facades\Log;
 use App\Models\System\Client;
-use App\Notifications\System\Message as MessageNotification;
+use App\Notifications\System\MessageNotification;
 
 class SystemNotificationCommand extends Command
 {
