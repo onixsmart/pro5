@@ -306,4 +306,17 @@
             return $query->onlyActive()->select('id', 'description')->whereIn('id', self::SALE_DOCUMENT_TYPES);
         }
 
+
+        /**
+         * 
+         * Filtro para la descripción
+         *
+         * @param Builder $query
+         * @return Builder
+         */  
+        public function scopeFilterOnlyDescription($query)
+        {
+            return $query->select('id', 'description');
+        }
+
     }

@@ -268,6 +268,9 @@
             'dashboard_products',
             'affect_all_documents',
             'quantity_sales_notes',
+            'regex_password_user',
+            'enabled_remember_change_password',
+            'quantity_month_remember_change_password',
             'restrict_series_selection_seller',
 
             'enabled_point_system',
@@ -281,6 +284,8 @@
             'sellers_discount_limit',
             'enabled_sales_agents',
             'change_affectation_exonerated_igv',
+
+            'exchange_rate_seller',
         ];
 
         protected $casts = [
@@ -378,6 +383,9 @@
             'hide_pdf_view_documents' => 'bool',
             'ticket_single_shipment' => 'bool',
             'affect_all_documents'=>'bool',
+            'regex_password_user' => 'bool',
+            'enabled_remember_change_password' => 'bool',
+            'quantity_month_remember_change_password' => 'int',
             'restrict_series_selection_seller'=>'bool',
             'show_complete_name_pos'=>'bool',
 
@@ -391,6 +399,7 @@
             'sellers_discount_limit'=>'float',
             'enabled_sales_agents'=>'bool',
             'change_affectation_exonerated_igv'=>'bool',
+            'exchange_rate_seller' => 'bool',
             
         ];
 
@@ -603,7 +612,9 @@
                 'list_items_by_warehouse' => $this->list_items_by_warehouse,
                 'hide_pdf_view_documents' => $this->hide_pdf_view_documents,
                 'ticket_single_shipment' => $this->ticket_single_shipment,
-                'affect_all_documents' => (bool)$this->affect_all_documents,
+                'regex_password_user' => $this->regex_password_user,
+                'enabled_remember_change_password' => $this->enabled_remember_change_password,
+                'quantity_month_remember_change_password' => $this->quantity_month_remember_change_password,
                 'dashboard_sales' => (bool)$this->dashboard_sales,
                 'dashboard_general' => (bool)$this->dashboard_general,
                 'dashboard_clients' => (bool)$this->dashboard_clients,
@@ -624,6 +635,8 @@
                 'sellers_discount_limit' => $this->sellers_discount_limit,
                 'enabled_sales_agents' => $this->enabled_sales_agents,
                 'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
+
+                'exchange_rate_seller' => $this->exchange_rate_seller,
                 
             ];
         }

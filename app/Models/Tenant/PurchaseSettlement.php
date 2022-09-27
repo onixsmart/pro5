@@ -21,10 +21,10 @@ use App\Models\Tenant\Catalogs\{
     DocumentType
 };
 
-
 class PurchaseSettlement extends ModelTenant
 {
-    /* protected $with = ['establishment']; */
+
+
     protected $fillable = [
         'user_id',
         'external_id',
@@ -290,5 +290,17 @@ class PurchaseSettlement extends ModelTenant
         ];
     }
 
+    
+    /**
+     *
+     * Filtro para no incluir relaciones en consulta
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeWhereFilterWithOutRelations($query)
+    {
+        return $query;
+    }
 
 }
