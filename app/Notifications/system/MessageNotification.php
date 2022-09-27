@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Notification as SendNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-use Illuminate\Notifications\Messages\BroadcastMessage;
-
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 use App\Models\System\User;
 
