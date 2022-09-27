@@ -175,7 +175,7 @@
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
-                                    <el-input v-model="form.exchange_rate_sale"></el-input>
+                                    <el-input :disabled="typeUser=='seller'&&!configuration.exchange_rate_seller?true:false" v-model="form.exchange_rate_sale"></el-input>
                                     <!-- <el-input :disabled="isUpdate" v-model="form.exchange_rate_sale"></el-input> -->
                                     <small v-if="errors.exchange_rate_sale"
                                            class="form-control-feedback"

@@ -279,6 +279,8 @@
             'sellers_discount_limit',
             'enabled_sales_agents',
             'change_affectation_exonerated_igv',
+
+            'exchange_rate_seller',
         ];
 
         protected $casts = [
@@ -392,6 +394,7 @@
             'sellers_discount_limit'=>'float',
             'enabled_sales_agents'=>'bool',
             'change_affectation_exonerated_igv'=>'bool',
+            'exchange_rate_seller' => 'bool',
             
         ];
 
@@ -627,6 +630,8 @@
                 'sellers_discount_limit' => $this->sellers_discount_limit,
                 'enabled_sales_agents' => $this->enabled_sales_agents,
                 'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
+
+                'exchange_rate_seller' => $this->exchange_rate_seller,
                 
             ];
         }

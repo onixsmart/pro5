@@ -728,6 +728,24 @@
                                             v-text="errors.restrict_series_selection_seller[0]"></small>
                                 </div>
                             </div>
+
+                            <div v-if="typeUser=='seller'" class="col-md-6 mt-4">
+
+                                <label class="control-label">
+                                    Editar tipo de cambio (Perfil vendedor)
+                                </label>
+
+                                <div :class="{'has-danger': errors.exchange_rate_seller}"
+                                        class="form-group">
+                                    <el-switch v-model="form.exchange_rate_seller"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.exchange_rate_seller"
+                                            class="form-control-feedback"
+                                            v-text="errors.exchange_rate_seller[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -2345,6 +2363,8 @@ export default {
                 sellers_discount_limit: 0,
                 enabled_sales_agents: false,
                 change_affectation_exonerated_igv: false,
+
+                exchange_rate_seller:false,
             };
         },
         UpdateFormPurchase(e) {
