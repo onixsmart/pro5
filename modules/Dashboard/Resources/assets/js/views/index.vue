@@ -843,7 +843,7 @@ export default {
                     type: 'error',
                     duration: 10000
                 });
-                this.data_message=id
+                this.data_message=response.data.id
             }
             this.data_message=null
         });
