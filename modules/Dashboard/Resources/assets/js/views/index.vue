@@ -836,14 +836,13 @@ export default {
             console.log(this.date_term)
             console.log(moment().format("HH:MM"))
             console.log(this.date_term==moment().format("HH:MM"))
-            if (response.data.message!=""&&this.data_message==null&&this.data_message!=response.data.message) {
+            if (response.data.message!=""&&this.date_term!=moment().format("HH:MM")) {
                 this.$message({
                     showClose: true,
                     message: response.data.message,
                     type: 'error',
-                    duration: 5000
+                    duration: 10000
                 });
-                this.data_message=response.data.message;
 
             }
         });
