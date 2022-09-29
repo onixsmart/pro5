@@ -226,6 +226,10 @@ export default {
             this.$emit("update:showNew", false);
         },
         async submit() {
+            if(this.form.recurrence==null){
+                this.loading = false
+                return this.$message.error('Debe seleccionar recurrencia mensual o anual')
+            }
             this.form.client_id=!this.recordId?null:this.recordId;
             console.log(this.form.selecteds)
             this.$http.post(`${this.resource}`, this.form)
@@ -265,7 +269,7 @@ export default {
             await this.records.map((d) => {
                 //console.log(d)
                 if (!d.selected) {
-                    this.form.selecteds.splice(this.records.indexOf(d.id),1);
+                    this.form.selecteds.splice(this.form.selecteds.indexOf(d.id),1);
                 }else{
                     console.log(d.selected)
                     this.form.selecteds.push(d.id);
