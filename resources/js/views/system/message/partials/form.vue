@@ -272,7 +272,10 @@ export default {
                     this.form.selecteds.splice(this.form.selecteds.indexOf(d.id),1);
                 }else{
                     console.log(d.selected)
-                    this.form.selecteds.push(d.id);
+                    if(this.form.selecteds.indexOf(d.id) == -1){
+                        this.form.selecteds.push(d.id);
+                    }
+                    
                 }
             });
 
