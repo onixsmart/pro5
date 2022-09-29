@@ -289,6 +289,7 @@ class UserController extends Controller
                 'success' => true,
                 'message' => $message_return['data'],
                 'date' => $value['created_at']->format('H:i'),
+                'id' => $value['id'],
             ];
         }
     }
