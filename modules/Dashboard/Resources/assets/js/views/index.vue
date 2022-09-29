@@ -845,7 +845,6 @@ export default {
                 });
                 this.data_message=response.data.id
             }
-            this.data_message=null
         });
     },
   },
