@@ -716,7 +716,6 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-
                                 <div :class="{'has-danger': errors.restrict_series_selection_seller}"
                                         class="form-group">
                                     <el-switch v-model="form.restrict_series_selection_seller"
@@ -726,6 +725,28 @@
                                     <small v-if="errors.restrict_series_selection_seller"
                                             class="form-control-feedback"
                                             v-text="errors.restrict_series_selection_seller[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Productos equivalentes
+                                    <el-tooltip class="item"
+                                                content="Recomendado para farmacia, venta de repuestos, otros"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+
+                                <div :class="{'has-danger': errors.equivalent_product}"
+                                        class="form-group">
+                                    <el-switch v-model="form.equivalent_product"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.equivalent_product"
+                                            class="form-control-feedback"
+                                            v-text="errors.equivalent_product[0]"></small>
                                 </div>
                             </div>
 
@@ -2366,6 +2387,7 @@ export default {
                 change_affectation_exonerated_igv: false,
 
                 exchange_rate_seller:false,
+                equivalent_product:false,
             };
         },
         UpdateFormPurchase(e) {

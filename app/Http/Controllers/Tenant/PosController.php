@@ -501,6 +501,7 @@ class PosController extends Controller
             }
         }
 
+
         if (!empty($whereExtra)) {
             $item
                 ->orWhereHas('brand', function ($query) use ($whereExtra) {
@@ -510,6 +511,7 @@ class PosController extends Controller
                 $query->where($whereExtra);
             });
         }
+        
 
         $item->whereIsActive();
 
@@ -529,6 +531,7 @@ class PosController extends Controller
             ->where('series_enabled', 0);
 
         self::FilterItem($item, $request);
+
         return new PosCollection($item->paginate(50));
 
     }

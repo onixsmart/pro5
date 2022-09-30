@@ -4,9 +4,11 @@ namespace App\Http\Resources\Tenant;
 
 use App\Models\Tenant\Configuration;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use App\Models\Tenant\Item;
 
 class PosCollection extends ResourceCollection
 {
+
     /**
      * Transform the resource collection into an array.
      *
@@ -15,11 +17,24 @@ class PosCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+        $configuration = Configuration::first();
+        if($configuration->equivalent_product){
+            $add_equivalent=null;
+            foreach ($this->collection as $value) {
+                $add_equivalent = $this->getAddItemEquivalent($value, $configuration);
+                if($add_equivalent!=null){
+                    foreach ($add_equivalent as $value) {
+                        $this->collection->push($value);
+                    }
+                }
+            }
+        }
+
         return $this->collection->transform(function ($row, $key) {
 
             $configuration = Configuration::first();
             $sale_unit_price = $this->getSaleUnitPrice($row, $configuration);
-
+            //dd($add_equivalent);
             return [
                 'stock' => $row->getStockByWarehouse(),
                 'id' => $row->id,
@@ -102,6 +117,32 @@ class PosCollection extends ResourceCollection
         }
 
         return $sale_unit_price;
+    }
+
+    private function getAddItemEquivalent($row, $configuration){
+        $items_equivalents=null;
+        $row_description = $row->name;
+        $desc=explode(" ",$row_description);
+        //dd($desc);
+        if($configuration->equivalent_product){
+
+            foreach ($desc as $in => $ds) {
+                $count_string=str_word_count($ds, 0);
+
+                if ($count_string>2) {
+                    $items_equivalents=Item::whereWarehouse()
+                    ->where('series_enabled', 0)
+                    ->where('name','like', '%'.$ds.'%')
+                    ->where('id', '!=', $row->id)
+                    ->whereIsActive()
+                    ->get();
+                }
+            }
+            //dd($items_equivalents);
+            return $items_equivalents;
+            
+
+        }
     }
     
 }

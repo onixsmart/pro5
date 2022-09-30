@@ -286,6 +286,7 @@
             'change_affectation_exonerated_igv',
 
             'exchange_rate_seller',
+            'equivalent_product',
         ];
 
         protected $casts = [
@@ -400,6 +401,7 @@
             'enabled_sales_agents'=>'bool',
             'change_affectation_exonerated_igv'=>'bool',
             'exchange_rate_seller' => 'bool',
+            'equivalent_product' => 'bool',
             
         ];
 
@@ -637,6 +639,7 @@
                 'change_affectation_exonerated_igv' => $this->change_affectation_exonerated_igv,
 
                 'exchange_rate_seller' => $this->exchange_rate_seller,
+                'equivalent_product' => (bool)$this->equivalent_product,
                 
             ];
         }

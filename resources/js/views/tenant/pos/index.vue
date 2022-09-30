@@ -1947,9 +1947,16 @@ export default {
         async searchItems() {
             if (this.input_item.length > 0) {
                 this.loading = true;
+
+                let equivalent_product=false
+                if (this.configuration.equivalent_product) {
+                    equivalent_product=true
+                }
+
                 let parameters = `input_item=${this.input_item}&cat=${
                     this.category_selected
-                }`;
+                }&equivalent=${equivalent_product}`;
+
 
                 await this.$http
                     .get(`/${this.resource}/search_items_cat?${parameters}`)
