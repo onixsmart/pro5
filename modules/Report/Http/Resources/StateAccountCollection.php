@@ -40,10 +40,10 @@ class StateAccountCollection extends ResourceCollection
                 
 
                 $document_type_id = Document::where('id', $row->id)->select('document_type_id')->get();
-                $document_type_id=$document_type_id[0]['document_type_id'];
+                $document_type_id=isset($document_type_id)?$document_type_id[0]['document_type_id']:'';
                 //dd($document_type_id);
                 $type_description= DocumentType::where('id',$document_type_id)->select('description')->get();
-                $type_description=$type_description[0]['description'];
+                $type_description=isset($type_description)?$type_description[0]['description']:'';
             }else{
                 $document_type = DocumentType::find('80');
 
@@ -66,7 +66,7 @@ class StateAccountCollection extends ResourceCollection
                 $payment_state = number_format($row->total - $total_paid, 2, '.', '');
                 $description=$row->state_type?$row->state_type->description:null;
                 $date_of_due=SaleNote::where('id',$row->id)->select('due_date')->get();
-                $date_of_due=$date_of_due[0]['due_date'];
+                $date_of_due=isset($date_of_due)?$date_of_due[0]['due_date']:'';
                 $type_description='NOTA DE VENTA';
                 //dd($row);
             }
