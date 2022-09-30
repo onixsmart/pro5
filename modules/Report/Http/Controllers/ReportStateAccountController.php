@@ -101,8 +101,7 @@ class ReportStateAccountController extends Controller
                 'total_igv',
                 'total',
                 'total_isc',
-            )
-            ->with(['person'=> function ($query) {
+            )->with(['person'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
@@ -133,8 +132,7 @@ class ReportStateAccountController extends Controller
                 'total_igv',
                 'total',
                 'total_isc',
-            )
-            ->with(['customer'=> function ($query) {
+            )->with(['customer'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
@@ -195,8 +193,7 @@ class ReportStateAccountController extends Controller
                 'customer_id',
                 'user_id',
                 'seller_id',
-            )
-            ->with(['person'=> function ($query) {
+            )->with(['person'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
@@ -232,8 +229,7 @@ class ReportStateAccountController extends Controller
                 'customer_id',
                 'user_id',
                 'seller_id',
-            )
-            ->with(['customer'=> function ($query) {
+            )->with(['customer'=> function ($query) {
                 $query->select('id','name', 'number');
             }])->with(['soap_type'=> function ($q) {
                 $q->select('id','description');
