@@ -274,17 +274,17 @@
                                        @click.prevent="clickDownload('pdf-simple')">Exportar PDF Simple
                             </el-button>
 
-                            <el-button v-if="resouce=='reports/sales'" class="submit"
+                            <el-button v-if="resource=='reports/sales'" class="submit"
                                        type="success"
                                        @click.prevent="clickExport('xlsx')"><i class="fa fa-file-excel"></i> Exportal
                                                                                                                 Excel
                             </el-button>
-                            <el-button class="submit"
+                            <el-button v-if="resource!='reports/sales'" class="submit"
                                        type="success"
                                        @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel"></i> Exportal
                                                                                                                 Excel
                             </el-button>
-                            <el-button v-if="resouce=='reports/sales'" class="submit"
+                            <el-button v-if="resource=='reports/sales'" class="submit"
                                        type="info"
                                        @click.prevent="clickEmail()">C. Electrónico
                             </el-button>
