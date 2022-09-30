@@ -188,7 +188,7 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message);
-                            //this.getData();
+                            this.getData();
                             // this.initDocumentTypes()
                             this.$eventHub.$emit('reloadData')
                             this.showAddButton = true;
