@@ -39,11 +39,11 @@ class StateAccountCollection extends ResourceCollection
                 $description=$row->state_type?$row->state_type->description:null;
                 
 
-                $document_type_id = Document::where('id', $row->id)->select('document_type_id')->get();
-                $document_type_id='';
-                //dd($document_type_id);
-                $type_description= DocumentType::where('id',$document_type_id)->select('description')->get();
-                $type_description='';
+                $document_type_id = Document::where('id', $row->id)->select('document_type_id')->first();
+                $document_type_id=$document_type_id['document_type_id'];
+                //dd($document_type_id['document_type_id']);
+                $type_description= DocumentType::where('id',$document_type_id)->select('description')->first();
+                $type_description=$type_description['description'];
             }else{
                 $document_type = DocumentType::find('80');
 
@@ -65,8 +65,8 @@ class StateAccountCollection extends ResourceCollection
                 $total_paid = number_format($pays->sum('payment'), 2, '.', '');
                 $payment_state = number_format($row->total - $total_paid, 2, '.', '');
                 $description=$row->state_type?$row->state_type->description:null;
-                $date_of_due=SaleNote::where('id',$row->id)->select('due_date')->get();
-                $date_of_due='';
+                $date_of_due=SaleNote::where('id',$row->id)->select('due_date')->first();
+                $date_of_due=$date_of_due['due_date'];
                 $type_description='NOTA DE VENTA';
                 //dd($row);
             }
