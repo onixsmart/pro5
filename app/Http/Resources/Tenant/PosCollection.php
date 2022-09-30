@@ -17,17 +17,18 @@ class PosCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        $add_equivalent=null;
         $configuration = Configuration::first();
-        foreach ($this->collection as $key => $value) {
-            $add_equivalent = $this->getAddItemEquivalent($value, $configuration);
-            if($add_equivalent!=null){
-                $this->collection->push($add_equivalent);
+        if($configuration->equivalent_product){
+            $add_equivalent=null;
+            foreach ($this->collection as $value) {
+                $add_equivalent = $this->getAddItemEquivalent($value, $configuration);
+                if($add_equivalent!=null){
+                    foreach ($add_equivalent as $value) {
+                        $this->collection->push($value);
+                    }
+                }
             }
         }
-        
-        //dd($this->collection);
-        //$this->calcularRestante(self::$re);
 
         return $this->collection->transform(function ($row, $key) {
 
@@ -122,7 +123,7 @@ class PosCollection extends ResourceCollection
             foreach ($desc as $in => $ds) {
                 $count_string=str_word_count($ds, 0);
 
-                if ($count_string>0) {
+                if ($count_string>2) {
                     $items_equivalents=Item::whereWarehouse()
                     ->where('series_enabled', 0)
                     ->where('name','like', '%'.$ds.'%')
