@@ -17,6 +17,8 @@ use App\Models\System\MessageDescription;
 use App\Http\Resources\System\MessageNotificationCollection;
 use Carbon\Carbon;
 
+use App\Models\System\Notification as MessageNotification;
+
 class MessageController extends Controller
 {
     public function index()
@@ -109,7 +111,7 @@ class MessageController extends Controller
         
         $message_info = MessageDescription::where('message_id',$id)->delete();
         $message = ModelMessage::where('id',$id)->delete();
-
+        $notification_message = MessageNotification::where('data->message_id',$id)->delete();
         return [
             'success' => true,
             'message' => 'Eliminado con éxito'

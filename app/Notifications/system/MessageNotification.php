@@ -14,19 +14,23 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 use App\Models\System\User;
 
+use App\Models\System\Message;
+
 class MessageNotification extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
     public $message;
+    public $message_id;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($message)
+    public function __construct($message,$message_id)
     {
         $this->message=$message;
+        $this->message_id=$message_id;
     }
 
     /**
@@ -64,6 +68,7 @@ class MessageNotification extends Notification implements ShouldBroadcast
     {
         return [
             'data' => $this->message,
+            'message_id' => $this->message_id
         ];
 
     }
