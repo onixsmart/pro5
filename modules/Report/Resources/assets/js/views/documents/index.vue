@@ -374,7 +374,6 @@
                 })
             },
             getNumberColumns(){
-                let numColumns=0;
                 let arrayColumns = Object.values(this.columns)
                 //console.log(Array.isArray(this.columns))
                 arrayColumns.filter(function(num){
@@ -385,13 +384,12 @@
                         case 'Total Gravado':
                         case 'Total Exonerado':
                         case 'Total Inafecto':
-                            return numColumns=this.numberColums;
+                            return this.numberColums;
                             break;
                         default:
                             if (num) {
                                 if(num.visible){
-                                    numColumns=numColumns+1;
-                                    return this.numberColums+numColumns
+                                    return this.numberColums=this.numberColums+1
                                 }
                             }
                             break;

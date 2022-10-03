@@ -690,6 +690,7 @@ export default {
 
             this.loading_submit = await true
             await this.getRecords()
+            console.log(this.colspanFootSales)
             this.loading_submit = await false
 
         },
