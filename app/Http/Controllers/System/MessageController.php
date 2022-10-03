@@ -16,7 +16,8 @@ use App\Models\System\Message as ModelMessage;
 use App\Models\System\MessageDescription;
 use App\Http\Resources\System\MessageNotificationCollection;
 use Carbon\Carbon;
-use App\Models\System\Notification as NotificationData;
+
+use App\Models\System\Notification as MessageNotification;
 
 class MessageController extends Controller
 {
@@ -109,16 +110,8 @@ class MessageController extends Controller
     {
         
         $message_info = MessageDescription::where('message_id',$id)->delete();
-
-        $message = ModelMessage::where('id',$id)->first();
-        $date = $message->date_start;
-        $time = $message->time_start;
-        $date_format=$date.' '.$time;
-        $date_all = Carbon::parse($date_format)->format('Y-m-d H:i:s');
-        NotificationData::where('created_at',$date_all)->delete();
-
-        $message->delete();
-
+        $message = ModelMessage::where('id',$id)->delete();
+        $notification_message = MessageNotification::where('data->message_id',$id)->delete();
         return [
             'success' => true,
             'message' => 'Eliminado con éxito'

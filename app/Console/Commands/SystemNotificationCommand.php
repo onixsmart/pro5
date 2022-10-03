@@ -70,12 +70,12 @@ class SystemNotificationCommand extends Command
                                     $id_client=$value->client_id;
                                     $tenant_id = Client::where('id', $id_client)->first();
                                     //Envio de notificacion al tenant
-                                    $tenant_id->notify(new MessageNotification($message_text));
+                                    $tenant_id->notify(new MessageNotification($message_text, $message->id));
                                     //Log::info('id con value' . $value . ' tenant');
                                 }
                                 $message_month=Carbon::parse($message_date)->addMonth(1);
                                 Message::where('id',$message->id)->update([
-                                    'date_start' => $message_month
+                                    'date_start' => $message_month,
                                 ]);
                             }
                         }
@@ -91,7 +91,7 @@ class SystemNotificationCommand extends Command
                                         $id_client=$value->client_id;
                                         $tenant_id = Client::where('id', $id_client)->get();
                                         //Envio de notificacion al tenant
-                                        $tenant_id->notify(new MessageNotification($message_text));
+                                        $tenant_id->notify(new MessageNotification($message_text,$message->id));
          
                                     }
                                     $message_month=Carbon::parse($message_date)->addYear(1);
