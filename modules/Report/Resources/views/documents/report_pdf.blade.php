@@ -683,6 +683,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                             <th style="padding: 5px; text-align: center;">DOC</th>
                             <th style="padding: 5px; text-align: center;">SERIE</th>
                             <th style="padding: 5px; text-align: center;">TOTAL</th>
+                            <th>columnas</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -706,6 +707,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                         <tr >
                             <td style="padding: 5px; text-align: center;" colspan="2">TOTAL GENERAL</td>
                             <td style="padding: 5px; text-align: center;">{{$total_general}}</td>
+                            <td>{{$columns}}</td>
                         </tr>
                     </tbody>
                 </table>
