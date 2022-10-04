@@ -275,7 +275,7 @@ class ReportDocumentController extends Controller
     {
         $reques=json_decode(json_encode($request, JSON_FORCE_OBJECT));
         set_time_limit (1800); // Maximo 30 minutos
-        $columns=json_decode(json_encode($columns));
+        $columns=json_decode(json_encode($columns, JSON_FORCE_OBJECT));
         $company = Company::first();
         $establishment = ($reques->establishment_id) ? Establishment::findOrFail($reques->establishment_id) : auth()->user()->establishment;
         $documentTypeId = "01";
@@ -317,7 +317,7 @@ class ReportDocumentController extends Controller
     {
         $reques=json_decode(json_encode($request, JSON_FORCE_OBJECT));
         set_time_limit (1800); // Maximo 30 minutos
-        $columns=json_decode(json_encode($columns));
+        $columns=json_decode(json_encode($columns, JSON_FORCE_OBJECT));
         $company = Company::first();
         $establishment = ($reques->establishment_id) ? Establishment::findOrFail($reques->establishment_id) : auth()->user()->establishment;
         $documentTypeId = "01";

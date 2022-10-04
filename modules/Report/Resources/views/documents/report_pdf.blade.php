@@ -707,7 +707,7 @@ $document_types=DocumentType::OnlyAvaibleDocuments()->get();
                         <tr >
                             <td style="padding: 5px; text-align: center;" colspan="2">TOTAL GENERAL</td>
                             <td style="padding: 5px; text-align: center;">{{$total_general}}</td>
-                            <td>{{$columns}}</td>
+                            <td>{{$col_num}}</td>
                         </tr>
                     </tbody>
                 </table>
