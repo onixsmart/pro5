@@ -46,7 +46,8 @@
                         });
                         break;
                     case 'description':
-                        $records->where('parent_customer->name', 'like', "%{$request->value}%");
+                        //$records->where('parent_customer->name', 'like', "%{$request->value}%");
+                        $records->where("parent_customer->>name", 'like',["%{$request->value}%"]);
                         break;
                     case 'cat_period_id':
                         $records->whereHas('cat_period', function($rq) use($request){
