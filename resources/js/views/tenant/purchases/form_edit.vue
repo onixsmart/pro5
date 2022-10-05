@@ -107,7 +107,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-                                <el-input v-model="form.exchange_rate_sale"></el-input>
+                                <el-input :disabled="typeUser=='seller'&&!configuration.exchange_rate_seller?true:false" v-model="form.exchange_rate_sale"></el-input>
                                 <small class="form-control-feedback" v-if="errors.exchange_rate_sale"
                                        v-text="errors.exchange_rate_sale[0]"></small>
                             </div>
@@ -541,6 +541,9 @@ export default {
         'resourceId': {
             required: true,
             default: 0
+        },
+        'typeUser': {
+            required: false,
         }
     },
     components: {PurchaseFormItem, PersonForm, PurchaseOptions},

@@ -145,7 +145,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-                                <el-input v-model="form.exchange_rate_sale"></el-input>
+                                <el-input :disabled="typeUser=='seller'&&!config.exchange_rate_seller?true:false" v-model="form.exchange_rate_sale"></el-input>
                                 <small v-if="errors.exchange_rate_sale"
                                        class="form-control-feedback"
                                        v-text="errors.exchange_rate_sale[0]"></small>
@@ -648,7 +648,7 @@ import SeriesForm from './partials/series'
 import {mapActions, mapState} from "vuex";
 
 export default {
-    props: ['purchase_order_id'],
+    props: ['purchase_order_id','typeUser'],
     components: {PurchaseFormItem, PersonForm, PurchaseOptions, SeriesForm},
     mixins: [functions, exchangeRate, fnPaymentsFee],
     computed: {
