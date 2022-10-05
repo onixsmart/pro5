@@ -67,8 +67,7 @@
 
         public function create($order_id = null)
         {
-            $type = 'purchase';
-            return view('tenant.purchases.form', compact('order_id','type'));
+            return view('tenant.purchases.form', compact('order_id'));
         }
 
         public function columns()
@@ -127,17 +126,12 @@
 
         }
 
-        public function tables($type)
+        public function tables()
         {
             $suppliers = $this->table('suppliers');
             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
             $currency_types = CurrencyType::whereActive()->get();
-            if ($type === 'settlements') {
-                $document_types_invoice = DocumentType::DocumentsActiveToSettlement()->get();
-            } else {
-                $document_types_invoice = DocumentType::DocumentsActiveToPurchase()->get();
-            }
-            
+            $document_types_invoice = DocumentType::DocumentsActiveToPurchase()->get();
             
             $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
             $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();

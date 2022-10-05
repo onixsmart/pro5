@@ -145,7 +145,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-                                <el-input v-model="form.exchange_rate_sale"></el-input>
+                                <el-input :disabled="typeUser=='seller'&&!config.exchange_rate_seller?true:false" v-model="form.exchange_rate_sale"></el-input>
                                 <small v-if="errors.exchange_rate_sale"
                                        class="form-control-feedback"
                                        v-text="errors.exchange_rate_sale[0]"></small>
@@ -650,7 +650,7 @@ import SeriesForm from './partials/series'
 import {mapActions, mapState} from "vuex";
 
 export default {
-    props: ['order_id','type'],
+    props: ['purchase_order_id','typeUser'],
     components: {PurchaseFormItem, PersonForm, PurchaseOptions, SeriesForm},
     mixins: [functions, exchangeRate, fnPaymentsFee],
     computed: {
@@ -712,7 +712,7 @@ export default {
     },
     async mounted() {
         this.initForm()
-        this.$http.get(`/${this.resource}/tables/${this.type}`)
+        this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 let data = response.data
                 this.document_types = data.document_types_invoice
@@ -755,9 +755,7 @@ export default {
         this.changeHasClient()
     },
     created() {
-        if (this.type === 'purchase') {
             this.titleDialog = 'Nueva Compra'
-        }
         this.loadConfiguration()
         this.loadHasGlobalIgv()
         this.loadEstablishment()
