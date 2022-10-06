@@ -595,7 +595,12 @@
 
             file_put_contents($temp, $this->getStorage($purchase->filename, 'purchase'));
 
-            return response()->file($temp);
+            $headers = [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="'.$purchase->filename.'"'
+            ];
+
+            return response()->file($temp, $headers);
         }
 
         private function reloadPDF($purchase, $format, $filename)
@@ -799,7 +804,7 @@
                 $obj->state_type_id = 11;
                 $obj->save();
 
-                foreach ($obj->items as $item) 
+                foreach ($obj->items as $item)
                 {
                     $item_warehouse_id = $item->warehouse_id ?? $obj->establishment->getCurrentWarehouseId();
 
@@ -809,7 +814,7 @@
                         'warehouse_id' => $item_warehouse_id,
                         'quantity' => -$item->quantity,
                     ]);
-                    
+
                     $wr = ItemWarehouse::where([['item_id', $item->item_id], ['warehouse_id', $item_warehouse_id]])->first();
                     $wr->stock = $wr->stock - $item->quantity;
                     $wr->save();

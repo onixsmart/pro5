@@ -60,6 +60,7 @@ use Mpdf\Mpdf;
 use App\Models\Tenant\PersonType;
 use App\Models\Tenant\DispatchSaleNote;
 use App\Http\Resources\Tenant\DispatchSaleNoteCollection;
+use Modules\Finance\Traits\FilePaymentTrait;
 
 // use App\Models\Tenant\Warehouse;
 
@@ -71,6 +72,7 @@ class SaleNoteController extends Controller
     use SearchTrait;
     use StorageDocument;
     use OfflineTrait;
+    use FilePaymentTrait;
 
     protected $sale_note;
     protected $company;
@@ -435,7 +437,7 @@ class SaleNoteController extends Controller
     {
 
         $records = $this->getRecords($request);
-        
+
         /* $records = new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
         dd($records); */
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
@@ -882,7 +884,7 @@ class SaleNoteController extends Controller
         return $inputs;
     }
 
-    
+
     /**
      * Configuración de sistema por puntos
      *
@@ -935,7 +937,12 @@ class SaleNoteController extends Controller
 
         file_put_contents($temp, $this->getStorage($sale_note->filename, 'sale_note'));
 
-        return response()->file($temp);
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
+        ];
+
+        return response()->file($temp, $headers);
     }
 
     private function reloadPDF($sale_note, $format, $filename) {
@@ -1662,6 +1669,8 @@ class SaleNoteController extends Controller
                 ]);
             }
 
+            // para carga de voucher
+            $this->saveFilesFromPayments($row, $record_payment, 'sale_notes');
         }
     }
 

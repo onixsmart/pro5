@@ -287,6 +287,8 @@
 
             'exchange_rate_seller',
             'equivalent_product',
+            'show_load_voucher',
+            'search_factory_code_items',
         ];
 
         protected $casts = [
@@ -402,6 +404,8 @@
             'change_affectation_exonerated_igv'=>'bool',
             'exchange_rate_seller' => 'bool',
             'equivalent_product' => 'bool',
+            'show_load_voucher'=>'bool',
+            'search_factory_code_items'=>'bool',
             
         ];
 
@@ -640,6 +644,8 @@
 
                 'exchange_rate_seller' => $this->exchange_rate_seller,
                 'equivalent_product' => (bool)$this->equivalent_product,
+                'show_load_voucher' => $this->show_load_voucher,
+                'search_factory_code_items' => $this->search_factory_code_items,
                 
             ];
         }

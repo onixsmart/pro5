@@ -645,7 +645,8 @@ export default {
         'currencyTypes',
         'isFromInvoice',
         'personTypeId',
-        'percentageIgv'
+        'percentageIgv',
+        'isCreditNoteAndType03',
     ],
     components: {
         ItemForm,
@@ -806,6 +807,16 @@ export default {
 
             return false
 
+        },
+        enabledSearchFactoryCodeItems()
+        {
+            if(this.configuration) return this.configuration.search_factory_code_items ? 1 : 0
+            return 0
+        },
+        isNoteErrorDescription()
+        {
+            if(this.isCreditNoteAndType03 !== undefined) return this.isCreditNoteAndType03
+            return false
         }
     },
     methods: {
@@ -923,6 +934,7 @@ export default {
                     'input': input,
                     'search_by_barcode': this.search_item_by_barcode ? 1 : 0,
                     'search_item_by_barcode_presentation': this.search_item_by_barcode_presentation ? 1 : 0,
+                    'search_factory_code_items' : this.enabledSearchFactoryCodeItems
                 }
                 await this.$http.get(`/${this.resource}/search-items/`, {params})
                     .then(response => {
@@ -1160,6 +1172,7 @@ export default {
             }
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
+
         },
         setPresentationEditItem() {
 
@@ -1361,9 +1374,16 @@ export default {
         cleanTotalItem() {
             this.total_item = null
         },
-        async clickAddItem() {
-
-            if(parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
+        async clickAddItem() 
+        {
+            if(this.isNoteErrorDescription)
+            {
+                if(parseFloat(this.form.unit_price_value) < 0) return this.$message.error('El Precio Unitario debe ser mayor o igual 0');
+            }
+            else
+            {
+                if(parseFloat(this.form.unit_price_value) <= 0) return this.$message.error('El Precio Unitario debe ser mayor a 0');
+            }
 
             // if(this.form.quantity < this.getMinQuantity()){
             //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
