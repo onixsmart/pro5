@@ -129,7 +129,7 @@ class PosCollection extends ResourceCollection
             foreach ($desc as $in => $ds) {
                 $count_string=str_word_count($ds, 0);
 
-                if ($count_string>2) {
+                if ($count_string>0) {
                     $items_equivalents=Item::whereWarehouse()
                     ->where('series_enabled', 0)
                     ->where('name','like', '%'.$ds.'%')
