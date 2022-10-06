@@ -271,9 +271,10 @@ class ConfigurationController extends Controller
             if (($type === 'ads')) {
                 $v = request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
 
-                UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
+                $path = 'public/uploads/ads';
 
-                $file->storeAs('public/uploads/ads', $name);
+                UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
+                $file->storeAs($path, $name);
 
                 $loginConfig = $config->login;
                 $basePathStorage = 'storage/uploads/ads/';

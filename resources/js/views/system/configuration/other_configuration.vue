@@ -37,6 +37,7 @@
                                     :readonly="true">
                             <el-upload slot="append"
                                         :data="{'type': 'ads'}"
+                                        :headers="headers"
                                         :on-success="successUpload"
                                         :on-error="errorUpload"
                                         :show-file-list="false"
@@ -64,6 +65,7 @@ export default {
         return {
             loading_submit: false,
             resource: 'configurations',
+            headers: headers_token,
             errors: {},
             form: {},
         }
@@ -78,6 +80,8 @@ export default {
                 regex_password_client: false,
                 advertising_client:null
             }
+
+            console.log(headers_token)
         },
         submit() {
             this.loading_submit = true
