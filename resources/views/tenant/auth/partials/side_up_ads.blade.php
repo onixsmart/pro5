@@ -1,6 +1,6 @@
 @if ($useLoginGlobal)
 @php
-    dd($useLoginGlobal);
+    //dd($useLoginGlobal);
 @endphp
     @if ($login->ads ?? false)
             <img class="auth__logo-form" src="{{ $login->ads }}" alt="Logo formulario" width="250"/>
