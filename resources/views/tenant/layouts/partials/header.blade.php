@@ -11,6 +11,9 @@
         <tenant-dialog-header-menu></tenant-dialog-header-menu>
 
     </div>
+    <div class="row">
+        @include('tenant.auth.partials.side_up_ads')
+    </div>
     <div class="header-right">
 
         <ul class="notifications mx-2">

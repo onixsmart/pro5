@@ -257,4 +257,43 @@ class ConfigurationController extends Controller
         ];
     }
 
+    public function uploadAds(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $config = Configuration::first();
+            $type = $request->input('type');
+
+            $file = $request->file('file');
+            $ext = $file->getClientOriginalExtension();
+            $name = $type.'_'.time().'.'.$ext;
+
+
+            if (($type === 'ads')) {
+                $v = request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+
+                UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
+
+                $file->storeAs('public/uploads/ads', $name);
+
+                $loginConfig = $config->login;
+                $basePathStorage = 'storage/uploads/ads/';
+                $loginConfig->ads = asset($basePathStorage . $name);
+            }
+            
+            $config->login = $loginConfig;
+            $config->save();
+
+            return [
+                'success' => true,
+                'message' => __('app.actions.upload.success'),
+                'name' => $name,
+                'type' => $type
+            ];
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
 }
