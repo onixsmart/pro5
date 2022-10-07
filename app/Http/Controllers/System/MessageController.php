@@ -83,6 +83,14 @@ class MessageController extends Controller
                 'date_start' => $req['date_start'],
                 'time_start' => $req['time_start']
             ]);
+            $ids=$req['selecteds'];
+            foreach ($ids as $key => $value) {
+
+                $description = MessageDescription::firstOrNew(['client_id'=>$value]);
+                $description->client_id = $value;
+                $description->message_id= $id;
+                $description->save();
+            }
         } else {
             $message=New ModelMessage();
             $message->message=$req['message'];

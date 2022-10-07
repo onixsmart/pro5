@@ -96,7 +96,7 @@
             
         </div>
 
-        <div class="table-responsive pt-5" v-if="!recordId">
+        <div class="table-responsive pt-5" >
             <span>Seleccione uno o más clientes para poder continuar</span>
             <table class="table table-hover table-stripe">
                 <thead>
@@ -179,13 +179,23 @@ export default {
         });
     },
     methods: {
-        create() {
+        async create() {
             this.form.client_id = null;
             this.titleDialog = (this.recordId)? 'Editar mensaje a clientes':'Nuevo mensaje a clientes'
             if (this.recordId) {
-                this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
+                await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                     this.form = response.data.data[0]
+                    console.log(this.form)
                 })
+                await this.$http.get(`/messages/filter`).then(response => {
+                    this.records = response.data.data;
+                    
+                })
+                this.form.selecteds.filter((s)=>this.recordSwitch(s))
+                console.log('records')
+                console.log(this.records)
+                console.log('========')
+
             }
         },
         async findClients(query) {
@@ -264,19 +274,36 @@ export default {
             this.getRecord=false;
             this.$emit("update:showNew", false);
         },
+        recordSwitch(id){
+            this.records.map((r)=>{
+                console.log('============')
+                console.log(r.id)
+                console.log(id)
+                console.log('============')
+                if(r.id!==id){
+                    return r.selected=false
+                }
+            })
+        },
         async selectOption() {
             //this.form.selecteds = [];
             await this.records.map((d) => {
                 //console.log(d)
                 if (!d.selected) {
-                    this.form.selecteds.splice(this.form.selecteds.indexOf(d.id),1);
-                }else{
-                    console.log(d.selected)
-                    this.form.selecteds.push(d.id);
+                    if (this.form.selecteds.indexOf(d.id)!=-1) {
+                        this.form.selecteds.splice(this.form.selecteds.indexOf(d.id),1);
+                    }
+                }
+                if(d.selected){
+                    console.log(this.form.selecteds.indexOf(d.id)==-1)
+                    if (this.form.selecteds.indexOf(d.id)==-1) {
+                        console.log(d.id)
+                        this.form.selecteds.push(d.id);
+                        console.log(this.form.selecteds)
+                    }
                 }
             });
-
-            console.log(this.form.selecteds)
+            
         },
     }
 };

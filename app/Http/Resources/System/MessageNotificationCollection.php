@@ -4,6 +4,7 @@ namespace App\Http\Resources\System;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Models\System\Client;
+use App\Models\System\MessageDescription;
 
 class MessageNotificationCollection extends ResourceCollection
 {
@@ -15,7 +16,14 @@ class MessageNotificationCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+
         return $this->collection->transform(function($row, $key) {
+            $array_select=[];
+            $selecteds = MessageDescription::where('message_id',$row->id)->select('client_id')->get();
+            foreach ($selecteds as $value) {
+                $array_select[] = $value->client_id;
+            }
+            //dd($array_select);
             $recurrence='';
             if ($row->recurrence!=null) {
                 if ($row->recurrence==0) {
@@ -33,6 +41,7 @@ class MessageNotificationCollection extends ResourceCollection
                 'recurrence' => $recurrence,
                 'date_start' => $row->date_start,
                 'time_start' => $row->time_start,
+                'selecteds' => $array_select,
             ];
         });
 
