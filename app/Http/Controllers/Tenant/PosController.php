@@ -514,7 +514,6 @@ class PosController extends Controller
         
 
         $item->whereIsActive();
-
     }
 
     /**
@@ -531,8 +530,11 @@ class PosController extends Controller
             ->where('series_enabled', 0);
 
         self::FilterItem($item, $request);
-
-        return new PosCollection($item->paginate(50));
+        $item=$item->paginate(50);
+        if ($request->equivalent) {
+            $item->put('equivalent',$request->equivalent);
+        }
+        return new PosCollection($item);
 
     }
 
