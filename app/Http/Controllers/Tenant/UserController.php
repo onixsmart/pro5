@@ -290,7 +290,7 @@ class UserController extends Controller
                 'message' => $message_return['data'],
                 'date' => $value['created_at']->format('H:i'),
                 'id' => $value['id'],
-                'message_id' => $message_return['message_id'],
+                'message_id' => $value['message_id'],
             ];
         }
     }
