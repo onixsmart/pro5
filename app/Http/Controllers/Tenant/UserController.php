@@ -280,7 +280,7 @@ class UserController extends Controller
         $tenancy = app(Environment::class);
         $hostname = $tenancy->hostname();
         $tenant_id = Client::select('id')->where('hostname_id', $hostname->id)->first();
-        $messages=$tenant_id->notifications;
+        $messages=$tenant_id->unreadNotifications;
         $message_return="";
         foreach ($messages as $key => $value) {
             $message_return=$value['data'];
@@ -290,7 +290,16 @@ class UserController extends Controller
                 'message' => $message_return['data'],
                 'date' => $value['created_at']->format('H:i'),
                 'id' => $value['id'],
+                'message_id' => $message_return['message_id'],
             ];
         }
+    }
+
+    public function setMessageStatus($data){
+        //dd($data);
+        $tenancy = app(Environment::class);
+        $hostname = $tenancy->hostname();
+        $tenant_id = Client::select('id')->where('hostname_id', $hostname->id)->first();
+        $tenant_id->unreadNotifications->where('message_id', $data)->markAsRead();
     }
 }

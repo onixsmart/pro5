@@ -7,6 +7,9 @@ use App\Observers\DocumentObserver;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
+use App\Notifications\system\DatabaseChannel;
+use Illuminate\Notifications\Channels\DatabaseChannel as IlluminateDatabaseChannel;
+
 class AppServiceProvider extends ServiceProvider
 {
 	public function boot()
@@ -15,6 +18,9 @@ class AppServiceProvider extends ServiceProvider
 			URL::forceScheme('https');
 		}
 		Document::observe(DocumentObserver::class);
+
+		$this->app->instance(IlluminateDatabaseChannel::class, new DatabaseChannel);
+
 	}
 
 	public function register()

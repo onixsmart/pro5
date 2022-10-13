@@ -83,6 +83,22 @@ class MessageController extends Controller
                 'date_start' => $req['date_start'],
                 'time_start' => $req['time_start']
             ]);
+            $ids=$req['selecteds'];
+            foreach ($ids as $key => $value) {
+
+                $description = MessageDescription::where('message_id', $id)->firstOrNew(['client_id'=>$value]);
+                $description->client_id = $value;
+                $description->message_id= $id;
+                $description->save();
+            }
+            if (isset($req['deselecteds'])) {
+                $idse=$req['deselecteds'];
+                foreach ($idse as $key => $value) {
+                    
+                    $description = MessageDescription::where('message_id',$id)->where('client_id',$value)->first();
+                    $description=$description->delete();
+                }
+            }
         } else {
             $message=New ModelMessage();
             $message->message=$req['message'];
@@ -111,7 +127,7 @@ class MessageController extends Controller
         
         $message_info = MessageDescription::where('message_id',$id)->delete();
         $message = ModelMessage::where('id',$id)->delete();
-        $notification_message = MessageNotification::where('data->message_id',$id)->delete();
+        $notification_message = MessageNotification::where('message_id',$id)->delete();
         return [
             'success' => true,
             'message' => 'Eliminado con éxito'

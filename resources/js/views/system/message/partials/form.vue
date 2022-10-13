@@ -96,7 +96,7 @@
             
         </div>
 
-        <div class="table-responsive pt-5" v-if="!recordId">
+        <div class="table-responsive pt-5" >
             <span>Seleccione uno o más clientes para poder continuar</span>
             <table class="table table-hover table-stripe">
                 <thead>
@@ -161,11 +161,13 @@ export default {
                 time_start:null,
                 recurrence:null,
                 selecteds: [],
+                deselecteds:[],
             },
             records: [],
             errors: {},
             columns:[],
             selecteds:[],
+            deselecteds:[],
             getRecord:false,
         };
     },
@@ -179,13 +181,23 @@ export default {
         });
     },
     methods: {
-        create() {
+        async create() {
             this.form.client_id = null;
             this.titleDialog = (this.recordId)? 'Editar mensaje a clientes':'Nuevo mensaje a clientes'
             if (this.recordId) {
-                this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
+                await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                     this.form = response.data.data[0]
+                    this.form.deselecteds=this.deselecteds;
+
+                    console.log(this.form)
                 })
+                
+                await this.$http.get(`/messages/filter`).then(response => {
+                    this.records = response.data.data;
+                    this.recordSwitch()
+                })
+                
+
             }
         },
         async findClients(query) {
@@ -264,25 +276,49 @@ export default {
             this.getRecord=false;
             this.$emit("update:showNew", false);
         },
+        recordSwitch(){
+            this.records.map((r)=>{
+                
+                console.log(this.form.deselecteds)
+                if (this.form.selecteds.indexOf(r.id)==-1) {
+                    this.form.deselecteds.push(r.id);
+                    return r.selected=false
+                }
+                if(this.form.selecteds.indexOf(r.id)!=-1){
+                    this.form.deselecteds.splice(this.form.deselecteds.indexOf(r.id),1);
+                    return r.selected=true
+                }
+            })
+        },
         async selectOption() {
             //this.form.selecteds = [];
             await this.records.map((d) => {
                 //console.log(d)
                 if (!d.selected) {
-                    if(this.form.selecteds.indexOf(d.id) !== -1){
+                    if (this.form.selecteds.indexOf(d.id)!=-1) {
                         this.form.selecteds.splice(this.form.selecteds.indexOf(d.id),1);
+                        
                     }
-                    
-                }else{
-                    console.log(d.selected)
-                    if(this.form.selecteds.indexOf(d.id) === -1){
+                    if (this.form.deselecteds.indexOf(d.id)==-1) {
+                        this.form.deselecteds.push(d.id);
+
+                    }
+                }
+                if(d.selected){
+                    console.log(this.form.selecteds.indexOf(d.id)==-1)
+                    if (this.form.selecteds.indexOf(d.id)==-1) {
+                        console.log(d.id)
                         this.form.selecteds.push(d.id);
+                        console.log(this.form.selecteds)
                     }
-                    
+                    if (this.form.deselecteds.indexOf(d.id)!=-1) {
+                        console.log(d.id)
+                        this.form.deselecteds.splice(this.form.deselecteds.indexOf(d.id),1);
+                        console.log(this.form.deselecteds)
+                    }
                 }
             });
-
-            console.log(this.form.selecteds)
+            
         },
     }
 };
