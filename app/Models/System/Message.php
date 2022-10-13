@@ -16,6 +16,7 @@ class Message extends Model
         'date_start',
         'time_start',
         'recurrence',
+        'date_update',
     ];
 
     public function messageDescription()

@@ -814,20 +814,23 @@ export default {
         .get(`/users/getMessageNotification`)
         .then((response) => {
             this.date_term=response.data.date;
-            console.log(this.date_term)
-            console.log(moment().format("HH:MM"))
-            console.log(this.date_term==moment().format("HH:MM"))
+            let message_data = response.data.message_id;
             if (response.data.message!=""&&this.date_term!=moment().format("HH:MM")) {
                 this.$message({
                     showClose: true,
                     message: response.data.message,
                     type: 'error',
-                    duration: 10000
+                    duration: 400000,
+                    onClose: this.setMessage(message_data)
                 });
 
             }
         });
     },
+    setMessage(message_data){
+        this.$http
+            .get(`/users/setMessageStatus/${message_data}`)
+    }
   },
 };
 </script>

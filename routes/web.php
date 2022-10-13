@@ -162,6 +162,7 @@ if ($hostname) {
             Route::delete('users/{user}', 'Tenant\UserController@destroy');
             Route::get('users/notification','Tenant\UserController@getNotification');
             Route::get('users/getMessageNotification','Tenant\UserController@getMessage')->name('tenant.users.messages');
+            Route::get('users/setMessageStatus/{data}','Tenant\UserController@setMessageStatus')->name('tenant.users.messages.status');
 
             //ChargeDiscounts
             Route::get('charge_discounts', 'Tenant\ChargeDiscountController@index')->name('tenant.charge_discounts.index');

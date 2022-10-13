@@ -161,11 +161,13 @@ export default {
                 time_start:null,
                 recurrence:null,
                 selecteds: [],
+                deselecteds:[],
             },
             records: [],
             errors: {},
             columns:[],
             selecteds:[],
+            deselecteds:[],
             getRecord:false,
         };
     },
@@ -185,16 +187,16 @@ export default {
             if (this.recordId) {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                     this.form = response.data.data[0]
+                    this.form.deselecteds=this.deselecteds;
+
                     console.log(this.form)
                 })
+                
                 await this.$http.get(`/messages/filter`).then(response => {
                     this.records = response.data.data;
-                    
+                    this.recordSwitch()
                 })
-                this.form.selecteds.filter((s)=>this.recordSwitch(s))
-                console.log('records')
-                console.log(this.records)
-                console.log('========')
+                
 
             }
         },
@@ -274,14 +276,17 @@ export default {
             this.getRecord=false;
             this.$emit("update:showNew", false);
         },
-        recordSwitch(id){
+        recordSwitch(){
             this.records.map((r)=>{
-                console.log('============')
-                console.log(r.id)
-                console.log(id)
-                console.log('============')
-                if(r.id!==id){
+                
+                console.log(this.form.deselecteds)
+                if (this.form.selecteds.indexOf(r.id)==-1) {
+                    this.form.deselecteds.push(r.id);
                     return r.selected=false
+                }
+                if(this.form.selecteds.indexOf(r.id)!=-1){
+                    this.form.deselecteds.splice(this.form.deselecteds.indexOf(r.id),1);
+                    return r.selected=true
                 }
             })
         },
@@ -292,6 +297,11 @@ export default {
                 if (!d.selected) {
                     if (this.form.selecteds.indexOf(d.id)!=-1) {
                         this.form.selecteds.splice(this.form.selecteds.indexOf(d.id),1);
+                        
+                    }
+                    if (this.form.deselecteds.indexOf(d.id)==-1) {
+                        this.form.deselecteds.push(d.id);
+
                     }
                 }
                 if(d.selected){
@@ -300,6 +310,11 @@ export default {
                         console.log(d.id)
                         this.form.selecteds.push(d.id);
                         console.log(this.form.selecteds)
+                    }
+                    if (this.form.deselecteds.indexOf(d.id)!=-1) {
+                        console.log(d.id)
+                        this.form.deselecteds.splice(this.form.deselecteds.indexOf(d.id),1);
+                        console.log(this.form.deselecteds)
                     }
                 }
             });

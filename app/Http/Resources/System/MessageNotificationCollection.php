@@ -5,6 +5,7 @@ namespace App\Http\Resources\System;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Models\System\Client;
 use App\Models\System\MessageDescription;
+use Carbon\Carbon;
 
 class MessageNotificationCollection extends ResourceCollection
 {
@@ -37,7 +38,7 @@ class MessageNotificationCollection extends ResourceCollection
             return [
                 'id'=>$row->id,
                 'message' => $row->message,
-                'update' => '',
+                'updated' => Carbon::parse($row->date_update)->format('Y:m:d'),
                 'recurrence' => $recurrence,
                 'date_start' => $row->date_start,
                 'time_start' => $row->time_start,

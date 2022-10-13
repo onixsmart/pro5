@@ -72,6 +72,7 @@ class SystemNotificationCommand extends Command
                                 $message_month=Carbon::parse($message_date)->addMonth(1);
                                 Message::where('id',$message->id)->update([
                                     'date_start' => $message_month,
+                                    'date_update' => Carbon::now()->format('Y:m:d'),
                                 ]);
                             }
                         }
@@ -92,7 +93,8 @@ class SystemNotificationCommand extends Command
                                     }
                                     $message_month=Carbon::parse($message_date)->addYear(1);
                                     Message::where('id',$message->id)->update([
-                                            'date_start' => $message_month
+                                            'date_start' => $message_month,
+                                            'date_update' => Carbon::now()->format('Y:m:d'),
                                         ]);
                                     }
                                 }
