@@ -91,12 +91,16 @@ class MessageController extends Controller
                 $description->message_id= $id;
                 $description->save();
             }
+            //dd($req['deselecteds']);
             if (isset($req['deselecteds'])) {
                 $idse=$req['deselecteds'];
                 foreach ($idse as $key => $value) {
                     
                     $description = MessageDescription::where('message_id',$id)->where('client_id',$value)->first();
-                    $description=$description->delete();
+                    //dd($description);
+                    if ($description!=null) {
+                        $description=$description->delete();
+                    }
                 }
             }
         } else {
