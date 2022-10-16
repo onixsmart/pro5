@@ -182,6 +182,8 @@ export default {
     },
     methods: {
         async create() {
+            this.initForm()
+            this.records=[]
             this.form.client_id = null;
             this.titleDialog = (this.recordId)? 'Editar mensaje a clientes':'Nuevo mensaje a clientes'
             if (this.recordId) {
@@ -320,6 +322,15 @@ export default {
             });
             
         },
+        initForm(){
+                this.form.client_id= null
+                this.form.message=null
+                this.form.date_start=null
+                this.form.time_start=null
+                this.form.recurrence=null
+                this.form.selecteds= []
+                this.form.deselecteds=[]
+        }
     }
 };
 </script>
