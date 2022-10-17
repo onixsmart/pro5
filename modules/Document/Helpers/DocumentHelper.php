@@ -152,6 +152,7 @@ class DocumentHelper
                     return [
                         'success' => true,
                         'count' => $total_quantity_sales,
+                        'limit_bool' => $limit_sales,
                         'message' => 'Ha superado el límite permitido de ventas por mes'
                     ];
                 }
@@ -162,6 +163,7 @@ class DocumentHelper
 
         return [
             'success' => false,
+            'limit_bool' => $limit_sales,
             'message' => ''
         ];
 

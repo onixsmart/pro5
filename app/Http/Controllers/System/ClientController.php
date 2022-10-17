@@ -423,7 +423,11 @@
                     'config_system_env' => $request->config_system_env,
                     'limit_documents' => $plan->limit_documents,
                     'limit_sales' => $plan->limit_sales,
+                    'locked_sales' => $client->locked_sales,
+                    'limit_sales' => $plan->limit_sales,
                     'locked_sales_notes' => $plan->locked_sales_notes,
+                    'locked_establishments' => $client->locked_establishments,
+                    'limit_establishments' => $plan->limit_establishments,
                     'smtp_host' => $client->smtp_host,
                     'smtp_port' => $client->smtp_port,
                     'smtp_user' => $client->smtp_user,
@@ -610,6 +614,7 @@
                 $client->plan_id = $request->input('plan_id');
                 $client->locked_emission = $request->input('locked_emission');
                 $client->locked_sales = $request->input('locked_sales');
+                $client->locked_establishments = $request->input('locked_establishments');
                 $client->save();
 
                 DB::connection('system')->commit();
@@ -654,6 +659,7 @@
                 'plan' => json_encode($plan),
                 'date_time_start' => date('Y-m-d H:i:s'),
                 'quantity_documents' => 0,
+                'quantity_sales_notes' => 0,
                 'config_system_env' => $request->config_system_env,
                 'login' => json_encode([
                     'type' => 'image',
@@ -779,11 +785,13 @@
                 'date_time_start' => date('Y-m-d H:i:s'),
                 'renew' => true,
                 'quantity_documents' => DB::connection('tenant')->table('configurations')->where('id', 1)->first()->quantity_documents,
+                'quantity_sales_notes' => DB::connection('tenant')->table('configurations')->where('id', 1)->first()->quantity_sales_notes,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
             DB::connection('tenant')->table('configurations')->where('id', 1)->update(['quantity_documents' => 0]);
+            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['quantity_sales_notes' => 0]);
 
 
             return [
