@@ -32,7 +32,14 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="control-label">Publicidad para clientes</label>
+                        <label class="control-label">Publicidad para clientes
+                            <el-tooltip class="item"
+                                    content="Activar configuracion global"
+                                    effect="dark"
+                                    placement="top-start">
+                                <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
+                        </label>
                         <el-input v-model="form.advertising_client"
                                     :readonly="true">
                             <el-upload slot="append"
@@ -46,7 +53,7 @@
                                             type="primary"></el-button>
                             </el-upload>
                         </el-input>
-                        <div class="sub-title text-danger"><small>Se recomienda resoluciones 700x300</small>
+                        <div class="sub-title text-danger"><small>Se recomienda resolucion 800x60</small>
                         </div>
                     </div>
                 </div>

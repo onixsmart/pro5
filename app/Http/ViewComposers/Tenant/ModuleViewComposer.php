@@ -12,6 +12,7 @@ class ModuleViewComposer
     {
         $modules = auth()->user()->modules()->pluck('value')->toArray();
         $systemConfig = Configuration::select('use_login_global')->first();
+        $systemLogin = Configuration::select('login')->first();
         if(count($modules) > 0) {
             $view->vc_modules = $modules;
         } else {
@@ -20,5 +21,7 @@ class ModuleViewComposer
         $view->vc_configuration = TenantConfiguration::first();
 
         $view->useLoginGlobal = $systemConfig->use_login_global;
+
+        $view->loginGlobal = $systemLogin->login;
     }
 }
