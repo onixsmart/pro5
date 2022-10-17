@@ -1404,16 +1404,19 @@ class DocumentController extends Controller
         ];
     }
     public function messageLockedSales(){
-
+        $configuration = Configuration::first();
         $exceed_limit = DocumentHelper::LimitSalesDocuments();
-        if($exceed_limit['success'])
-        {
-            return [
-                'success' => true,
-                'message' => $exceed_limit['message'],
-            ];
+        if ($configuration->locked_sales) {
+            if($exceed_limit['success'])
+            {
+                return [
+                    'success' => true,
+                    'count' => $exceed_limit['count'],
+                    'limit_bool' =>$exceed_limit['limit_bool'],
+                    'message' => $exceed_limit['message'],
+                ];
+            }
         }
-
         return [
             'success' => false,
             'message' => '',

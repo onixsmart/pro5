@@ -3756,8 +3756,9 @@ export default {
             await this.$http.get(`/${this.resource}/locked_sales`).then(response => {
                 if(response.data.success){
                     this.$message.error(response.data.message);
+                    this.loading_submit = false;
                 }
-            }).finally(() => this.loading_submit = false);
+            });
 
             let path = `/${this.resource}`;
             if (this.isUpdate) {
@@ -3767,35 +3768,37 @@ export default {
             // Condicion de pago Credito con cuota pasa a credito
             if (this.form.payment_condition_id === '03') this.form.payment_condition_id = '02';
 
-            this.$http.post(path, this.form).then(response => {
-                if (response.data.success) {
-                    this.$eventHub.$emit('reloadDataItems', null)
-                    this.resetForm();
-                    this.documentNewId = response.data.data.id;
+            if(this.loading_submit){
+                this.$http.post(path, this.form).then(response => {
+                    if (response.data.success) {
+                        this.$eventHub.$emit('reloadDataItems', null)
+                        this.resetForm();
+                        this.documentNewId = response.data.data.id;
 
-                    this.showOptionsDialog(response)
+                        this.showOptionsDialog(response)
 
-                    this.form_cash_document.document_id = response.data.data.id;
+                        this.form_cash_document.document_id = response.data.data.id;
 
-                    // this.savePaymentMethod();
-                    this.saveCashDocument();
+                        // this.savePaymentMethod();
+                        this.saveCashDocument();
 
-                    this.autoPrintDocument()
+                        this.autoPrintDocument()
 
-                } else {
-                    this.$message.error(response.data.message);
-                }
-            }).catch(error => {
-                if (error.response.status === 422) {
-                    this.errors = error.response.data;
-                } else {
-                    this.$message.error(error.response.data.message);
-                }
-                if (temp === '03') this.form.payment_condition_id = '03';
-            }).finally(() => {
-                this.loading_submit = false;
-                this.setDefaultDocumentType();
-            });
+                    } else {
+                        this.$message.error(response.data.message);
+                    }
+                }).catch(error => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data;
+                    } else {
+                        this.$message.error(error.response.data.message);
+                    }
+                    if (temp === '03') this.form.payment_condition_id = '03';
+                }).finally(() => {
+                    this.loading_submit = false;
+                    this.setDefaultDocumentType();
+                });
+            }
 
         },
         showOptionsDialog(response) {

@@ -120,6 +120,8 @@ class EstablishmentController extends Controller
             {
                 return [
                     'success' => true,
+                    'locked' => $configuration->locked_establishments,
+                    'plan_limit' => $configuration->plan->limit_establishments,
                     'message' => 'Ha superado el límite permitido para la creación de establecimientos'
                 ];
             }
@@ -127,6 +129,8 @@ class EstablishmentController extends Controller
 
         return [
             'success' => false,
+            'locked' => $configuration->locked_establishments,
+            'plan_limit' => $configuration->plan->limit_establishments,
             'message' => ''
         ];
     }

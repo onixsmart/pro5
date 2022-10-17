@@ -3489,8 +3489,9 @@ export default {
                 console.log('inicio');
                 if(response.data.success){
                     this.$message.error(response.data.message);
+                    this.loading_submit = false;
                 }
-            }).finally(() => this.loading_submit = false);
+            });
 
 
             let path = `/${this.resource}`;
@@ -3500,8 +3501,8 @@ export default {
             let temp = this.form.payment_condition_id;
             // Condicion de pago Credito con cuota pasa a credito
             if (this.form.payment_condition_id === '03') this.form.payment_condition_id = '02';
-
-            this.$http.post(path, this.form).then(response => {
+            if(this.loading_submit){
+                this.$http.post(path, this.form).then(response => {
                 if (response.data.success) {
                     this.$eventHub.$emit('reloadDataItems', null)
                     this.resetForm();
@@ -3519,17 +3520,18 @@ export default {
                 } else {
                     this.$message.error(response.data.message);
                 }
-            }).catch(error => {
-                if (error.response.status === 422) {
-                    this.errors = error.response.data;
-                } else {
-                    this.$message.error(error.response.data.message);
-                }
-                if (temp === '03') this.form.payment_condition_id = '03';
-            }).finally(() => {
-                this.loading_submit = false;
-                this.setDefaultDocumentType();
-            });
+                }).catch(error => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data;
+                    } else {
+                        this.$message.error(error.response.data.message);
+                    }
+                    if (temp === '03') this.form.payment_condition_id = '03';
+                }).finally(() => {
+                    this.loading_submit = false;
+                    this.setDefaultDocumentType();
+                });
+            }
 
         },
         showOptionsDialog(response){
