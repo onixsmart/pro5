@@ -29,6 +29,34 @@
                                 v-text="errors.regex_password_client[0]"></small>
                     </div>
                 </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label">Publicidad para clientes
+                            <el-tooltip class="item"
+                                    content="Activar configuracion global"
+                                    effect="dark"
+                                    placement="top-start">
+                                <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
+                        </label>
+                        <el-input v-model="form.advertising_client"
+                                    :readonly="true">
+                            <el-upload slot="append"
+                                        :data="{'type': 'ads'}"
+                                        :headers="headers"
+                                        :on-success="successUpload"
+                                        :on-error="errorUpload"
+                                        :show-file-list="false"
+                                        action="/configurations/uploadAds">
+                                <el-button icon="el-icon-upload"
+                                            type="primary"></el-button>
+                            </el-upload>
+                        </el-input>
+                        <div class="sub-title text-danger"><small>Se recomienda resolucion 800x60</small>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- <div class="form-actions text-right pt-2">
                 <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
@@ -44,6 +72,7 @@ export default {
         return {
             loading_submit: false,
             resource: 'configurations',
+            headers: headers_token,
             errors: {},
             form: {},
         }
@@ -55,8 +84,11 @@ export default {
         initForm() {
             this.errors = {}
             this.form = {
-                regex_password_client: false
+                regex_password_client: false,
+                advertising_client:null
             }
+
+            console.log(headers_token)
         },
         submit() {
             this.loading_submit = true
@@ -79,6 +111,19 @@ export default {
                 .then(() => {
                     this.loading_submit = false
                 })
+        },
+        successUpload(response, file, fileList) {
+
+            if (response.success) {
+                this.$message.success(response.message)
+                this.form[response.type] = response.name
+            } else {
+                this.$message({message: 'Error al subir el archivo', type: 'error'})
+            }
+        },
+        errorUpload(error)
+        {
+            this.$message({message: 'Error al subir el archivo', type: 'error'})
         },
     }
 }

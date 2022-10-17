@@ -11,6 +11,14 @@
         <tenant-dialog-header-menu></tenant-dialog-header-menu>
 
     </div>
+    <div class="row">
+        @include('tenant.auth.partials.side_up_ads')
+    </div>
+        @if ($useLoginGlobal)
+            @if ($loginGlobal->ads ?? false)
+                <img class="" src="{{$loginGlobal->ads}}" alt="Logo Ads" style="height: 60px!important; width: 800px; margin-left: 60px;"/>
+            @endif
+        @endif
     <div class="header-right">
 
         <ul class="notifications mx-2">

@@ -804,6 +804,8 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
             Route::post('configurations/bg', 'System\ConfigurationController@storeBgLogin');
             Route::post('configurations/other-configuration', 'System\ConfigurationController@storeOtherConfiguration');
 
+            Route::post('configurations/uploadAds', 'System\ConfigurationController@uploadAds');
+
             Route::get('companies/record', 'System\CompanyController@record');
             Route::post('companies', 'System\CompanyController@store');
 
