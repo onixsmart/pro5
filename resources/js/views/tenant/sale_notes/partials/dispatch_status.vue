@@ -34,15 +34,27 @@
                                         ></el-switch>
                                     </td>
                                     <td>DESPACHO-{{ row.id }}</td>
-                                    <td>{{ row.type==null?'-':(row.type?'Entregado':'Parcial') }}</td>
+                                    <td v-if="!row.selected">{{ row.type==null?'-':(row.type?'Entregado':'Parcial') }}</td>
+                                    <td v-else>
+                                        <el-select v-model="status_display" placeholder="Select">
+                                            <el-option
+                                            v-for="status_option in options_status"
+                                                :key="status_option.value"
+                                                :label="status_option.label"
+                                                :value="status_option.value"
+                                                @change="getStatusSale(status_option.value)">
+                                            </el-option>
+                                        </el-select>
+                                    </td>
                                     <td>{{ row.date_dispatch }}</td>
                                     <td>{{ row.time_dispatch }}</td>
                                     <td>{{ row.person_pick }}</td>
                                     <td>{{ row.reference }}</td>
                                     <td class="text-right">{{ row.person_dispatch }}</td>
                                     <td class="series-table-actions text-right">
+                                        <button v-if="row.selected" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickSubmit(index)">
+                                            <i class="fa fa-check"></i></button>
                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)"><i class="fas fa-trash"></i></button>
-                                        <!--<el-button type="danger" icon="el-icon-delete" plain @click.prevent="clickDelete(row.id)"></el-button>-->
                                     </td>
                                 </template>
                                 <template v-else>
@@ -54,7 +66,8 @@
                                             v-for="status_option in options_status"
                                                 :key="status_option.value"
                                                 :label="status_option.label"
-                                                :value="status_option.value">
+                                                :value="status_option.value"
+                                                @change="getStatusSale(status_option.value)">
                                             </el-option>
                                         </el-select>
                                     </td>
@@ -91,7 +104,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="col-md-12 pt-2">
+                <!-- <div class="col-md-12 pt-2">
                     <div class="d-flex">
                         <div class="d-flex">
                             <div class="d-flex flex-column">
@@ -99,14 +112,12 @@
                                 <el-radio v-model="status_display" @change="statusUpdate" :checked="checked_display" label="0">Parcial</el-radio>
                             </div>
                             <button v-if="typeUser != 'seller'" type="button" class="btn waves-effect waves-light btn-xs btn-light" @click.prevent="statusUpdate('initial')">Borrar Check</button>
-                            <!-- <button v-if="typeUser != 'seller'" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="statusUpdate('check')">Guardar Check</button> -->
                         </div>
                         <div class="w-100 text-center">
-                            <!-- <button type="button" class="btn waves-effect waves-light btn btn-info" @click.prevent="clickSubmit(index)">Grabar</button> -->
                         </div>
                     </div>
                     
-                </div>
+                </div> -->
                 
             </div>
         </div>
@@ -149,11 +160,11 @@
                 dispatch_active:false,
                 options_status:[
                     {
-                        value: 'Option1',
-                        label: 'Option1'
+                        value: '1',
+                        label: 'Entregado'
                     }, {
-                        value: 'Option2',
-                        label: 'Option2'
+                        value: '0',
+                        label: 'Parcial'
                     }
                 ]
             }
@@ -227,13 +238,14 @@
                     person_pick:this.records[index].person_pick,
                     person_dispatch: this.records[index].person_dispatch,
                     reference: this.records[index].reference,
-                    status_display:this.status_display,
+                    status:this.status_display,
                 };
                 this.$http.post(`/${this.resource}/dispatch`, form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message);
                             this.dispatch_active=true
+                            this.setStatusButton();
                             this.getData();
                             // this.initDocumentTypes()
                             this.$eventHub.$emit('reloadData')
@@ -319,6 +331,13 @@
                 });
                 console.log(this.selecteds.length)
             },
+            getStatusSale(value){
+                this.status_display=value
+            },
+            setStatusButton(){
+                console.log(this.status_display)
+                this.statusDispatch = this.status_display=='0'?true:false
+            }
         },
     }
 </script>
