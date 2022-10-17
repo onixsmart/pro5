@@ -1019,30 +1019,32 @@
             await this.$http.get(`/documents/locked_sales`).then(response => {
                 if(response.data.success){
                     this.$message.error(response.data.message);
-                }
-            }).finally(() => this.loading = false);
-
-            let new_resource= this.purchase_value? this.resource_purchase:this.resource;
-            await this.$http.post(`/${new_resource}`, this.form)
-                .then(response => {
-                    if (response.data.success) {
-                        this.resetForm()
-                        this.documentNewId = response.data.data.id
-                        this.showDialogOptions = true
-                    } else {
-                        this.$message.error(response.data.message)
-                    }
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data
-                    } else {
-                        this.$message.error(error.response.data.message)
-                    }
-                })
-                .then(() => {
                     this.loading_submit = false
-                })
+                }
+            });
+            if (this.loading_submit) {
+                let new_resource= this.purchase_value? this.resource_purchase:this.resource;
+                await this.$http.post(`/${new_resource}`, this.form)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.resetForm()
+                            this.documentNewId = response.data.data.id
+                            this.showDialogOptions = true
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data
+                        } else {
+                            this.$message.error(error.response.data.message)
+                        }
+                    })
+                    .then(() => {
+                        this.loading_submit = false
+                    })
+            }
         },
         getCustomer() {
             this.$http.get(`/${this.resource}/search/customer/${this.document.customer_id}`).then((response) => {

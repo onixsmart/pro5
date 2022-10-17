@@ -1288,35 +1288,39 @@
             await this.$http.get(`/documents/locked_sales`).then(response => {
                     if(response.data.success){
                         this.$message.error(response.data.message);
+                        this.loading_submit = false
                     }
-                }).finally(() => this.loading = false);
-            this.$http.post(`/${this.resource}`, this.form)
-                .then(response => {
-                    if (response.data.success) {
+                });
 
-                        this.form_payment.sale_note_id = response.data.data.id;
-                        this.$eventHub.$emit('reloadDataItems', null)
-                        // if(!this.id) this.sale_note_payment()
-                        this.resetForm();
-                        this.saleNotesNewId = response.data.data.id;
-                        this.showDialogOptions = true;
-                        this.saveCashDocument(response.data.data.id)
+            if(this.loading_submit){
+                this.$http.post(`/${this.resource}`, this.form)
+                    .then(response => {
+                        if (response.data.success) {
 
-                        this.isUpdate()
+                            this.form_payment.sale_note_id = response.data.data.id;
+                            this.$eventHub.$emit('reloadDataItems', null)
+                            // if(!this.id) this.sale_note_payment()
+                            this.resetForm();
+                            this.saleNotesNewId = response.data.data.id;
+                            this.showDialogOptions = true;
+                            this.saveCashDocument(response.data.data.id)
 
+                            this.isUpdate()
+
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    }).catch(error => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data;
                     } else {
-                        this.$message.error(response.data.message);
+                        this.$message.error(error.response.data.message);
                     }
-                }).catch(error => {
-                if (error.response.status === 422) {
-                    this.errors = error.response.data;
-                } else {
-                    this.$message.error(error.response.data.message);
-                }
-            }).then(() => {
-                this.form.currency_type_id = this.config.currency_type_id;
-                this.loading_submit = false;
-            });
+                }).then(() => {
+                    this.form.currency_type_id = this.config.currency_type_id;
+                    this.loading_submit = false;
+                });
+            }
         },
         validate_payments() {
 
