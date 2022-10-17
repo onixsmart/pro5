@@ -1016,12 +1016,15 @@
             }
 
             this.loading_submit = true
-            await this.$http.get(`/documents/locked_sales`).then(response => {
-                if(response.data.success){
-                    this.$message.error(response.data.message);
-                    this.loading_submit = false
-                }
-            });
+            if (this.form.document_type_id!='07') {
+                await this.$http.get(`/documents/locked_sales`).then(response => {
+                    if(response.data.success){
+                        this.$message.error(response.data.message);
+                        this.loading_submit = false
+                    }
+                });
+            }
+            
             if (this.loading_submit) {
                 let new_resource= this.purchase_value? this.resource_purchase:this.resource;
                 await this.$http.post(`/${new_resource}`, this.form)
