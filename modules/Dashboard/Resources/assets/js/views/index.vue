@@ -833,7 +833,7 @@ export default {
         .get(`/users/getMessageNotification`)
         .then((response) => {
             this.date_term=response.data.date;
-            let message_data = response.data.id;
+            let message_data = response.data.message_id;
             if (response.data.message!=""&&this.data_message!=response.data.id) {
                 this.$message({
                     showClose: true,
