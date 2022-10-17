@@ -1890,6 +1890,7 @@ class SaleNoteController extends Controller
 
     public function recordDispatch(Request $request)
     {
+        //dd($request->all());
         $id = $request->input('id');
 
         $record = DispatchSaleNote::firstOrNew(['id' => $id]);
