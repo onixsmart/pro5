@@ -835,30 +835,36 @@ export default {
             //console.log(response.data=='')
             this.date_term=response.data.date;
             let message_data = response.data.message_id;
+            let message_info = response.data.message;
             if(response.data!=''){
-                if (response.data.message!=""&&this.data_message!=response.data.id) {
+                if (message_info!=""&&this.data_message!=response.data.id) {
                     this.$message({
                         showClose: true,
                         message: response.data.message,
                         type: 'error',
                         duration: 400000,
                         onClose:()=>{
-                            this.setMessage(message_data)
+                            this.setMessage(message_data,message_info)
                         }
                     });
                     this.data_message=response.data.id
+                }else{
+                    message_info=''
+                    this.$message.close()
                 }
             }else{
+                message_info=''
                 this.$message.close()
                 //console.log(response.data=='')
                 this.data_message=null
             }
         });
     },
-    setMessage(message_data){
+    setMessage(message_data,message_info){
         this.$http
             .get(`/users/setMessageStatus/${message_data}`)
         this.data_message=null
+        return message_info=''
     }
   },
 };
