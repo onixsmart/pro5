@@ -220,8 +220,7 @@
         public function scopeWhereFilterReportStock($query, $warehouse_id, $date_start, $date_end)
         {
 
-            $query->with(['inventory_kardex'])
-                        ->whereHas('transaction')
+            $query->with('transaction')
                         ->where('warehouse_id', $warehouse_id)
                         ->where('description', 'like', 'STock Real')
                         ->whereHas('inventory_kardex', function($query) use($date_start, $date_end){
@@ -260,6 +259,34 @@
             $stock_system=InventoryKardex::where('inventory_kardexable_type', 'Modules\Inventory\Models\Inventory')->where('item_id',$this->item_id)->where('warehouse_id',$this->warehouse_id)->where('date_of_issue','<',$date)->sum('quantity');
 
             return $stock_system;
+
+        }
+
+        public function getRowResourceReportCollection()
+        {
+
+            $input = '-';
+            $output = '-';
+            if (isset($this->transaction)) {
+                if($this->transaction->type === 'input'){
+                    $input = $this->quantity;
+                }else{
+                    $output = -$this->quantity;
+                }
+            }else{
+                $input = $this->quantity;
+            }
+
+            return [
+                'description' => $this->description,
+                'item_id' => $this->item_id,
+                'item_description' => $this->item->getInternalIdDescription(),
+                'inventory_transaction_id' => $this->inventory_transaction_id,
+                'quantity' => $this->quantity,
+                'input' => $input,
+                'output' => $output,
+                'date_time' => $this->created_at->format('Y-m-d H:i:s'),
+            ];
 
         }
 

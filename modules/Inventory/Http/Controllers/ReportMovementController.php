@@ -105,7 +105,7 @@ class ReportMovementController extends Controller
     public function stockRecords(Request $request)
     {
         $records = $this->getStockRecords($request->all());
-
+        //dd($records->get());
         return new ReportMovementCollection($records->paginate(config('tenant.items_per_page')));
     }
 
