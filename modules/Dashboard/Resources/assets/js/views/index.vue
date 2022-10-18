@@ -840,6 +840,9 @@ export default {
                     message: response.data.message,
                     type: 'error',
                     duration: 400000,
+                    onClose:()=>{
+                        this.setMessage(message_data)
+                    }
                 });
                 this.data_message=response.data.id
             }
