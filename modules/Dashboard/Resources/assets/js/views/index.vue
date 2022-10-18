@@ -832,25 +832,33 @@ export default {
       this.$http
         .get(`/users/getMessageNotification`)
         .then((response) => {
+            //console.log(response.data=='')
             this.date_term=response.data.date;
             let message_data = response.data.message_id;
-            if (response.data.message!=""&&this.data_message!=response.data.id) {
-                this.$message({
-                    showClose: true,
-                    message: response.data.message,
-                    type: 'error',
-                    duration: 400000,
-                    onClose:()=>{
-                        this.setMessage(message_data)
-                    }
-                });
-                this.data_message=response.data.id
+            if(response.data!=''){
+                if (response.data.message!=""&&this.data_message!=response.data.id) {
+                    this.$message({
+                        showClose: true,
+                        message: response.data.message,
+                        type: 'error',
+                        duration: 400000,
+                        onClose:()=>{
+                            this.setMessage(message_data)
+                        }
+                    });
+                    this.data_message=response.data.id
+                }
+            }else{
+                this.$message.close()
+                //console.log(response.data=='')
+                this.data_message=null
             }
         });
     },
     setMessage(message_data){
         this.$http
             .get(`/users/setMessageStatus/${message_data}`)
+        this.data_message=null
     }
   },
 };
