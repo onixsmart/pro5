@@ -238,10 +238,14 @@
 
             $ajust = '-';
 
-            if($this->transaction->type === 'input'){
-                $ajust = $this->quantity;
+            if (isset($this->transaction)) {
+                if($this->transaction->type === 'input'){
+                    $input = $this->quantity;
+                }else{
+                    $output = -$this->quantity;
+                }
             }else{
-                $ajust = -$this->quantity;
+                $input = $this->quantity;
             }
 
             $stock_system=$this->getStockFull($this->created_at->format('Y-m-d'));
