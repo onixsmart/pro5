@@ -199,10 +199,8 @@ class DocumentInput
                         'has_igv' => $row['item']['has_igv'] ?? true,
                         'unit_price' => $row['unit_price'] ?? 0,
                         'purchase_unit_price' => $row['item']['purchase_unit_price'] ?? 0,
-                        
                         'exchanged_for_points' => $row['item']['exchanged_for_points'] ?? false,
                         'used_points_for_exchange' => $row['item']['used_points_for_exchange'] ?? null,
-                        
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
@@ -235,6 +233,14 @@ class DocumentInput
                     'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
                     'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
 //                    'additional_data' => key_exists('additional_data', $row)?$row['additional_data']:null,
+                    'credit_cap'=> Functions::valueKeyInArray($row, 'credit_cap'),
+                    'credit_int'=> Functions::valueKeyInArray($row, 'credit_int'),
+                    'credit_mor'=> Functions::valueKeyInArray($row, 'credit_mor'),
+                    'credit_fee'=> Functions::valueKeyInArray($row, 'credit_fee'),
+                    'credit_amorti'=> Functions::valueKeyInArray($row, 'credit_amorti'),
+                    'credit_pend'=> Functions::valueKeyInArray($row, 'credit_pend'),
+                    'credit_tot'=> Functions::valueKeyInArray($row, 'credit_tot'),
+                    'credit_dat'=> Functions::valueKeyInArray($row, 'credit_dat'),
                 ];
 //                dd($arayItem);
                 Item::SaveExtraDataToRequest($arayItem,$row);
@@ -463,12 +469,24 @@ class DocumentInput
                 $percentage = $retention['percentage'];
                 $amount = $retention['amount'];
                 $base = $retention['base'];
+                $currency_type_id = $retention['currency_type_id'];
+                $exchange_rate = $retention['exchange_rate'];
+                $amount_pen = $retention['amount_pen'];
+                $amount_usd = $retention['amount_usd'];
 
                 return [
                     'code' => $code,
                     'percentage' => $percentage,
                     'amount' => $amount,
                     'base' => $base,
+                    'currency_type_id' => $currency_type_id,
+                    'exchange_rate' => $exchange_rate,
+                    'amount_pen' => $amount_pen,
+                    'amount_usd' => $amount_usd,
+                    'voucher_date_of_issue' => null,
+                    'voucher_number' => null,
+                    'voucher_amount' => null,
+                    'voucher_filename' => null,
                 ];
             }
         }
@@ -661,7 +679,6 @@ class DocumentInput
         return null;
     }
 
-
     /**
      *
      * Retornar configuracion para envio individual de boletas
@@ -679,9 +696,9 @@ class DocumentInput
         return false;
     }
 
-    
+
     /**
-     * 
+     *
      * Configuración de sistema por puntos
      *
      * @param  array $inputs
@@ -710,7 +727,7 @@ class DocumentInput
         return $data;
     }
 
-    
+
     /**
      * Determina si es factura o boleta
      *
@@ -721,6 +738,4 @@ class DocumentInput
     {
         return in_array($document_type_id, ['01', '03'], true);
     }
-
-
 }

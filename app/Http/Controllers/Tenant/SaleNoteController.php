@@ -61,7 +61,7 @@ use App\Models\Tenant\PersonType;
 use App\Models\Tenant\DispatchSaleNote;
 use App\Http\Resources\Tenant\DispatchSaleNoteCollection;
 use Modules\Finance\Traits\FilePaymentTrait;
-
+// use App\Http\Resources\Tenant\SaleNoteGenerateDocumentResource;
 // use App\Models\Tenant\Warehouse;
 
 class SaleNoteController extends Controller
@@ -1960,4 +1960,18 @@ class SaleNoteController extends Controller
             'message' => 'Despacho eliminado con exito'
         ];
     }
+    
+    /**
+     * 
+     * Data para generar cpe desde nv
+     *
+     * @param  int $id
+     * @return SaleNoteGenerateDocumentResource
+     */
+    // public function recordGenerateDocument($id)
+    // {
+    //     return new SaleNoteGenerateDocumentResource(SaleNote::findOrFail($id));
+    // }
+
+
 }

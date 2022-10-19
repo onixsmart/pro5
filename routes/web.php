@@ -302,6 +302,9 @@ if ($hostname) {
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
             Route::get('documents/data-table/items', 'Tenant\DocumentController@getDataTableItem');
+            Route::get('documents/retention/{document}', 'Tenant\DocumentController@retention');
+            Route::post('documents/retention', 'Tenant\DocumentController@retentionStore');
+            Route::post('documents/retention/upload', 'Tenant\DocumentController@retentionUpload');
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level', 'tenant.internal.mode');
@@ -584,6 +587,7 @@ if ($hostname) {
             Route::post('sale-notes/dispatch/statusUpdate', 'Tenant\SaleNoteController@statusUpdate');
             Route::delete('sale-notes/dispatch/delete/{id}', 'Tenant\SaleNoteController@destroyStatus');
             Route::get('sale-notes/dispatch_note/{id}', 'Tenant\SaleNoteController@recordsDispatchNote');
+            // Route::get('sale-notes/record-generate-document/{salenote}', 'Tenant\SaleNoteController@recordGenerateDocument');
 
             //POS
             Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');
@@ -713,6 +717,7 @@ Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store')
 
             Route::post('general-upload-temp-image', 'Controller@generalUploadTempImage');
 
+            Route::get('general-get-current-warehouse', 'Controller@generalGetCurrentWarehouse');
 
             // test theme
             // Route::get('testtheme', function () {

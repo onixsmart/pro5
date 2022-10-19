@@ -515,6 +515,101 @@
                                 </el-collapse-item>
                             </el-collapse>
                         </div>
+                        <div class="col-md-12 mt-2">
+                            <el-collapse v-model="activePanel">
+                                <el-collapse-item
+                                                  name="2"
+                                                  title="+ Agregar Capital/Intereses/Mora">
+                                        <label class="control-label">
+                                            <a href="#"
+                                               @click.prevent="clickAddCredit">Ticket Creditos - Cobranza</a>
+                                        </label>
+                                        <div class="row">
+                                        <template v-if="showCredit">
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">Capital</label>
+                                                    <el-input v-model="form.credit_capital"
+                                                    @change="setInputCapital"></el-input>
+                                                    <small v-if="errors.credit_capital"
+                                                        class="form-control-feedback"
+                                                        v-text="errors.credit_capital[0]"></small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">Interes</label>
+                                                    <el-input v-model="form.credit_interest" :disabled="true"></el-input>
+                                                    <small v-if="errors.credit_interest"
+                                                        class="form-control-feedback"
+                                                        v-text="errors.credit_interest[0]"></small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">Mora</label>
+                                                    <el-input v-model="form.credit_mora"
+                                                    @change="setInputMora"></el-input>
+                                                    <small v-if="errors.credit_mora"
+                                                        class="form-control-feedback"
+                                                        v-text="errors.credit_mora[0]"></small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">Total</label>
+                                                    <el-input v-model="form.credit_total"
+                                                    @input="getTotalInput"></el-input>
+                                                    <small v-if="errors.credit_total"
+                                                        class="form-control-feedback"
+                                                        v-text="errors.credit_total[0]"></small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">N° Cuotas</label>
+                                                    <el-input v-model="form.credit_fees"
+                                                    @change="setInputFees"></el-input>
+                                                    <small v-if="errors.credit_fees"
+                                                        class="form-control-feedback"
+                                                        v-text="errors.credit_fees[0]"></small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">Cuotas amortizadas</label>
+                                                    <el-input v-model="form.credit_amortized"
+                                                    @change="setInputAmortized"></el-input>
+                                                    <small v-if="errors.credit_amortized"
+                                                        class="form-control-feedback"
+                                                        v-text="errors.credit_amortized[0]"></small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">Cuotas pendientes</label>
+                                                    <el-input v-model="form.credit_pending"
+                                                    @input="getInputFees"></el-input>
+                                                    <small v-if="errors.credit_pending"
+                                                        class="form-control-feedback"
+                                                        v-text="errors.credit_pending[0]"></small>
+                                                </div>
+                                            </div>
+                                            <div class="col-3 form-group">
+                                                <label class="control-label">Fech. Vencimiento cuota</label>
+                                                <el-date-picker
+                                                    v-model="form.credit_date"
+                                                    type="date"
+                                                    placeholder="Fech. Vencimiento cuota"
+                                                    value-format="yyyy-MM-dd"
+                                                >
+                                                </el-date-picker>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </el-collapse-item>
+                            </el-collapse>
+                        </div>
                     </template>
                 </div>
             </div>
@@ -705,6 +800,7 @@ export default {
             showDialogHistorySales: false,
             history_item_id: null,
             //item_unit_type: {}
+            showCredit:false,
         }
     },
     created() {
@@ -1075,6 +1171,16 @@ export default {
                     price_default: 2,
                     prices: [],
                 },
+
+                credit_capital:0,
+                credit_interest:0,
+                credit_mora:0,
+                credit_fees:0,
+                credit_amortized:0,
+                credit_pending:0,
+                credit_total:0,
+                credit_date:null,
+
             };
 
             this.activePanel = 0;
@@ -1365,6 +1471,10 @@ export default {
         calculateQuantity() {
             if (this.form.item.calculate_quantity) {
                 this.form.quantity = _.round((this.total_item / this.form.unit_price_value), 4)
+            }
+            if(this.showCredit){
+                this.form.credit_interest=this.form.unit_price_value
+                this.getTotalInput()
             }
             this.calculateTotal()
         },
@@ -1789,6 +1899,32 @@ export default {
             this.showDialogHistorySales = true;
             // console.log(item)
         },
+        clickAddCredit(){
+            this.form.credit_interest=this.form.unit_price_value
+            this.showCredit=true
+        },
+        setInputCapital(value){
+            this.form.credit_capital=value
+            this.getTotalInput()
+        },
+        setInputMora(value){
+            this.form.credit_mora=value
+            this.getTotalInput()
+        },
+        getTotalInput(){
+            return this.form.credit_total = parseFloat(this.form.credit_interest)+parseFloat(this.form.credit_capital)+parseFloat(this.form.credit_mora)
+        },
+        setInputFees(value){
+            this.form.credit_fees=value
+            this.getInputFees()
+        },
+        setInputAmortized(value){
+            this.form.credit_amortized=value
+            this.getInputFees()
+        },
+        getInputFees(){
+            return this.form.credit_pending = parseFloat(this.form.credit_fees)-parseFloat(this.form.credit_amortized)
+        }
     }
 }
 

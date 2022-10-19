@@ -76,6 +76,15 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         purchase_unit_price: row_old.item.purchase_unit_price,
         purchase_unit_value: row_old.item.purchase_unit_value,
         purchase_has_igv: row_old.item.has_igv,
+
+        credit_capital:row_old.credit_capital,
+        credit_interest:row_old.credit_interest,
+        credit_mora:row_old.credit_mora,
+        credit_fees:row_old.credit_fees,
+        credit_amortized:row_old.credit_amortized,
+        credit_pending:row_old.credit_pending,
+        credit_total:row_old.credit_total,
+        credit_date:row_old.credit_date,
     };
 
     // console.log(row)

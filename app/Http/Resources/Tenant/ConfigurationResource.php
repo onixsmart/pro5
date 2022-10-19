@@ -69,6 +69,7 @@ class ConfigurationResource extends JsonResource
             'dashboard_clients' => (bool)$this->dashboard_clients,
             'dashboard_products' => (bool)$this->dashboard_products,
             'equivalent_product' => (bool)$this->equivalent_product,
+            'enable_discount_by_customer' => $this->enable_discount_by_customer,
         ];
     }
 }

@@ -143,6 +143,11 @@ class Document extends ModelTenant
 
     public const DOCUMENT_TYPE_TICKET = '03';
 
+    public const GROUP_INVOICE = '01';
+
+    public const GROUP_TICKET = '02';
+
+
     protected $with = [
         'user',
         'soap_type',
@@ -261,6 +266,7 @@ class Document extends ModelTenant
         'point_system_data',
         'folio',
         'agent_id',
+        'force_send_by_summary',
     ];
 
     protected $casts = [
@@ -270,8 +276,10 @@ class Document extends ModelTenant
         'enabled_concurrency' => 'bool',
         'apply_concurrency' => 'bool',
         'send_to_pse' => 'bool',
+        'total' => 'float',
         'ticket_single_shipment' => 'bool',
         'point_system' => 'bool',
+        'force_send_by_summary' => 'bool',
     ];
 
     public static function boot()
@@ -1449,6 +1457,94 @@ class Document extends ModelTenant
 
     /**
      *
+     * Validar si se modifico la boleta enviada de forma individual, a resumen
+     *
+     * @return bool
+     */
+    public function isForceSendBySummary()
+    {
+        return $this->isDocumentTypeTicket() && $this->force_send_by_summary;
+    }
+
+
+    /**
+     *
+     * Validar si se puede modificar el tipo de envio de la boleta, individual a resumen
+     *
+     * @return bool
+     */
+    public function isAvailableForceSendBySummary()
+    {
+        return $this->isSingleDocumentShipment() && !$this->force_send_by_summary && $this->state_type_id === self::STATE_TYPE_REGISTERED && auth()->user()->permission_force_send_by_summary;
+    }
+
+
+    /**
+     *
+     * Verificar si es boleta
+     *
+     * @return bool
+     */
+    public function isDocumentTypeTicket()
+    {
+        return $this->document_type_id === self::DOCUMENT_TYPE_TICKET;
+    }
+
+
+    /**
+     *
+     * Determina si se muestra el boton consultar cdr
+     *
+     * @return bool
+     */
+    public function isAvailableConsultCdr()
+    {
+        $action = false;
+
+        if ($this->state_type_id === self::STATE_TYPE_REGISTERED && $this->soap_type_id === self::SOAP_TYPE_PRODUCTION)
+        {
+            if($this->group_id === self::GROUP_INVOICE)
+            {
+                $action = true;
+            }
+            else
+            {
+                if($this->isSingleDocumentShipment()) $action = true;
+            }
+        }
+
+        return $action;
+    }
+
+
+    /**
+     *
+     * Determina si se muestra el boton para reenvio
+     *
+     * @return bool
+     */
+    public function isAvailableResend()
+    {
+        $action = false;
+
+        if ($this->state_type_id === self::STATE_TYPE_REGISTERED)
+        {
+            if($this->group_id === self::GROUP_INVOICE)
+            {
+                $action = true;
+            }
+            else
+            {
+                if($this->isSingleDocumentShipment()) $action = true;
+            }
+        }
+
+        return $action;
+    }
+
+
+    /**
+     *
      * Filtrar registros para listado de documentos - app
      *
      * @param Builder $query
@@ -1520,9 +1616,9 @@ class Document extends ModelTenant
             ]);
     }
 
-    
+
     /**
-     * 
+     *
      * Determina si es factura o boleta
      *
      * @return bool
@@ -1531,10 +1627,10 @@ class Document extends ModelTenant
     {
         return in_array($this->document_type_id, ['01', '03'], true);
     }
- 
+
 
     /**
-     * 
+     *
      * Determina si fue usado para sistema por puntos
      *
      * @return bool
@@ -1543,14 +1639,14 @@ class Document extends ModelTenant
     {
         return $this->point_system;
     }
-    
-    
+
+
     /**
-     * 
+     *
      * Obtener puntos por la venta
      *
      * @return float
-     * 
+     *
      */
     public function getPointsBySale()
     {
@@ -1560,7 +1656,7 @@ class Document extends ModelTenant
         {
             $point_system_data = $this->point_system_data;
             $total = $this->total;
-    
+
             $value_quantity_points = ($total / $point_system_data->point_system_sale_amount) * $point_system_data->quantity_of_points;
             $calculate_quantity_points = $point_system_data->round_points_of_sale ? intval($value_quantity_points) : round($value_quantity_points, 2);
         }

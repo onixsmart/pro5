@@ -2402,7 +2402,9 @@ class Item extends ModelTenant
             'active' => (bool) $this->active,
             'stock' => $this->getWarehouseCurrentStock(),
             'favorite' => $this->favorite,
-
+            'has_isc' => (bool)$this->has_isc,
+            'system_isc_type_id' => $this->system_isc_type_id,
+            'percentage_isc' => $this->percentage_isc,
         ];
     }
 
@@ -2592,6 +2594,27 @@ class Item extends ModelTenant
     public function getStockByVariantsInventoryReview($establishment_id)
     {
         return ItemMovement::getStockByVariantSizeColor($this->id, $establishment_id);
+    }
+
+
+    /**
+     *
+     * Filtrar por almacen
+     *
+     * @param  Builder $query
+     * @param  int $warehouse_id
+     * @return Builder
+     */
+    public function scopeFilterByWarehouseId($query, $warehouse_id)
+    {
+        if(!is_null($warehouse_id) && $warehouse_id != 'all')
+        {
+            $query->whereHas('warehouses', function ($query) use ($warehouse_id) {
+                return $query->where('warehouse_id', $warehouse_id);
+            });
+        }
+
+        return $query;
     }
 
 

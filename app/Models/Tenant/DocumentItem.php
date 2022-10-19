@@ -81,7 +81,16 @@
             'name_product_pdf',
             'additional_information',
             'name_product_xml',
-            'additional_data'
+            'additional_data',
+
+            'credit_cap',
+            'credit_int',
+            'credit_mor',
+            'credit_fee',
+            'credit_amorti',
+            'credit_pend',
+            'credit_tot',
+            'credit_dat',
         ];
 
         public static function boot()
