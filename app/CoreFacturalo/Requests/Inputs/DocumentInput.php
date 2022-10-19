@@ -233,6 +233,14 @@ class DocumentInput
                     'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
                     'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
 //                    'additional_data' => key_exists('additional_data', $row)?$row['additional_data']:null,
+                    'credit_cap'=> Functions::valueKeyInArray($row, 'credit_cap'),
+                    'credit_int'=> Functions::valueKeyInArray($row, 'credit_int'),
+                    'credit_mor'=> Functions::valueKeyInArray($row, 'credit_mor'),
+                    'credit_fee'=> Functions::valueKeyInArray($row, 'credit_fee'),
+                    'credit_amorti'=> Functions::valueKeyInArray($row, 'credit_amorti'),
+                    'credit_pend'=> Functions::valueKeyInArray($row, 'credit_pend'),
+                    'credit_tot'=> Functions::valueKeyInArray($row, 'credit_tot'),
+                    'credit_dat'=> Functions::valueKeyInArray($row, 'credit_dat'),
                 ];
 //                dd($arayItem);
                 Item::SaveExtraDataToRequest($arayItem,$row);
