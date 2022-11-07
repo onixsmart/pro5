@@ -282,6 +282,7 @@
             'show_load_voucher',
             'search_factory_code_items',
             'register_series_invoice_xml',
+            'enabled_dispatch_ticket_pdf',
             'enable_discount_by_customer'
         ];
 
@@ -400,8 +401,9 @@
             'search_factory_code_items'=>'bool',
             'register_series_invoice_xml'=>'bool',
             
+            'enabled_dispatch_ticket_pdf'=>'bool',
             'enable_discount_by_customer' => 'boolean'
-
+            
         ];
 
         protected $hidden = [
@@ -640,6 +642,7 @@
                 'search_factory_code_items' => $this->search_factory_code_items,
                 'register_series_invoice_xml' => $this->register_series_invoice_xml,
                 
+                'enabled_dispatch_ticket_pdf' => $this->enabled_dispatch_ticket_pdf,
                 'enable_discount_by_customer' => $this->enable_discount_by_customer,
 
             ];
