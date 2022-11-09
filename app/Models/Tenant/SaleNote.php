@@ -878,9 +878,8 @@
             return ($internal_id ? $internal_id.' - ' : '').$row->item->description; 
         }
 
-
+                
         /**
-         * getUrlPrintByFormat
          *
          * @param  string $format
          * @return string
