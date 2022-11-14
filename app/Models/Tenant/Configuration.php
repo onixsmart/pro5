@@ -281,8 +281,8 @@
             'change_affectation_exonerated_igv',
             'show_load_voucher',
             'search_factory_code_items',
-            'register_series_invoice_xml',
             'enabled_dispatch_ticket_pdf',
+            'register_series_invoice_xml',
             'enable_discount_by_customer'
         ];
 
