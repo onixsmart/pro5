@@ -16,6 +16,7 @@
     use Modules\Order\Models\OrderNote;
     use Modules\Sale\Models\TechnicalService;
     use Modules\Pos\Models\Tip;
+    use App\Models\Tenant\DispatchSaleNote;
     use Modules\Sale\Models\Agent;
 
     /**
@@ -555,6 +556,11 @@
             return $this->hasMany(Document::class);
         }
 
+        public function dispatch_sale()
+        {
+            return $this->hasMany(DispatchSaleNote::class);
+        }
+
         /**
          * @return BelongsTo
          * order from ecommerce
@@ -751,6 +757,23 @@
             $mails = $person->getCollectionData();
             $customer_email=  $mails['optional_email_send'];
 
+            $status_dispatch=$this->dispatch_sale;
+            
+            if (count($status_dispatch)>0) {
+                //dd($status_dispatch[0]->status);
+                foreach ($status_dispatch as $value) {
+                    if($value->status){
+                        $status_dispatch='ENTREGADO';
+                        break;
+                    }else{
+                        //dd('parcial');
+                        $status_dispatch='PARCIAL';
+                    }
+                }
+            }else {
+                $status_dispatch='PENDIENTE';
+            }
+            
             $date_pay=$this->payments()->select('date_of_payment')->get();
 
             $date_of_pay='';
@@ -834,8 +857,10 @@
                 'seller' => $this->seller,
                 'filename' => $this->filename,
                 'seller_name'                     => ((int)$this->seller_id !=0)?$this->seller->name:'',
+
+                'status_dispatch'=>$status_dispatch,
+                'customer_region' => $this->customer->department->description ?? null,
                 'date_of_payment'              => $date_of_pay,
-                'customer_region'              => $customer->department->description,
 // 'number' => $this->number,
                 'agent_name' => optional($this->agent)->search_description,
                 'reference_data' => $this->reference_data,
