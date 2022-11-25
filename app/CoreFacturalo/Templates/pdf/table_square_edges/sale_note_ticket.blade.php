@@ -307,7 +307,7 @@
                 {{ $row->date_of_payment->format('d/m/Y') }}  
                 {!! $spacing !!}{{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}  
                 {!! $spacing !!}{{ $row->payment_method_type->description }}
-                {!! $spacing !!}{{ $row->reference ? $row->reference.' - ':'' }} 
+                {!! $spacing !!}{{ $row->reference ? $row->reference :'' }} 
             </td>
         </tr>
         @php
