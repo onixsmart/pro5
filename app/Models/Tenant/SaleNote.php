@@ -1722,4 +1722,16 @@
                         ]);
         }
 
+        
+        /**
+         * 
+         * Placa para reporte de ventas
+         *
+         * @return string
+         */
+        public function getPlateNumberSaleReport()
+        {
+            return $this->license_plate;
+        }
+
     }
