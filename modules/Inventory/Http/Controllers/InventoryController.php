@@ -27,6 +27,8 @@ use Modules\Inventory\Http\Resources\InventoryResource;
 use Modules\Inventory\Http\Resources\InventoryCollection;
 use App\Imports\StockImport;
 use Maatwebsite\Excel\Excel;
+use Modules\Inventory\Http\Requests\RemoveRequest;
+
 
 class InventoryController extends Controller
 {
@@ -714,7 +716,7 @@ class InventoryController extends Controller
         return $result;
     }
 
-    public function remove(Request $request)
+    public function remove(RemoveRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             // dd($request->all());
@@ -792,6 +794,8 @@ class InventoryController extends Controller
                 }
             }
 
+            $this->removeItemLotsGroup($request);
+
             return [
                 'success' => true,
                 'message' => 'Producto trasladado con éxito'
@@ -800,6 +804,29 @@ class InventoryController extends Controller
 
         return $result;
     }
+
+    
+    /**
+     * Remover lotes
+     *
+     * @param  RemoveRequest $request
+     * @return void
+     */
+    public function removeItemLotsGroup($request)
+    {
+        $selected_lots_group = $request->selected_lots_group ?? null;
+
+        if($selected_lots_group) 
+        {
+            foreach ($selected_lots_group as $lots_group) 
+            {
+                $lot = $this->getItemLotsGroupById($lots_group['id']);
+                $lot->quantity = $lot->quantity - $lots_group['compromise_quantity'];
+                $lot->save();
+            }
+        }
+    }
+
 
     public function initialize()
     {
