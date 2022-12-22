@@ -285,6 +285,7 @@
             'enable_discount_by_customer',
             'show_price_barcode_ticket',
             'price_selected_add_product',
+            'pdf_footer_images',
         ];
 
         protected $casts = [
@@ -646,6 +647,46 @@
                 'price_selected_add_product' => $this->price_selected_add_product,
             ];
         }
+        
+
+        /**
+         *
+         * @return array
+         */
+        public function getPdfFooterImages()
+        {
+            return $this->pdf_footer_images ?? [];
+        }
+
+
+        /**
+         *
+         * Validar si se agrega pdf footer con imagenes
+         * 
+         * @return bool
+         */
+        public function applyImagesInPdfFooter()
+        {
+            return collect($this->getPdfFooterImages())->count() > 0;
+        }
+
+        
+        /**
+         * 
+         * Datos para consulta de imagenes footer
+         *
+         * @return array
+         */
+        public function getDataPdfFooterImages()
+        {
+            return collect($this->getPdfFooterImages())->transform(function($row){
+                return [
+                    'name' => $row->filename,
+                    'url'=> $this->getPathPublicUploads('pdf_footer_images', $row->filename)
+                ];
+            });
+        }
+        
 
         /**
          * @return bool
@@ -920,6 +961,16 @@
         public function getFinancesAttribute($value)
         {
             return is_null($value) ? ['apply_arrears' => false, 'arrears_amount' => 0] : (object)json_decode($value);
+        }
+        
+        public function getPdfFooterImagesAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setPdfFooterImagesAttribute($value)
+        {
+            $this->attributes['pdf_footer_images'] = (is_null($value)) ? null : json_encode($value);
         }
 
         /**
